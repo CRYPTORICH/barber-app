@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Smoke Shop Rewards</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface2: #1a1a1a;
+    --border: #262626;
+    --text: #f5f5f5;
+    --muted: #888;
+    --accent: #059669;
+    --accent-glow: rgba(5, 150, 105, 0.15);
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --radius: 14px;
+    --radius-sm: 10px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    max-width: 480px;
+    margin: 0 auto;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 20px 20px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-icon {
+    width: 40px; height: 40px;
+    background: var(--accent-glow);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    padding: 8px 16px;
+    gap: 4px;
+    background: var(--surface);
+    margin: 0 16px;
+    border-radius: var(--radius);
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .tab.active { background: var(--accent); color: #fff; }
+
+  /* ── Content areas ── */
+  .content { padding: 16px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Phone input ── */
+  .phone-section { margin-bottom: 20px; }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .phone-input-wrap {
+    display: flex;
+    gap: 8px;
+  }
+  input[type="tel"], input[type="number"] {
+    width: 100%;
+    padding: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  input:focus { border-color: var(--accent); }
+  ::placeholder { color: #444; font-weight: 400; }
+
+  .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:active { transform: scale(.97); }
+  .btn-outline {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-block { width: 100%; padding: 16px; font-size: 16px; margin-top: 12px; }
+  .btn-warn { background: var(--warn); color: #000; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn:disabled { opacity: .4; pointer-events: none; }
+
+  /* ── Customer card ── */
+  .customer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .customer-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .customer-phone {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .points-display {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .points-number {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .points-label {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .points-value {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── Quick stats row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .stat-card {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-number { font-size: 24px; font-weight: 800; color: var(--text); }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Amount input ── */
+  .amount-section { margin: 20px 0; }
+  .amount-preview {
+    background: var(--accent-glow);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .amount-preview span {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ── Transaction list ── */
+  .txn-list { margin-top: 20px; }
+  .txn-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .txn-type { font-weight: 600; }
+  .txn-type.redeem { color: var(--danger); }
+  .txn-type.purchase { color: var(--accent); }
+  .txn-meta { font-size: 12px; color: var(--muted); }
+  .txn-amount { font-size: 16px; font-weight: 700; }
+  .txn-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Redeem section ── */
+  .redeem-info {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  /* ── Loading / Error states ── */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+  }
+  .error-msg {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    color: var(--danger);
+    font-size: 13px;
+    margin: 12px 0;
+  }
+  .success-msg {
+    background: var(--accent-glow);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    margin: 12px 0;
+  }
+
+  /* ── Shop stats page ── */
+  .shop-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .shop-stat .value {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .shop-stat .label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ── Config page ── */
+  .config-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+  }
+  .config-row label { margin: 0; font-size: 14px; text-transform: none; color: var(--text); }
+  .config-row input {
+    width: 80px;
+    text-align: center;
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn .3s ease; }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="header">
+  <div class="header-icon">💨</div>
+  <div>
+    <h1 id="shopNameDisplay">Smoke Shop Rewards</h1>
+    <p>Staff Panel</p>
+  </div>
+</div>
+
+<!-- ── Tabs ── -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('lookup')">🔍 Lookup</button>
+  <button class="tab" onclick="switchTab('redeem')">💸 Redeem</button>
+  <button class="tab" onclick="switchTab('shop')">📊 Shop</button>
+  <button class="tab" onclick="switchTab('config')">⚙️</button>
+</div>
+
+<div class="content">
+  <!-- ── LOOKUP / PURCHASE PAGE ── -->
+  <div id="page-lookup" class="page active">
+    <div class="phone-section">
+      <label>Customer Phone</label>
+      <div class="phone-input-wrap">
+        <input type="tel" id="lookupPhone" placeholder="(555) 123-4567" autocomplete="off">
+        <button class="btn btn-primary" onclick="lookupCustomer()">Lookup</button>
+      </div>
+    </div>
+    <div id="lookupResult"></div>
+  </div>
+
+  <!-- ── REDEEM PAGE ── -->
+  <div id="page-redeem" class="page">
+    <div class="phone-section">
+      <label>Customer Phone</label>
+      <div class="phone-input-wrap">
+        <input type="tel" id="redeemPhone" placeholder="(555) 123-4567" autocomplete="off">
+        <button class="btn btn-primary" onclick="lookupForRedeem()">Lookup</button>
+      </div>
+    </div>
+    <div id="redeemResult"></div>
+  </div>
+
+  <!-- ── SHOP STATS PAGE ── -->
+  <div id="page-shop" class="page">
+    <div id="shopStats">
+      <div class="loading">Loading shop stats...</div>
+    </div>
+  </div>
+
+  <!-- ── CONFIG PAGE ── -->
+  <div id="page-config" class="page">
+    <div id="configForm">
+      <div class="loading">Loading config...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://rewards.onrender.com';
+
+// Cache the current customer for purchase/redeem flows
+let currentCustomer = null;
+
+// ── Init ──
+async function init() {
+  try {
+    const r = await fetch(API_URL + '/api/config');
+    const d = await r.json();
+    if (d.config?.shop_name) {
+      document.getElementById('shopNameDisplay').textContent = d.config.shop_name;
+    }
+  } catch(e) {}
+}
+init();
+
+// ── Tabs ──
+function switchTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.target.classList.add('active');
+
+  if (name === 'redeem') {
+    document.getElementById('redeemPhone').value = document.getElementById('lookupPhone').value;
+  }
+  if (name === 'shop') loadShopStats();
+  if (name === 'config') loadConfig();
+}
+
+// ── Phone formatting ──
+function cleanPhone(raw) {
+  return raw.replace(/\D/g, '');
+}
+
+// ── Lookup Customer ──
+async function lookupCustomer() {
+  const phone = cleanPhone(document.getElementById('lookupPhone').value);
+  if (!phone) return;
+
+  const resultEl = document.getElementById('lookupResult');
+  resultEl.innerHTML = '<div class="loading">Looking up...</div>';
+
+  try {
+    const r = await fetch(API_URL + '/api/customer', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({phone})
+    });
+    const d = await r.json();
+
+    if (d.error) {
+      resultEl.innerHTML = `<div class="error-msg">${d.error}</div>`;
+      return;
+    }
+
+    currentCustomer = d.customer;
+    renderCustomerCard(resultEl, d.customer, d.found === false);
+  } catch(e) {
+    resultEl.innerHTML = `<div class="error-msg">Connection error. Is the server running?</div>`;
+  }
+}
+
+function renderCustomerCard(el, c, isNew) {
+  const pointsValue = (c.points * 0.01).toFixed(2);
+  const phoneDisplay = c.phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+
+  let html = `
+    <div class="customer-card fade-in">
+      <div class="customer-name">${c.name || 'Customer'}</div>
+      <div class="customer-phone">${phoneDisplay}</div>
+      <div class="points-display">
+        <span class="points-number">${c.points.toLocaleString()}</span>
+        <span class="points-label">pts</span>
+      </div>
+      <div class="points-value">= $${pointsValue} redemption value</div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-number">$${c.lifetime_spend.toLocaleString()}</div>
+          <div class="stat-label">Lifetime Spend</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${c.transactions?.length || 0}</div>
+          <div class="stat-label">Visits</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Amount input for purchase
+  html += `
+    <div class="amount-section">
+      <label>Purchase Amount</label>
+      <input type="number" id="purchaseAmount" placeholder="0.00" step="0.01" min="0"
+             oninput="updatePointsPreview()" style="font-size:20px;">
+      <div class="amount-preview" id="pointsPreview" style="display:none">
+        Will earn <span id="previewPoints">0</span> points
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="addPurchase()">✅ Add Purchase</button>
+    <div id="purchaseMsg"></div>
+  `;
+
+  // Recent transactions
+  if (c.transactions && c.transactions.length > 0) {
+    const recent = c.transactions.slice(-5).reverse();
+    html += '<div class="txn-list"><label>Recent Transactions</label>';
+    recent.forEach(t => {
+      const date = new Date(t.timestamp).toLocaleDateString();
+      const sign = t.type === 'redeem' ? '-' : '+';
+      const cls = t.type === 'redeem' ? 'redeem' : 'purchase';
+      html += `
+        <div class="txn-item">
+          <div>
+            <div class="txn-type ${cls}">${t.type === 'redeem' ? 'Redeemed' : 'Purchase'}</div>
+            <div class="txn-date">${date}</div>
+          </div>
+          <div>
+            <div class="txn-amount">${sign}${Math.abs(t.points).toLocaleString()} pts</div>
+            ${t.amount ? `<div class="txn-meta">$${t.amount.toFixed(2)}</div>` : ''}
+            ${t.value ? `<div class="txn-meta">$${t.value.toFixed(2)} off</div>` : ''}
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function updatePointsPreview() {
+  const amount = parseFloat(document.getElementById('purchaseAmount').value) || 0;
+  const preview = document.getElementById('pointsPreview');
+  const previewPts = document.getElementById('previewPoints');
+
+  if (amount > 0) {
+    const dollars = Math.floor(amount);
+    const points = dollars * 10;
+    preview.style.display = 'block';
+    previewPts.textContent = points.toLocaleString();
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+async function addPurchase() {
+  const amount = parseFloat(document.getElementById('purchaseAmount').value) || 0;
+  if (!currentCustomer || amount <= 0) return;
+
+  const msgEl = document.getElementById('purchaseMsg');
+  msgEl.innerHTML = '<div class="loading">Processing...</div>';
+
+  try {
+    const r = await fetch(API_URL + '/api/purchase', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({phone: currentCustomer.phone, amount})
+    });
+    const d = await r.json();
+
+    if (d.error) {
+      msgEl.innerHTML = `<div class="error-msg">${d.error}</div>`;
+      return;
+    }
+
+    currentCustomer = d.customer;
+    msgEl.innerHTML = `<div class="success-msg">✅ +${d.points_earned.toLocaleString()} points added!</div>`;
+
+    // Refresh the card
+    const resultEl = document.getElementById('lookupResult');
+    renderCustomerCard(resultEl, d.customer, false);
+    document.getElementById('purchaseAmount').value = '';
+
+    // Clear success after 3s
+    setTimeout(() => { document.getElementById('purchaseMsg').innerHTML = ''; }, 3000);
+  } catch(e) {
+    msgEl.innerHTML = `<div class="error-msg">Connection error.</div>`;
+  }
+}
+
+// ── Redeem Flow ──
+async function lookupForRedeem() {
+  const phone = cleanPhone(document.getElementById('redeemPhone').value);
+  if (!phone) return;
+
+  const resultEl = document.getElementById('redeemResult');
+  resultEl.innerHTML = '<div class="loading">Looking up...</div>';
+
+  try {
+    const r = await fetch(API_URL + '/api/customer', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({phone})
+    });
+    const d = await r.json();
+
+    if (d.error) {
+      resultEl.innerHTML = `<div class="error-msg">${d.error}</div>`;
+      return;
+    }
+
+    if (d.customer.points === 0) {
+      resultEl.innerHTML = `<div class="customer-card fade-in">
+        <div class="customer-name">${d.customer.name || 'Customer'}</div>
+        <div style="text-align:center;padding:20px;color:var(--muted);">No points to redeem</div>
+      </div>`;
+      return;
+    }
+
+    currentCustomer = d.customer;
+    const pointsValue = (d.customer.points * 0.01).toFixed(2);
+
+    resultEl.innerHTML = `
+      <div class="customer-card fade-in">
+        <div class="customer-name">${d.customer.name || 'Customer'}</div>
+        <div class="points-display">
+          <span class="points-number">${d.customer.points.toLocaleString()}</span>
+          <span class="points-label">pts available</span>
+        </div>
+        <div class="points-value">= $${pointsValue}</div>
+      </div>
+      <label>Points to Redeem</label>
+      <input type="number" id="redeemAmount" placeholder="100" min="100"
+             step="100" style="font-size:18px">
+      <p style="color:var(--muted);font-size:12px;margin-top:4px;">
+        100 pts = $1.00 &bull; Max: ${d.customer.points} pts
+      </p>
+      <button class="btn btn-warn btn-block" onclick="executeRedeem()">💸 Redeem Points</button>
+      <div id="redeemMsg"></div>
+    `;
+  } catch(e) {
+    resultEl.innerHTML = `<div class="error-msg">Connection error.</div>`;
+  }
+}
+
+async function executeRedeem() {
+  const points = parseInt(document.getElementById('redeemAmount').value) || 0;
+  if (!currentCustomer || points <= 0) return;
+
+  const msgEl = document.getElementById('redeemMsg');
+  msgEl.innerHTML = '<div class="loading">Processing...</div>';
+
+  try {
+    const r = await fetch(API_URL + '/api/redeem', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({phone: currentCustomer.phone, points})
+    });
+    const d = await r.json();
+
+    if (d.error) {
+      msgEl.innerHTML = `<div class="error-msg">${d.error} (Available: ${d.available || 0})</div>`;
+      return;
+    }
+
+    msgEl.innerHTML = `<div class="success-msg">💸 $${d.value.toFixed(2)} discount applied!</div>`;
+
+    // Refresh
+    setTimeout(() => lookupForRedeem(), 500);
+  } catch(e) {
+    msgEl.innerHTML = `<div class="error-msg">Connection error.</div>`;
+  }
+}
+
+// ── Shop Stats ──
+async function loadShopStats() {
+  const el = document.getElementById('shopStats');
+  try {
+    const r = await fetch(API_URL + '/api/stats');
+    const d = await r.json();
+    el.innerHTML = `
+      <div class="fade-in">
+        <div class="shop-stat">
+          <div class="value">${d.total_customers}</div>
+          <div class="label">Total Customers</div>
+        </div>
+        <div class="shop-stat">
+          <div class="value">${d.points_outstanding.toLocaleString()}</div>
+          <div class="label">Points Outstanding</div>
+        </div>
+        <div class="shop-stat">
+          <div class="value">$${d.outstanding_value.toLocaleString()}</div>
+          <div class="label">Redemption Liability</div>
+        </div>
+        <div class="shop-stat">
+          <div class="value">${d.lifetime_points.toLocaleString()}</div>
+          <div class="label">Lifetime Points Issued</div>
+        </div>
+      </div>
+    `;
+  } catch(e) {
+    el.innerHTML = '<div class="error-msg">Cannot load stats. Is the server running?</div>';
+  }
+}
+
+// ── Config ──
+async function loadConfig() {
+  const el = document.getElementById('configForm');
+  try {
+    const r = await fetch(API_URL + '/api/config');
+    const d = await r.json();
+    const c = d.config;
+    el.innerHTML = `
+      <div class="fade-in">
+        <div class="config-row">
+          <label>Shop Name</label>
+          <input type="text" id="cfgShopName" value="${c.shop_name || ''}" style="width:160px">
+        </div>
+        <div class="config-row">
+          <label>Points per $1 spent</label>
+          <input type="number" id="cfgPtsPerDollar" value="${c.points_per_dollar || 10}" min="1">
+        </div>
+        <div class="config-row">
+          <label>Cents per point</label>
+          <input type="number" id="cfgPtsValue" value="${c.points_value_cents || 1}" min="1">
+        </div>
+        <p style="color:var(--muted);font-size:12px;margin:8px 0 16px;">
+          Default: 10 pts/$1, 1¢/pt = 100 pts = $1.00
+        </p>
+        <button class="btn btn-primary btn-block" onclick="saveConfig()">💾 Save Config</button>
+        <div id="configMsg"></div>
+      </div>
+    `;
+  } catch(e) {
+    el.innerHTML = '<div class="error-msg">Cannot load config.</div>';
+  }
+}
+
+async function saveConfig() {
+  const body = {
+    shop_name: document.getElementById('cfgShopName').value,
+    points_per_dollar: parseInt(document.getElementById('cfgPtsPerDollar').value),
+    points_value_cents: parseInt(document.getElementById('cfgPtsValue').value)
+  };
+
+  const msgEl = document.getElementById('configMsg');
+  try {
+    const r = await fetch(API_URL + '/api/config', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    document.getElementById('shopNameDisplay').textContent = d.config.shop_name || 'Smoke Shop Rewards';
+    msgEl.innerHTML = '<div class="success-msg">✅ Config saved!</div>';
+    setTimeout(() => { msgEl.innerHTML = ''; }, 3000);
+  } catch(e) {
+    msgEl.innerHTML = '<div class="error-msg">Save failed.</div>';
+  }
+}
+
+// ── Enter key handlers ──
+document.getElementById('lookupPhone').addEventListener('keydown', e => {
+  if (e.key === 'Enter') lookupCustomer();
+});
+document.getElementById('redeemPhone').addEventListener('keydown', e => {
+  if (e.key === 'Enter') lookupForRedeem();
+});
+</script>
+</body>
+</html>
