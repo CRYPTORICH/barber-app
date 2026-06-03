@@ -34,7 +34,7 @@ let _lastFetch = 0;      // Timestamp of last data fetch
 
 const DEFAULT_PIN = '0000';
 
-async function hashPin(pin) {
+function hashPin(pin) {
   // Simple hash for PIN (not crypto-grade, but sufficient for shop counter)
   let h = 0;
   for (let i = 0; i < pin.length; i++) {
