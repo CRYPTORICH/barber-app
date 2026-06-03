@@ -145,10 +145,17 @@
     <div class="glass login-card">
       <input type="tel" id="phoneDisplay" class="large" placeholder="(555) 123-4567" readonly style="text-align:center;">
       <div class="num-pad">
-        ${[1,2,3,4,5,6,7,8,9,'',0].map(n => n==='' 
-          ? '<div></div>' 
-          : `<button class="num-key" onclick="pressDigit('${n}')">${n}</button>`
-        ).join('')}
+        <button class="num-key" onclick="pressDigit('1')">1</button>
+        <button class="num-key" onclick="pressDigit('2')">2</button>
+        <button class="num-key" onclick="pressDigit('3')">3</button>
+        <button class="num-key" onclick="pressDigit('4')">4</button>
+        <button class="num-key" onclick="pressDigit('5')">5</button>
+        <button class="num-key" onclick="pressDigit('6')">6</button>
+        <button class="num-key" onclick="pressDigit('7')">7</button>
+        <button class="num-key" onclick="pressDigit('8')">8</button>
+        <button class="num-key" onclick="pressDigit('9')">9</button>
+        <div></div>
+        <button class="num-key" onclick="pressDigit('0')">0</button>
         <button class="num-key del" onclick="pressDelete()">⌫</button>
         <button class="num-key go" onclick="doLogin()">→</button>
       </div>
