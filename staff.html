@@ -6,152 +6,177 @@
 <meta name="theme-color" content="#060906">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Staff Panel · Smoke Shop Rewards</title>
+<link rel="stylesheet" href="styles.css">
 <style>
-:root{--bg:#060906;--card:#0d100d;--border:#1a241a;--text:#d4d8d4;--muted:#6b726b;--accent:#059669;--red:#ef4444;--gold:#d4a843}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-text-size-adjust:100%}
-button,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent;font-family:inherit}
-.hidden{display:none!important}
-/* PIN */
-.pin-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;gap:1rem}
-.pin-wrap input{font-size:1.5rem;text-align:center;padding:12px;width:140px;border:2px solid var(--accent);border-radius:12px;background:#111;color:#fff}
-.btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;color:#fff}
-.btn-green{background:var(--accent)}
-.btn-gold{background:var(--gold);color:#000}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
-.btn-sm{padding:10px;font-size:.875rem}
-.msg{padding:12px;border-radius:8px;margin-top:8px;font-size:.875rem}
-.msg-err{background:rgba(239,68,68,.15);color:var(--red)}
-.msg-ok{background:rgba(5,150,105,.15);color:var(--accent)}
-/* Layout */
-.app{padding:12px;max-width:500px;margin:0 auto}
-.top{display:flex;align-items:center;justify-content:space-between;padding:8px 0 16px}
-.top h1{font-size:1.2rem}
-.back{color:var(--muted);text-decoration:none;font-size:.875rem}
-/* Tabs */
-.tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px}
-.tab{flex:1;padding:10px 6px;border:none;background:none;color:var(--muted);font-size:.7rem;font-weight:600;border-radius:8px;cursor:pointer}
-.tab.on{background:var(--accent);color:#fff}
-/* Content */
-.panel{display:none}
-.panel.on{display:block}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
-input[type=tel],input[type=text],input[type=number],input[type=password]{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#111;color:#fff;font-size:1rem}
-input:focus{outline:none;border-color:var(--accent)}
-.row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.grow{flex:1}
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600}
-.badge-bronze{background:rgba(205,127,50,.15);color:#cd7f32}
-.badge-silver{background:rgba(168,168,176,.1);color:#a8a8b0}
-.badge-gold{background:rgba(212,168,67,.1);color:var(--gold)}
-.badge-platinum{background:rgba(212,212,220,.1);color:#d4d4dc}
-.pts{font-size:2rem;font-weight:700;color:var(--accent)}
-.muted{color:var(--muted);font-size:.8rem}
-.stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+  button, [onclick], input, textarea, select, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .staff-layout { max-width: 480px; margin: 0 auto; min-height: 100dvh; }
+  .nav { display: flex; padding: 0.5rem; margin: 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); gap: 2px; }
+  .nav-btn { flex: 1; padding: 0.625rem 0.5rem; border: none; background: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .nav-btn.active { background: var(--accent); color: white; }
+  .nav-btn .ico { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+  .section { display: none; padding: 0 1rem 2rem; }
+  .section.active { display: block; animation: fadeIn 0.25s var(--ease-out); }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem 0; }
+  .top-bar h1 { font-size: 1.25rem; }
+  .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; }
+  .search-wrap { margin-bottom: 1rem; }
+  .pts-ring { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; flex-shrink: 0; }
+  .pts-ring .num { font-size: 1.25rem; font-weight: 800; }
+  .pts-ring .lbl { font-size: 0.5625rem; color: var(--text-muted); text-transform: uppercase; }
+  .txn-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+  .txn-item:last-child { border-bottom: none; }
+  .config-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+  .config-row label { font-size: 0.875rem; color: var(--text); }
+  .config-row input { width: auto; min-width: 80px; text-align: right; }
+  .hidden { display: none !important; }
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .gap-4 { gap: 1rem; }
+  .gap-2 { gap: 0.5rem; }
+  .mb-4 { margin-bottom: 1rem; }
+  .mt-2 { margin-top: 0.5rem; }
+  .mt-3 { margin-top: 0.75rem; }
+  .mt-4 { margin-top: 1rem; }
+  .p-4 { padding: 1rem; }
+  .justify-between { justify-content: space-between; }
+  .w-full { width: 100%; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
 <body>
 
 <!-- PIN GATE -->
-<div id="pinGate" class="pin-wrap">
-  <div style="font-size:3rem">🔐</div>
-  <h2>Staff Access</h2>
-  <p style="color:var(--muted);font-size:.9rem">Enter PIN to continue</p>
-  <input type="password" id="pinIn" maxlength="4" placeholder="0000">
-  <button class="btn btn-green" style="max-width:200px" onclick="tryUnlock()">Unlock</button>
-  <div id="pinMsg"></div>
+<div id="pinGate" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:1.5rem;">
+  <div style="font-size:3rem;">🔐</div>
+  <h1>Staff Access</h1>
+  <p class="text-muted">Enter staff PIN to continue</p>
+  <input type="password" id="pinInput" class="large" placeholder="••••" maxlength="4" autocomplete="off" style="text-align:center;max-width:200px;">
+  <button class="btn btn-primary btn-lg" onclick="tryUnlock()">Unlock</button>
+  <div id="pinError" class="mt-2"></div>
+  <a href="index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8125rem;">← Back</a>
 </div>
 
 <!-- MAIN APP -->
-<div id="mainApp" class="hidden app">
-  <div class="top">
-    <a href="index.html" class="back">← Back</a>
-    <h1 id="shopTitle">Staff Panel</h1>
-    <div></div>
+<div id="mainApp" class="hidden">
+<div class="staff-layout" style="max-width:none;">
+  <div class="top-bar">
+    <a href="index.html" class="back-link">← Back</a>
+    <h1 id="shopName">Staff Panel</h1>
+    <div style="width:40px"></div>
   </div>
 
-  <div class="tabs">
-    <button class="tab on" onclick="showTab('lookup',this)">🔍 Lookup</button>
-    <button class="tab" onclick="showTab('redeem',this)">💸 Redeem</button>
-    <button class="tab" onclick="showTab('history',this)">📋 History</button>
-    <button class="tab" onclick="showTab('stats',this)">📊 Stats</button>
-    <button class="tab" onclick="showTab('config',this)">⚙️ Config</button>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showTab('lookup',this)"><span class="ico">🔍</span>Lookup</button>
+    <button class="nav-btn" onclick="showTab('redeem',this)"><span class="ico">💸</span>Redeem</button>
+    <button class="nav-btn" onclick="showTab('history',this)"><span class="ico">📋</span>History</button>
+    <button class="nav-btn" onclick="showTab('stats',this)"><span class="ico">📊</span>Stats</button>
+    <button class="nav-btn" onclick="showTab('config',this)"><span class="ico">⚙️</span>Config</button>
   </div>
 
   <!-- LOOKUP -->
-  <div id="pnl-lookup" class="panel on">
-    <div class="row"><input type="tel" id="phoneIn" placeholder="Phone number..." class="grow"><button class="btn btn-green btn-sm" style="width:auto;padding:12px 20px" onclick="doLook()">Lookup</button></div>
-    <div id="lookResult"></div>
+  <div id="sec-lookup" class="section active">
+    <div class="search-wrap">
+      <input type="tel" id="phoneInput" class="large" placeholder="Phone number..." autocomplete="off">
+      <button class="btn btn-primary btn-block mt-3" onclick="doSearch()">🔍 Search</button>
+    </div>
+    <div id="custDetail"></div>
   </div>
 
   <!-- REDEEM -->
-  <div id="pnl-redeem" class="panel">
-    <div class="row"><input type="tel" id="redeemPhone" placeholder="Phone number..." class="grow"><button class="btn btn-green btn-sm" style="width:auto;padding:12px 20px" onclick="doRedeemLook()">Lookup</button></div>
-    <div id="redeemResult"></div>
+  <div id="sec-redeem" class="section">
+    <div class="search-wrap">
+      <input type="tel" id="redeemPhone" class="large" placeholder="Phone number..." autocomplete="off">
+      <button class="btn btn-primary btn-block mt-3" onclick="doRedeemSearch()">Lookup for Redemption</button>
+    </div>
+    <div id="redeemDetail"></div>
   </div>
 
   <!-- HISTORY -->
-  <div id="pnl-history" class="panel">
-    <div class="row"><input type="tel" id="histPhone" placeholder="Phone number..." class="grow"><button class="btn btn-green btn-sm" style="width:auto;padding:12px 20px" onclick="doHist()">View</button></div>
-    <div id="histResult"></div>
+  <div id="sec-history" class="section">
+    <div class="search-wrap">
+      <input type="tel" id="histPhone" class="large" placeholder="Phone number..." autocomplete="off">
+      <button class="btn btn-outline btn-block mt-3" onclick="doHist()">View History</button>
+    </div>
+    <div id="histDetail"></div>
   </div>
 
   <!-- STATS -->
-  <div id="pnl-stats" class="panel">
-    <div id="statsResult"><button class="btn btn-outline" onclick="doStats()">Load Stats</button></div>
+  <div id="sec-stats" class="section">
+    <div id="statsContent"><button class="btn btn-outline btn-block" onclick="doStats()">Load Stats</button></div>
   </div>
 
   <!-- CONFIG -->
-  <div id="pnl-config" class="panel">
-    <div id="cfgResult"><button class="btn btn-outline" onclick="doConfig()">Load Config</button></div>
+  <div id="sec-config" class="section">
+    <div id="configContent"><button class="btn btn-outline btn-block" onclick="doConfig()">Load Config</button></div>
   </div>
 </div>
+</div>
 
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 <script>
 // ========== PIN ==========
 function tryUnlock(){
-  var p=document.getElementById('pinIn').value;
+  var p=document.getElementById('pinInput').value;
   var ok=false;
-  if(typeof checkPin==='function'){
-    try{ok=checkPin(p)}catch(e){ok=(p==='0000')}
-  }else{ok=(p==='0000')}
+  if(typeof checkPin==='function'){try{ok=checkPin(p)}catch(e){ok=(p==='0000')}}
+  else{ok=(p==='0000')}
   if(ok){
     document.getElementById('pinGate').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
-    document.getElementById('shopTitle').textContent=(_data&&_data.config&&_data.config.shop_name)||'Staff Panel';
+    document.getElementById('shopName').textContent=(_data&&_data.config&&_data.config.shop_name)||'Staff Panel';
   }else{
-    document.getElementById('pinMsg').innerHTML='<div class="msg msg-err">Wrong PIN</div>';
-    document.getElementById('pinIn').value='';
+    document.getElementById('pinError').innerHTML='<div class="msg msg-error">Wrong PIN</div>';
+    document.getElementById('pinInput').value='';
   }
 }
-document.getElementById('pinIn').addEventListener('keydown',function(e){if(e.key==='Enter')tryUnlock()});
+document.getElementById('pinInput').addEventListener('keydown',function(e){if(e.key==='Enter')tryUnlock()});
 
 // ========== TABS ==========
 function showTab(name,btn){
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on')});
-  document.getElementById('pnl-'+name).classList.add('on');
-  if(btn)btn.classList.add('on');
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});
+  document.getElementById('sec-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
   if(name==='stats')doStats();
   if(name==='config')doConfig();
 }
 
 // ========== LOOKUP ==========
 var curPhone=null;
-async function doLook(){
-  var ph=document.getElementById('phoneIn').value.replace(/\D/g,'');
-  var el=document.getElementById('lookResult');
-  if(!ph){el.innerHTML='<div class="msg msg-err">Enter a phone number</div>';return}
+
+async function doSearch(){
+  var ph=document.getElementById('phoneInput').value.replace(/\D/g,'');
+  var el=document.getElementById('custDetail');
+  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
   curPhone=ph;
-  el.innerHTML='<div class="muted" style="padding:2rem;text-align:center">Loading...</div>';
+  el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-muted);">Searching...</div>';
   try{
     await loadData();
     var c=findCustomer(ph);
-    if(!c){c=createCustomer(ph);await saveData()}
+    if(c){
+      showCustomer(c,el);
+    }else{
+      el.innerHTML='<div class="glass p-4" style="text-align:center">'+
+        '<div style="font-size:2rem;margin-bottom:0.5rem;">📱</div>'+
+        '<div style="font-weight:700;font-size:1.1rem;margin-bottom:0.25rem;">Account Not Found</div>'+
+        '<div class="text-muted mb-4">'+formatPhone(ph)+'</div>'+
+        '<button class="btn btn-primary btn-block" onclick="doCreate()">➕ Create Account</button>'+
+        '</div>';
+    }
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+async function doCreate(){
+  var el=document.getElementById('custDetail');
+  try{
+    await loadData();
+    var c=createCustomer(curPhone);
+    await saveData();
     showCustomer(c,el);
   }catch(e){
-    el.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
@@ -159,145 +184,179 @@ function showCustomer(c,el){
   var t=getTier(c);
   var ec=enrichCustomer(c);
   var pts=c.points||0;
-  var html='<div class="card">'+
-    '<div class="row"><div class="pts">'+pts+'</div><span style="font-size:.75rem;color:var(--muted)">pts</span></div>'+
-    '<div style="font-weight:700;font-size:1.1rem">'+(c.name||formatPhone(c.phone))+'</div>'+
-    '<div class="muted">'+formatPhone(c.phone)+'</div>'+
-    '<div style="margin:8px 0"><span class="badge badge-'+t.name.toLowerCase()+'">'+t.icon+' '+t.name+'</span></div>'+
-    '<div class="row" style="margin-top:12px">'+
-    '<input type="number" id="amtIn" placeholder="$ amount" class="grow" style="text-align:center">'+
-    '<button class="btn btn-green btn-sm" style="width:auto;padding:12px 20px" onclick="doBuy()">Add Purchase</button>'+
+  var phone=formatPhone(c.phone);
+  el.innerHTML='<div class="glass animate-in" style="padding:1.25rem;">'+
+    '<div class="flex items-center gap-4 mb-4">'+
+    '<div class="pts-ring" style="background:'+t.bg+';border:2px solid '+t.color+';">'+
+    '<div class="num">'+pts+'</div><div class="lbl">pts</div></div>'+
+    '<div style="flex:1">'+
+    '<div style="font-size:1.25rem;font-weight:700;">'+(c.name||'Customer')+'</div>'+
+    '<div class="text-muted">'+phone+'</div>'+
+    '<div class="mt-2"><span class="badge badge-'+t.name.toLowerCase()+'">'+t.icon+' '+t.name+'</span></div>'+
+    '</div></div>'+
+    '<div class="flex gap-2 mb-4">'+
+    '<input type="text" id="editName" placeholder="'+(c.name||'Add name...')+'" value="'+(c.name||'')+'" style="flex:1">'+
+    '<button class="btn btn-outline btn-sm" onclick="doSaveName()">💾 Save</button>'+
     '</div>'+
-    '<div id="buyMsg"></div>'+
+    '<div id="nameMsg" class="mb-4"></div>'+
+    '<div class="flex gap-2">'+
+    '<input type="number" id="amtIn" placeholder="$ amount" style="flex:1;text-align:center">'+
+    '<button class="btn btn-primary" onclick="doBuy()">Add Purchase</button>'+
+    '</div>'+
+    '<div id="buyMsg" class="mt-3"></div>'+
     '</div>';
-  el.innerHTML=html;
+}
+
+async function doSaveName(){
+  var nm=document.getElementById('editName').value.trim();
+  var el=document.getElementById('nameMsg');
+  if(!nm){el.innerHTML='<div class="msg msg-error">Enter a name</div>';return}
+  try{
+    await loadData();
+    var c=findCustomer(curPhone);
+    if(!c){el.innerHTML='<div class="msg msg-error">Customer not found</div>';return}
+    c.name=nm;
+    await saveData();
+    el.innerHTML='<div class="msg msg-success">✅ Name saved</div>';
+    setTimeout(function(){doSearch()},800);
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
 }
 
 async function doBuy(){
   var amt=parseFloat(document.getElementById('amtIn').value)||0;
   var el=document.getElementById('buyMsg');
-  if(!curPhone||amt<=0){el.innerHTML='<div class="msg msg-err">Enter amount</div>';return}
-  el.innerHTML='<div class="muted">Processing...</div>';
+  if(amt<=0){el.innerHTML='<div class="msg msg-error">Enter amount</div>';return}
+  el.innerHTML='<div style="color:var(--text-muted);">Processing...</div>';
   try{
     await loadData();
     var r=addPurchase(curPhone,amt);
-    if(!r||r.error){el.innerHTML='<div class="msg msg-err">'+(r?r.error:'Failed')+'</div>';return}
-    el.innerHTML='<div class="msg msg-ok">✅ +'+r.points_earned+' points'+(r.tier_up?' 🎉 '+r.new_tier.icon+' '+r.new_tier.name+'!':'')+'</div>';
-    setTimeout(function(){doLook()},1500);
+    if(!r||r.error){el.innerHTML='<div class="msg msg-error">'+(r?r.error:'Failed')+'</div>';return}
+    var bonusText=r.bonuses&&r.bonuses.length?' + '+r.bonuses.map(function(b){return b.label+' (+'+b.pts+')'}).join(', '):'';
+    var tierText=r.tier_up?' 🎉 '+r.new_tier.icon+' '+r.new_tier.name+'!':'';
+    el.innerHTML='<div class="msg msg-success">✅ +'+r.points_earned+' points'+bonusText+tierText+'</div>';
+    setTimeout(function(){doSearch()},1500);
   }catch(e){
-    el.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
 // ========== REDEEM ==========
-async function doRedeemLook(){
+async function doRedeemSearch(){
   var ph=document.getElementById('redeemPhone').value.replace(/\D/g,'');
-  var el=document.getElementById('redeemResult');
-  if(!ph){el.innerHTML='<div class="msg msg-err">Enter a phone number</div>';return}
+  var el=document.getElementById('redeemDetail');
+  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
   curPhone=ph;
-  el.innerHTML='<div class="muted" style="padding:2rem;text-align:center">Loading...</div>';
+  el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div>';
   try{
     await loadData();
     var c=findCustomer(ph);
-    if(!c){el.innerHTML='<div class="msg msg-err">Customer not found</div>';return}
+    if(!c){el.innerHTML='<div class="msg msg-error">Customer not found</div>';return}
     var ec=enrichCustomer(c);
-    if(!ec.points){el.innerHTML='<div class="msg msg-err">No points</div>';return}
-    var pts=c.points||0;
-    var val=ec._value;
-    var html='<div class="card">'+
-      '<div class="pts">'+pts+'</div><div class="muted">points = '+val+'</div>'+
-      '<div style="font-weight:700">'+(c.name||formatPhone(c.phone))+'</div>'+
-      '<div class="muted">'+ec._tier.icon+' '+ec._tier.name+' · '+ec._tier.redeem+'x rate</div>'+
-      '<div class="row" style="margin-top:12px">'+
-      '<input type="number" id="redeemAmt" placeholder="Points (max '+pts+')" class="grow" min="100" max="'+pts+'" style="text-align:center">'+
-      '<button class="btn btn-gold btn-sm" style="width:auto;padding:12px 20px" onclick="doRedeemGo()">Redeem</button>'+
-      '</div><div id="redeemMsg"></div></div>';
-    el.innerHTML=html;
+    if(!ec.points){el.innerHTML='<div class="glass p-4 text-center text-muted">No points to redeem</div>';return}
+    var pts=ec.points;
+    el.innerHTML='<div class="glass animate-in p-4">'+
+      '<div class="flex items-center gap-4 mb-4">'+
+      '<div class="pts-ring" style="background:'+ec._tier.bg+';border:2px solid '+ec._tier.color+';">'+
+      '<div class="num">'+pts+'</div><div class="lbl">pts</div></div>'+
+      '<div><div style="font-weight:700;">'+(c.name||'Customer')+'</div>'+
+      '<div class="text-muted">'+ec._tier.icon+' '+ec._tier.name+' · '+ec._tier.redeem+'x rate</div>'+
+      '<div class="text-accent mt-1" style="font-weight:600;">= '+ec._value+' value</div></div>'+
+      '</div>'+
+      '<div class="flex gap-2">'+
+      '<input type="number" id="redeemAmt" placeholder="Points (max '+pts+')" min="100" max="'+pts+'" style="flex:1;text-align:center">'+
+      '<button class="btn btn-gold" onclick="doRedeemGo()">Redeem</button>'+
+      '</div>'+
+      '<div id="redeemMsg" class="mt-3"></div>'+
+      '</div>';
   }catch(e){
-    el.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
 async function doRedeemGo(){
   var pts=parseInt(document.getElementById('redeemAmt').value)||0;
   var el=document.getElementById('redeemMsg');
-  if(!curPhone||pts<=0){el.innerHTML='<div class="msg msg-err">Enter points</div>';return}
+  if(pts<=0){el.innerHTML='<div class="msg msg-error">Enter points to redeem</div>';return}
   try{
     await loadData();
     var r=redeemPoints(curPhone,pts);
-    if(r.error){el.innerHTML='<div class="msg msg-err">'+r.error+'</div>';return}
-    el.innerHTML='<div class="msg msg-ok">✅ Redeemed '+pts+' pts = $'+r.value+'</div>';
-    setTimeout(function(){doRedeemLook()},1500);
+    if(r.error){el.innerHTML='<div class="msg msg-error">'+r.error+'</div>';return}
+    el.innerHTML='<div class="msg msg-success">✅ Redeemed '+pts+' pts = '+r.value+'</div>';
+    setTimeout(function(){doRedeemSearch()},1500);
   }catch(e){
-    el.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
 // ========== HISTORY ==========
 async function doHist(){
   var ph=document.getElementById('histPhone').value.replace(/\D/g,'');
-  var el=document.getElementById('histResult');
-  if(!ph){el.innerHTML='<div class="msg msg-err">Enter a phone number</div>';return}
+  var el=document.getElementById('histDetail');
+  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
   try{
     await loadData();
     var c=findCustomer(ph);
-    if(!c){el.innerHTML='<div class="msg msg-err">Not found</div>';return}
+    if(!c){el.innerHTML='<div class="msg msg-error">Not found</div>';return}
     var txs=(c.transactions||[]).slice().reverse();
-    var html='<div class="card"><div style="font-weight:700;margin-bottom:8px">'+(c.name||formatPhone(c.phone))+'</div>';
-    if(!txs.length){html+='<div class="muted">No transactions</div>'}
+    var html='<div class="glass p-4"><div style="font-weight:700;margin-bottom:0.75rem;">'+(c.name||formatPhone(ph))+'</div>';
+    if(!txs.length){html+='<div class="text-muted">No transactions</div>'}
     else{txs.forEach(function(tx){
       var icon=tx.type==='purchase'?'💰':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
-      html+='<div class="stat-row"><span>'+icon+' '+(tx.note||tx.type)+'</span><span>'+(tx.points>0?'+':'')+tx.points+' pts</span></div>';
+      html+='<div class="txn-item"><span style="font-size:1.25rem;">'+icon+'</span><span style="flex:1">'+(tx.note||tx.type)+'</span><span style="font-weight:600">'+(tx.points>0?'+':'')+tx.points+' pts</span></div>';
     })}
     html+='</div>';
     el.innerHTML=html;
   }catch(e){
-    el.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
 // ========== STATS ==========
 async function doStats(){
-  var el=document.getElementById('statsResult');
+  var el=document.getElementById('statsContent');
   try{
     await loadData();
     var s=getStats();
-    if(!s||!s.total){el.innerHTML='<div class="card"><div class="muted">No data</div></div>';return}
-    var html='<div class="card">'+
-      '<div class="stat-row"><span>Total Customers</span><span style="font-weight:700">'+s.total+'</span></div>'+
-      '<div class="stat-row"><span>Active Points</span><span style="font-weight:700">'+s.points+'</span></div>'+
-      '<div class="stat-row"><span>Lifetime Points</span><span style="font-weight:700">'+s.lifetime+'</span></div>'+
-      '<div class="stat-row"><span>🎂 Birthdays</span><span>'+s.birthdays+'</span></div>'+
-      '<div class="stat-row"><span>👥 Referrals</span><span>'+s.referrals+'</span></div>'+
+    if(!s||!s.total){el.innerHTML='<div class="glass p-4 text-muted text-center">No data yet</div>';return}
+    var html='<div class="glass p-4"><div style="font-weight:700;margin-bottom:0.75rem;">Overview</div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Customers</span><span style="font-weight:700">'+s.total+'</span></div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Active Points</span><span style="font-weight:700">'+s.points+'</span></div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Lifetime Points</span><span style="font-weight:700">'+s.lifetime+'</span></div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>🎂 Birthdays</span><span>'+s.birthdays+'</span></div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0"><span>👥 Referrals</span><span>'+s.referrals+'</span></div>'+
       '</div>'+
-      '<div class="card"><div style="font-weight:700;margin-bottom:8px">Tiers</div>';
+      '<div class="glass p-4 mt-3"><div style="font-weight:700;margin-bottom:0.75rem;">Tiers</div>';
     var tiers=s.tiers||{};
     for(var name in tiers){
-      html+='<div class="stat-row"><span>'+name+'</span><span>'+tiers[name]+'</span></div>';
+      html+='<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>'+name+'</span><span>'+tiers[name]+'</span></div>';
     }
     html+='</div>';
     el.innerHTML=html;
   }catch(e){
-    el.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
 // ========== CONFIG ==========
 async function doConfig(){
-  var el=document.getElementById('cfgResult');
+  var el=document.getElementById('configContent');
   try{
     await loadData();
     var c=_data&&_data.config?_data.config:{};
-    el.innerHTML='<div class="card">'+
-      '<div class="row"><span class="muted">Shop Name</span><input type="text" id="cfgName" value="'+(c.shop_name||'')+'" class="grow"></div>'+
-      '<div class="row"><span class="muted">Staff PIN</span><input type="password" id="cfgPin" value="'+(c.staff_pin||'0000')+'" maxlength="4" class="grow" style="text-align:center;max-width:100px"></div>'+
-      '<div class="row"><span class="muted">Birthday Bonus</span><input type="number" id="cfgBday" value="'+(c.birthday_bonus||50)+'" class="grow" style="max-width:80px"></div>'+
-      '<div class="row"><span class="muted">Referral Bonus</span><input type="number" id="cfgRef" value="'+(c.referral_bonus||100)+'" class="grow" style="max-width:80px"></div>'+
-      '<button class="btn btn-green" onclick="doSaveCfg()">💾 Save</button>'+
-      '<div id="cfgMsg"></div>'+
+    el.innerHTML='<div class="glass p-4">'+
+      '<div class="config-row"><label>Shop Name</label><input type="text" id="cfgName" value="'+(c.shop_name||'')+'"></div>'+
+      '<div class="config-row"><label>🔐 Staff PIN</label><input type="password" id="cfgPin" value="'+(c.staff_pin||'0000')+'" maxlength="4" style="text-align:center;max-width:100px;"></div>'+
+      '<div class="config-row"><label>🎂 Birthday Bonus</label><input type="number" id="cfgBday" value="'+(c.birthday_bonus||50)+'" min="0"></div>'+
+      '<div class="config-row"><label>👥 Referral Bonus</label><input type="number" id="cfgRef" value="'+(c.referral_bonus||100)+'" min="0"></div>'+
+      '<div style="padding:1rem 0;border-bottom:1px solid var(--border);"><label style="display:block;margin-bottom:0.5rem;">Double Points Days (comma-separated)</label>'+
+      '<input type="text" id="cfgDPD" value="'+(c.double_points_days||[]).join(',')+'" placeholder="2026-07-04,2026-12-25"></div>'+
+      '<button class="btn btn-primary btn-block mt-4" onclick="doSaveCfg()">💾 Save Config</button>'+
+      '<div id="cfgMsg" class="mt-3"></div>'+
       '</div>';
   }catch(e){
-    el.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
@@ -311,13 +370,14 @@ async function doSaveCfg(){
       staff_pin_hash:hashPin(document.getElementById('cfgPin').value||'0000'),
       birthday_bonus:parseInt(document.getElementById('cfgBday').value)||50,
       referral_bonus:parseInt(document.getElementById('cfgRef').value)||100,
-      double_points_days:_data.config?(_data.config.double_points_days||[]):[]
+      double_points_days:document.getElementById('cfgDPD').value.split(',').map(function(s){return s.trim()}).filter(function(s){return s})
     };
     await saveData();
-    document.getElementById('shopTitle').textContent=_data.config.shop_name||'Staff Panel';
-    el.innerHTML='<div class="msg msg-ok">✅ Saved</div>';
+    document.getElementById('shopName').textContent=_data.config.shop_name||'Staff Panel';
+    el.innerHTML='<div class="msg msg-success">✅ Saved</div>';
+    setTimeout(function(){doConfig()},1500);
   }catch(e){
-    el.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 </script>
