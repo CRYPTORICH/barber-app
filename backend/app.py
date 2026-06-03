@@ -1,13 +1,14 @@
 """
-Smoke Shop Rewards API
-Points-based loyalty program for smoke shops.
-Phone lookup, purchase tracking, point redemption.
+Smoke Shop Rewards API v2 — Dispensary-Grade Loyalty Engine
+Tier system, birthday rewards, referrals, visit streaks, amplified redemption.
 Deploy on Render free tier with GitHub JSON persistence.
 """
 import json
 import os
 import uuid
-from datetime import datetime, timezone
+import random
+import string
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -19,25 +20,66 @@ CORS(app)
 BASE_DIR = Path(__file__).resolve().parent
 DATA_FILE = BASE_DIR / "shop_data.json"
 
-# ── GitHub persistence config ──
 GITHUB_REPO = "CRYPTORICH/rewards-data"
 GITHUB_PATH = "shop_data.json"
 GITHUB_API = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_PATH}"
 GITHUB_TOKEN = None
 
 def _load_token():
-    """Load and decode GitHub token from reversed .ghtoken."""
     global GITHUB_TOKEN
+    from helper import rev, getenv
     token_file = BASE_DIR / ".ghtoken"
     if token_file.exists():
         with open(token_file) as f:
             raw = f.read().strip()
-        GITHUB_TOKEN = raw[::-1]  # reverse to decode
-    else:
-        GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+        GITHUB_TOKEN = rev(raw)
+        GITHUB_TOKEN = getenv()
+
+# ═══════════════════════════════════════════
+# TIER SYSTEM
+# ═══════════════════════════════════════════
+
+TIERS = [
+    {"name": "Bronze", "min_points": 0,      "earn_bonus": 0.0,  "redeem_rate": 1.0,  "color": "#cd7f32", "icon": "🥉"},
+    {"name": "Silver", "min_points": 500,    "earn_bonus": 0.10, "redeem_rate": 1.25, "color": "#a8a8a8", "icon": "🥈"},
+    {"name": "Gold",   "min_points": 2000,   "earn_bonus": 0.25, "redeem_rate": 1.50, "color": "#d4a843", "icon": "🥇"},
+    {"name": "Platinum","min_points": 5000,  "earn_bonus": 0.50, "redeem_rate": 2.00, "color": "#e5e5e5", "icon": "💎"},
+]
+
+def get_tier(customer):
+    """Determine tier from lifetime points."""
+    pts = customer.get("lifetime_points", 0)
+    tier = TIERS[0]
+    for t in TIERS:
+        if pts >= t["min_points"]:
+            tier = t
+    return tier
+
+def next_tier(customer):
+    """What's the next tier and how far away?"""
+    pts = customer.get("lifetime_points", 0)
+    for t in TIERS:
+        if pts < t["min_points"]:
+            return {"name": t["name"], "icon": t["icon"], "needed": t["min_points"] - pts}
+    return None  # Already at max tier
+
+def calc_points(amount, tier):
+    """Calculate points from purchase, including tier earn bonus."""
+    base = int(amount) * 10  # 10 pts per whole dollar
+    bonus = int(base * tier["earn_bonus"])
+    return base + bonus
+
+def calc_redemption(points, tier):
+    """Calculate dollar value when redeeming points. Tier amplifies value."""
+    return round((points / 100) * tier["redeem_rate"], 2)
+
+VISIT_BONUSES = {2: 25, 3: 50, 4: 75}  # 3rd visit = 50 bonus, 4th+ = 75
+
+# ═══════════════════════════════════════════
+# GITHUB PERSISTENCE
+# ═══════════════════════════════════════════
 
 def _github_fetch():
-    """Fetch shop data from GitHub. Falls back to local JSON."""
     if not GITHUB_TOKEN:
         return _local_fetch()
     try:
@@ -46,56 +88,42 @@ def _github_fetch():
             "Accept": "application/vnd.github.v3+json"
         }, timeout=10)
         if r.status_code == 200:
-            content = r.json().get("content", "")
             import base64
-            decoded = base64.b64decode(content).decode()
-            return json.loads(decoded)
+            return json.loads(base64.b64decode(r.json()["content"]).decode())
         elif r.status_code == 404:
-            return {"customers": {}, "config": {
-                "points_per_dollar": 10,
-                "points_value_cents": 1,
-                "shop_name": "Smoke Shop Rewards"
-            }}
+            return _default_data()
     except Exception:
         pass
     return _local_fetch()
 
 def _local_fetch():
-    """Fallback: load from local JSON file."""
     if DATA_FILE.exists():
         with open(DATA_FILE) as f:
             return json.load(f)
+    return _default_data()
+
+def _default_data():
     return {"customers": {}, "config": {
-        "points_per_dollar": 10,
-        "points_value_cents": 1,
-        "shop_name": "Smoke Shop Rewards"
+        "shop_name": "Smoke Shop Rewards", "points_per_dollar": 10,
+        "points_value_cents": 1, "birthday_bonus": 50,
+        "referral_bonus": 100, "double_points_days": []
     }}
 
 def _github_push(data):
-    """Push shop data to GitHub."""
     if not GITHUB_TOKEN:
         _local_save(data)
         return
     try:
         import base64
-        content = base64.b64encode(
-            json.dumps(data, indent=2).encode()
-        ).decode()
-        # Check if file exists (get SHA)
+        content = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
         r = requests.get(GITHUB_API, headers={
             "Authorization": f"Bearer {GITHUB_TOKEN}",
             "Accept": "application/vnd.github.v3+json"
         }, timeout=10)
         sha = r.json().get("sha") if r.status_code == 200 else None
-
-        payload = {
-            "message": "Update shop data",
-            "content": content,
-            "branch": "main"
-        }
+        payload = {"message": "Update shop data", "content": content, "branch": "main"}
         if sha:
             payload["sha"] = sha
-
         requests.put(GITHUB_API, headers={
             "Authorization": f"Bearer {GITHUB_TOKEN}",
             "Accept": "application/vnd.github.v3+json"
@@ -104,38 +132,43 @@ def _github_push(data):
         _local_save(data)
 
 def _local_save(data):
-    """Fallback: save to local JSON file."""
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=2, default=str)
 
+# ═══════════════════════════════════════════
+# HELPERS
+# ═══════════════════════════════════════════
 
-# ── Points math ──
+def _clean_phone(raw):
+    return "".join(c for c in (raw or "").strip() if c.isdigit())
 
-ROUND_DOWN = True  # round purchase down to whole dollars
+def _generate_code(length=8):
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
-def calc_points(purchase_amount, config):
-    dollars = int(purchase_amount) if ROUND_DOWN else purchase_amount
-    ppd = config.get("points_per_dollar", 10)
-    return dollars * ppd
+def _enrich_customer(c):
+    """Add computed tier info to customer object."""
+    tier = get_tier(c)
+    nxt = next_tier(c)
+    c["tier"] = tier
+    c["next_tier"] = nxt
+    c["points_value"] = calc_redemption(c.get("points", 0), tier)
+    return c
 
-def calc_redemption_value(points, config):
-    pvc = config.get("points_value_cents", 1)
-    return round((points * pvc) / 100, 2)
-
-
-# ── API Routes ──
+# ═══════════════════════════════════════════
+# ROUTES
+# ═══════════════════════════════════════════
 
 @app.route("/health")
 def health():
     return jsonify({"ok": True, "time": datetime.now(timezone.utc).isoformat()})
 
+# ── Customer CRUD ──
+
 @app.route("/api/customer", methods=["POST"])
-def find_or_create_customer():
-    """Look up customer by phone, or create new."""
+def find_or_create():
     body = request.get_json() or {}
-    raw_phone = (body.get("phone") or "").strip()
-    phone = "".join(c for c in raw_phone if c.isdigit())
+    phone = _clean_phone(body.get("phone", ""))
     if not phone:
         return jsonify({"error": "Phone number required"}), 400
 
@@ -143,39 +176,65 @@ def find_or_create_customer():
     customers = data.get("customers", {})
 
     if phone in customers:
-        return jsonify({"found": True, "customer": customers[phone]})
+        return jsonify({"found": True, "customer": _enrich_customer(customers[phone])})
 
-    customer = {
+    # New customer
+    c = {
         "id": str(uuid.uuid4())[:8],
         "phone": phone,
         "name": body.get("name", ""),
         "points": 0,
         "lifetime_points": 0,
         "lifetime_spend": 0,
+        "visit_count": 0,
+        "birthday": body.get("birthday", ""),
+        "referral_code": _generate_code(),
+        "referred_by": body.get("referred_by", ""),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "transactions": []
     }
-    customers[phone] = customer
+
+    # Referral bonus — if referred, credit referrer
+    if c["referred_by"]:
+        for _, ref in customers.items():
+            if ref.get("referral_code") == c["referred_by"]:
+                bonus = data["config"].get("referral_bonus", 100)
+                ref["points"] = ref.get("points", 0) + bonus
+                ref.setdefault("transactions", []).append({
+                    "id": str(uuid.uuid4())[:8], "type": "referral_bonus",
+                    "points": bonus,
+                    "note": f"Referred {phone}",
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                })
+                c["points"] = bonus  # New customer also gets bonus
+                c.setdefault("transactions", []).append({
+                    "id": str(uuid.uuid4())[:8], "type": "referral_bonus",
+                    "points": bonus,
+                    "note": f"Signed up via {c['referred_by']}",
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                })
+                break
+
+    customers[phone] = c
     data["customers"] = customers
     _github_push(data)
-    return jsonify({"found": False, "customer": customer}), 201
+    return jsonify({"found": False, "customer": _enrich_customer(c)}), 201
 
 @app.route("/api/customer/<phone>")
 def get_customer(phone):
-    """Get customer details by phone."""
-    phone = "".join(c for c in phone if c.isdigit())
+    phone = _clean_phone(phone)
     data = _github_fetch()
-    customer = data.get("customers", {}).get(phone)
-    if not customer:
+    c = data.get("customers", {}).get(phone)
+    if not c:
         return jsonify({"error": "Customer not found"}), 404
-    return jsonify({"customer": customer})
+    return jsonify({"customer": _enrich_customer(c)})
+
+# ── Purchase ──
 
 @app.route("/api/purchase", methods=["POST"])
 def add_purchase():
-    """Record a purchase and add points."""
     body = request.get_json() or {}
-    raw_phone = (body.get("phone") or "").strip()
-    phone = "".join(c for c in raw_phone if c.isdigit())
+    phone = _clean_phone(body.get("phone", ""))
     amount = float(body.get("amount", 0))
 
     if not phone:
@@ -184,50 +243,91 @@ def add_purchase():
         return jsonify({"error": "Amount must be positive"}), 400
 
     data = _github_fetch()
-    config = data.get("config", {})
     customers = data.get("customers", {})
+    config = data.get("config", {})
 
     if phone not in customers:
-        return jsonify({
-            "error": "Customer not found. Create customer first.",
-            "phone": phone
-        }), 404
+        return jsonify({"error": "Customer not found", "phone": phone}), 404
 
-    customer = customers[phone]
-    points_earned = calc_points(amount, config)
+    c = customers[phone]
+    tier = get_tier(c)
 
-    customer["points"] = customer.get("points", 0) + points_earned
-    customer["lifetime_points"] = customer.get("lifetime_points", 0) + points_earned
-    customer["lifetime_spend"] = round(
-        customer.get("lifetime_spend", 0) + amount, 2
-    )
+    # Double points days?
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    multiplier = 2 if today in config.get("double_points_days", []) else 1
+
+    points_earned = calc_points(amount, tier) * multiplier
+    c["points"] = c.get("points", 0) + points_earned
+    c["lifetime_points"] = c.get("lifetime_points", 0) + points_earned
+    c["lifetime_spend"] = round(c.get("lifetime_spend", 0) + amount, 2)
+    c["visit_count"] = c.get("visit_count", 0) + 1
+
+    # Check if tier changed after this purchase
+    new_tier = get_tier(c)
+    tier_up = new_tier["name"] != tier["name"]
+
+    # Visit streak bonus
+    visit_bonus = VISIT_BONUSES.get(c["visit_count"], 0)
+    if visit_bonus > 0:
+        c["points"] += visit_bonus
+        points_earned += visit_bonus
+
+    # Birthday month bonus (first visit in birthday month)
+    if c.get("birthday"):
+        try:
+            bday = datetime.strptime(c["birthday"], "%Y-%m-%d") if "-" in c["birthday"] else datetime.strptime(c["birthday"], "%m-%d")
+            if bday.month == datetime.now(timezone.utc).month:
+                # Only once per birthday month
+                already_got = any(
+                    t.get("type") == "birthday_bonus" and 
+                    datetime.fromisoformat(t["timestamp"]).year == datetime.now(timezone.utc).year
+                    for t in c.get("transactions", [])
+                )
+                if not already_got:
+                    bonus = config.get("birthday_bonus", 50)
+                    c["points"] += bonus
+                    points_earned += bonus
+                    c.setdefault("transactions", []).append({
+                        "id": str(uuid.uuid4())[:8], "type": "birthday_bonus",
+                        "points": bonus,
+                        "note": f"🎂 Birthday month bonus ({new_tier['name']} tier)",
+                        "timestamp": datetime.now(timezone.utc).isoformat()
+                    })
+        except ValueError:
+            pass
 
     txn = {
-        "id": str(uuid.uuid4())[:8],
-        "type": "purchase",
-        "amount": round(amount, 2),
-        "points": points_earned,
+        "id": str(uuid.uuid4())[:8], "type": "purchase",
+        "amount": round(amount, 2), "points": points_earned,
+        "tier": new_tier["name"], "multiplier": multiplier,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
-    if "transactions" not in customer:
-        customer["transactions"] = []
-    customer["transactions"].append(txn)
-    customers[phone] = customer
+    c.setdefault("transactions", []).append(txn)
+
+    if visit_bonus:
+        c["transactions"].append({
+            "id": str(uuid.uuid4())[:8], "type": "visit_bonus",
+            "points": visit_bonus,
+            "note": f"Visit #{c['visit_count']} streak bonus",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+
+    customers[phone] = c
     data["customers"] = customers
     _github_push(data)
 
     return jsonify({
-        "customer": customer,
-        "transaction": txn,
-        "points_earned": points_earned
+        "customer": _enrich_customer(c), "transaction": txn,
+        "points_earned": points_earned, "tier_up": tier_up,
+        "new_tier": new_tier["name"] if tier_up else None
     })
+
+# ── Redeem ──
 
 @app.route("/api/redeem", methods=["POST"])
 def redeem_points():
-    """Redeem points for discount."""
     body = request.get_json() or {}
-    raw_phone = (body.get("phone") or "").strip()
-    phone = "".join(c for c in raw_phone if c.isdigit())
+    phone = _clean_phone(body.get("phone", ""))
     points_to_redeem = int(body.get("points", 0))
 
     if not phone:
@@ -236,82 +336,102 @@ def redeem_points():
         return jsonify({"error": "Points must be positive"}), 400
 
     data = _github_fetch()
-    config = data.get("config", {})
     customers = data.get("customers", {})
 
     if phone not in customers:
         return jsonify({"error": "Customer not found"}), 404
 
-    customer = customers[phone]
-    if customer.get("points", 0) < points_to_redeem:
-        return jsonify({
-            "error": "Insufficient points",
-            "available": customer["points"]
-        }), 400
+    c = customers[phone]
+    if c.get("points", 0) < points_to_redeem:
+        return jsonify({"error": "Insufficient points", "available": c["points"]}), 400
 
-    value = calc_redemption_value(points_to_redeem, config)
-    customer["points"] -= points_to_redeem
+    tier = get_tier(c)
+    value = calc_redemption(points_to_redeem, tier)
+    c["points"] -= points_to_redeem
 
     txn = {
-        "id": str(uuid.uuid4())[:8],
-        "type": "redeem",
-        "points": -points_to_redeem,
-        "value": value,
+        "id": str(uuid.uuid4())[:8], "type": "redeem",
+        "points": -points_to_redeem, "value": value,
+        "tier": tier["name"],
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
-    if "transactions" not in customer:
-        customer["transactions"] = []
-    customer["transactions"].append(txn)
-    customers[phone] = customer
+    c.setdefault("transactions", []).append(txn)
+    customers[phone] = c
     data["customers"] = customers
     _github_push(data)
 
     return jsonify({
-        "customer": customer,
-        "transaction": txn,
-        "value": value
+        "customer": _enrich_customer(c), "transaction": txn, "value": value
     })
 
-@app.route("/api/config", methods=["GET", "POST"])
-def manage_config():
-    """Get or update shop config."""
-    data = _github_fetch()
-
-    if request.method == "POST":
-        body = request.get_json() or {}
-        config = data.get("config", {})
-        if "points_per_dollar" in body:
-            config["points_per_dollar"] = int(body["points_per_dollar"])
-        if "points_value_cents" in body:
-            config["points_value_cents"] = int(body["points_value_cents"])
-        if "shop_name" in body:
-            config["shop_name"] = body["shop_name"]
-        data["config"] = config
-        _github_push(data)
-        return jsonify({"config": config})
-
-    return jsonify({"config": data.get("config", {})})
+# ── Stats ──
 
 @app.route("/api/stats")
 def get_stats():
-    """Shop-wide stats."""
     data = _github_fetch()
     customers = data.get("customers", {})
+    custs = list(customers.values())
     config = data.get("config", {})
-    total_customers = len(customers)
-    total_points = sum(c.get("points", 0) for c in customers.values())
-    lifetime_points = sum(c.get("lifetime_points", 0) for c in customers.values())
-    value = calc_redemption_value(total_points, config)
+
+    tier_counts = {}
+    for c in custs:
+        t = get_tier(c)["name"]
+        tier_counts[t] = tier_counts.get(t, 0) + 1
+
+    total_pts = sum(c.get("points", 0) for c in custs)
+    tier = TIERS[0]  # default for value calc
+    outstanding_value = calc_redemption(total_pts, {"redeem_rate": 1.0})
+
+    # Birthday month customers
+    now = datetime.now(timezone.utc)
+    birthdays = sum(1 for c in custs if c.get("birthday") and 
+        (lambda b: b.month == now.month if (b := _parse_bday(c["birthday"])) else False)(None))
 
     return jsonify({
-        "total_customers": total_customers,
-        "points_outstanding": total_points,
-        "outstanding_value": value,
-        "lifetime_points": lifetime_points
+        "total_customers": len(custs),
+        "points_outstanding": total_pts,
+        "outstanding_value": outstanding_value,
+        "lifetime_points": sum(c.get("lifetime_points", 0) for c in custs),
+        "tier_breakdown": tier_counts,
+        "birthday_this_month": birthdays,
+        "total_referrals": sum(1 for c in custs if c.get("referred_by"))
     })
 
+def _parse_bday(s):
+    try:
+        return datetime.strptime(s, "%Y-%m-%d") if "-" in s else datetime.strptime(f"2000-{s}", "%Y-%m-%d")
+    except ValueError:
+        return None
 
-# ── Entry Point ──
+# ── Config ──
+
+@app.route("/api/config", methods=["GET", "POST"])
+def manage_config():
+    data = _github_fetch()
+    if request.method == "POST":
+        body = request.get_json() or {}
+        config = data.get("config", {})
+        for key in ["shop_name", "points_per_dollar", "points_value_cents", 
+                     "birthday_bonus", "referral_bonus"]:
+            if key in body:
+                config[key] = body[key]
+        if "double_points_days" in body:
+            config["double_points_days"] = body["double_points_days"]
+        data["config"] = config
+        _github_push(data)
+        return jsonify({"config": config})
+    return jsonify({"config": data.get("config", {})})
+
+# ── Referral lookup ──
+
+@app.route("/api/referral/<code>")
+def lookup_referral(code):
+    data = _github_fetch()
+    for c in data.get("customers", {}).values():
+        if c.get("referral_code") == code.upper():
+            return jsonify({"valid": True, "referrer": c.get("name", c["phone"])})
+    return jsonify({"valid": False}), 404
+
 if __name__ == "__main__":
     _load_token()
     port = int(os.environ.get("PORT", 5000))

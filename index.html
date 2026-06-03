@@ -6,298 +6,192 @@
 <title>Smoke Shop Rewards</title>
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #141414;
-    --surface2: #1a1a1a;
-    --border: #262626;
-    --text: #f5f5f5;
-    --muted: #888;
-    --accent: #059669;
-    --accent-glow: rgba(5, 150, 105, 0.15);
-    --warn: #f59e0b;
-    --danger: #ef4444;
-    --radius: 14px;
-    --radius-sm: 10px;
+    --bg: #080808; --surface: #111; --surface2: #1a1a1a;
+    --border: #262626; --text: #f0f0f0; --muted: #777;
+    --accent: #059669; --accent-glow: rgba(5,150,105,0.12);
+    --bronze: #cd7f32; --silver: #a0a0a0; --gold: #d4a843; --platinum: #c0c0c0;
+    --radius: 12px; --radius-sm: 8px;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100dvh;
-    max-width: 480px;
-    margin: 0 auto;
+    background: var(--bg); color: var(--text); min-height: 100dvh;
+    max-width: 480px; margin: 0 auto;
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
   }
 
-  /* ── Header ── */
+  /* Header */
   .header {
-    padding: 20px 20px 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid var(--border);
+    padding: 16px 16px 0;
+    display: flex; align-items: center; gap: 10px;
   }
-  .header-icon {
-    width: 40px; height: 40px;
-    background: var(--accent-glow);
-    border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-  }
-  .header h1 { font-size: 18px; font-weight: 700; }
-  .header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .header-icon { font-size: 24px; }
+  .header h1 { font-size: 17px; font-weight: 700; }
+  .header .sub { font-size: 11px; color: var(--muted); }
 
-  /* ── Tabs ── */
+  /* View toggle */
+  .view-toggle {
+    display: flex; margin: 8px 16px; background: var(--surface);
+    border-radius: var(--radius); padding: 3px;
+  }
+  .view-btn {
+    flex: 1; padding: 8px; border: none; background: none;
+    color: var(--muted); font-size: 12px; font-weight: 600;
+    border-radius: 9px; cursor: pointer; transition: .15s;
+  }
+  .view-btn.active { background: var(--accent); color: #fff; }
+
+  /* Tabs */
   .tabs {
-    display: flex;
-    padding: 8px 16px;
-    gap: 4px;
-    background: var(--surface);
-    margin: 0 16px;
-    border-radius: var(--radius);
+    display: flex; margin: 8px 16px; background: var(--surface);
+    border-radius: var(--radius); overflow-x: auto; padding: 3px;
+    gap: 2px;
   }
   .tab {
-    flex: 1;
-    padding: 10px 8px;
-    border: none;
-    background: none;
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all .15s;
+    flex: 1; min-width: fit-content; padding: 9px 10px;
+    border: none; background: none; color: var(--muted);
+    font-size: 12px; font-weight: 600; border-radius: 9px;
+    cursor: pointer; white-space: nowrap;
   }
   .tab.active { background: var(--accent); color: #fff; }
 
-  /* ── Content areas ── */
-  .content { padding: 16px; }
+  /* Pages */
+  .content { padding: 12px 16px 24px; }
   .page { display: none; }
   .page.active { display: block; }
 
-  /* ── Phone input ── */
-  .phone-section { margin-bottom: 20px; }
+  /* Inputs */
   label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .5px;
+    display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px;
+    color: var(--muted); text-transform: uppercase; letter-spacing: .5px;
   }
-  .phone-input-wrap {
-    display: flex;
-    gap: 8px;
-  }
-  input[type="tel"], input[type="number"] {
-    width: 100%;
-    padding: 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    outline: none;
-    transition: border-color .15s;
+  input, select {
+    width: 100%; padding: 13px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    color: var(--text); font-size: 16px; font-weight: 500; outline: none;
   }
   input:focus { border-color: var(--accent); }
-  ::placeholder { color: #444; font-weight: 400; }
+  ::placeholder { color: #444; }
 
+  .input-row { display: flex; gap: 8px; }
+  .input-row input { flex: 1; }
+
+  /* Buttons */
   .btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .15s;
+    padding: 12px 18px; border: none; border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: opacity .15s, transform .1s;
     white-space: nowrap;
   }
+  .btn:active { transform: scale(.97); }
   .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:active { transform: scale(.97); }
-  .btn-outline {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-  .btn-block { width: 100%; padding: 16px; font-size: 16px; margin-top: 12px; }
-  .btn-warn { background: var(--warn); color: #000; }
-  .btn-danger { background: var(--danger); color: #fff; }
-  .btn:disabled { opacity: .4; pointer-events: none; }
+  .btn-block { width: 100%; padding: 15px; font-size: 15px; margin-top: 10px; }
+  .btn-outline { background: none; border: 1px solid var(--border); color: var(--text); }
+  .btn-sm { padding: 8px 14px; font-size: 12px; }
 
-  /* ── Customer card ── */
-  .customer-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  .customer-name {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .customer-phone {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-  .points-display {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
-  .points-number {
-    font-size: 48px;
-    font-weight: 800;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .points-label {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .points-value {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 4px;
+  /* Customer Card */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
   }
 
-  /* ── Quick stats row ── */
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 16px;
+  /* Tier Badge */
+  .tier-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    margin-bottom: 10px;
   }
-  .stat-card {
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    padding: 14px;
-    text-align: center;
-  }
-  .stat-number { font-size: 24px; font-weight: 800; color: var(--text); }
-  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .tier-bronze { background: rgba(205,127,50,0.15); color: var(--bronze); }
+  .tier-silver { background: rgba(160,160,160,0.15); color: var(--silver); }
+  .tier-gold { background: rgba(212,168,67,0.15); color: var(--gold); }
+  .tier-platinum { background: rgba(192,192,192,0.15); color: var(--platinum); }
 
-  /* ── Amount input ── */
-  .amount-section { margin: 20px 0; }
-  .amount-preview {
-    background: var(--accent-glow);
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    text-align: center;
-    margin-top: 8px;
+  /* Tier Progress Bar */
+  .progress-wrap { margin: 10px 0; }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted); margin-bottom: 4px;
   }
-  .amount-preview span {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--accent);
+  .progress-bar {
+    height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--bronze), var(--gold));
+    transition: width .5s ease;
   }
 
-  /* ── Transaction list ── */
-  .txn-list { margin-top: 20px; }
-  .txn-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px;
-    border-bottom: 1px solid var(--border);
+  /* Points display */
+  .points-big {
+    font-size: 44px; font-weight: 800; color: var(--accent); line-height: 1;
   }
-  .txn-type { font-weight: 600; }
-  .txn-type.redeem { color: var(--danger); }
+  .points-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* Stats grid */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .stat-box {
+    background: var(--surface2); border-radius: var(--radius-sm);
+    padding: 12px; text-align: center;
+  }
+  .stat-box .val { font-size: 22px; font-weight: 800; }
+  .stat-box .lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* Transaction list */
+  .txn { display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .txn-type { font-weight: 600; font-size: 13px; }
   .txn-type.purchase { color: var(--accent); }
-  .txn-meta { font-size: 12px; color: var(--muted); }
-  .txn-amount { font-size: 16px; font-weight: 700; }
-  .txn-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .txn-type.redeem { color: #ef4444; }
+  .txn-type.birthday_bonus, .txn-type.referral_bonus, .txn-type.visit_bonus { color: var(--gold); }
+  .txn-meta { font-size: 11px; color: var(--muted); }
+  .txn-pts { font-size: 15px; font-weight: 700; text-align: right; }
 
-  /* ── Redeem section ── */
-  .redeem-info {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin: 16px 0;
-  }
-
-  /* ── Loading / Error states ── */
-  .loading {
-    text-align: center;
-    padding: 40px;
-    color: var(--muted);
-  }
-  .error-msg {
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.3);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    color: var(--danger);
-    font-size: 13px;
-    margin: 12px 0;
-  }
-  .success-msg {
-    background: var(--accent-glow);
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    color: var(--accent);
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    margin: 12px 0;
+  /* Referral code display */
+  .ref-code {
+    display: inline-block; background: var(--surface2); border: 1px dashed var(--border);
+    padding: 8px 16px; border-radius: var(--radius-sm); font-size: 20px;
+    font-weight: 800; letter-spacing: 2px; font-family: monospace;
+    margin: 10px 0;
   }
 
-  /* ── Shop stats page ── */
+  /* Messages */
+  .msg { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin: 8px 0; }
+  .msg-success { background: var(--accent-glow); border: 1px solid var(--accent); color: var(--accent); }
+  .msg-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
+  .loading { text-align: center; padding: 30px; color: var(--muted); }
+
+  /* Shop stats cards */
   .shop-stat {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 12px;
-    text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 10px; text-align: center;
   }
-  .shop-stat .value {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .shop-stat .label {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 6px;
+  .shop-stat .big { font-size: 34px; font-weight: 800; color: var(--accent); }
+  .shop-stat .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Tier breakdown bars */
+  .tier-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+  .tier-row .bar-wrap { flex: 1; height: 20px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .tier-row .bar-fill { height: 100%; border-radius: 4px; transition: width .5s; display: flex; align-items: center; padding-left: 8px; font-size: 10px; font-weight: 700; }
+  .tier-row .count { font-size: 13px; font-weight: 700; min-width: 30px; text-align: right; }
+
+  /* Birthday alert */
+  .birthday-alert {
+    background: linear-gradient(135deg, rgba(212,168,67,0.1), rgba(212,168,67,0.05));
+    border: 1px solid rgba(212,168,67,0.3); border-radius: var(--radius-sm);
+    padding: 10px 14px; margin: 8px 0; font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
   }
 
-  /* ── Config page ── */
-  .config-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    background: var(--surface);
-    border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-  }
-  .config-row label { margin: 0; font-size: 14px; text-transform: none; color: var(--text); }
-  .config-row input {
-    width: 80px;
-    text-align: center;
-    font-size: 16px;
-    padding: 8px;
-  }
+  /* Referral input */
+  .ref-input { display: flex; gap: 8px; margin: 8px 0; }
+  .ref-input input { flex: 1; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
 
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--muted);
-    font-size: 14px;
-  }
+  .hidden { display: none !important; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .text-center { text-align: center; }
+  .text-muted { color: var(--muted); font-size: 12px; }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }
@@ -308,98 +202,141 @@
 </head>
 <body>
 
-<!-- ── Header ── -->
 <div class="header">
   <div class="header-icon">💨</div>
-  <div>
-    <h1 id="shopNameDisplay">Smoke Shop Rewards</h1>
-    <p>Staff Panel</p>
+  <div><h1 id="shopName">Smoke Shop Rewards</h1><div class="sub" id="viewLabel">Staff Panel</div></div>
+</div>
+
+<div class="view-toggle" id="viewToggle">
+  <button class="view-btn active" onclick="setView('staff')">🔧 Staff Panel</button>
+  <button class="view-btn" onclick="setView('customer')">👤 Customer View</button>
+</div>
+
+<div id="staffView">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('lookup')">🔍 Lookup</button>
+    <button class="tab" onclick="switchTab('redeem')">💸 Redeem</button>
+    <button class="tab" onclick="switchTab('referrals')">👥 Refs</button>
+    <button class="tab" onclick="switchTab('shop')">📊 Shop</button>
+    <button class="tab" onclick="switchTab('config')">⚙️</button>
   </div>
 </div>
 
-<!-- ── Tabs ── -->
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('lookup')">🔍 Lookup</button>
-  <button class="tab" onclick="switchTab('redeem')">💸 Redeem</button>
-  <button class="tab" onclick="switchTab('shop')">📊 Shop</button>
-  <button class="tab" onclick="switchTab('config')">⚙️</button>
+<div id="customerView" class="hidden">
+  <div style="text-align:center;padding:20px 16px;color:var(--muted);font-size:15px;">
+    Customers: enter your phone number to check your points and tier status.
+  </div>
 </div>
 
 <div class="content">
-  <!-- ── LOOKUP / PURCHASE PAGE ── -->
+  <!-- LOOKUP -->
   <div id="page-lookup" class="page active">
-    <div class="phone-section">
-      <label>Customer Phone</label>
-      <div class="phone-input-wrap">
-        <input type="tel" id="lookupPhone" placeholder="(555) 123-4567" autocomplete="off">
-        <button class="btn btn-primary" onclick="lookupCustomer()">Lookup</button>
-      </div>
+    <label>Customer Phone</label>
+    <div class="input-row">
+      <input type="tel" id="lookupPhone" placeholder="(555) 123-4567" autocomplete="off">
+      <button class="btn btn-primary" onclick="lookupCustomer()">Lookup</button>
     </div>
-    <div id="lookupResult"></div>
+    <div id="lookupResult" class="mt-12"></div>
   </div>
 
-  <!-- ── REDEEM PAGE ── -->
+  <!-- REDEEM -->
   <div id="page-redeem" class="page">
-    <div class="phone-section">
-      <label>Customer Phone</label>
-      <div class="phone-input-wrap">
-        <input type="tel" id="redeemPhone" placeholder="(555) 123-4567" autocomplete="off">
-        <button class="btn btn-primary" onclick="lookupForRedeem()">Lookup</button>
-      </div>
+    <label>Customer Phone</label>
+    <div class="input-row">
+      <input type="tel" id="redeemPhone" placeholder="(555) 123-4567" autocomplete="off">
+      <button class="btn btn-primary" onclick="lookupForRedeem()">Lookup</button>
     </div>
-    <div id="redeemResult"></div>
+    <div id="redeemResult" class="mt-12"></div>
   </div>
 
-  <!-- ── SHOP STATS PAGE ── -->
-  <div id="page-shop" class="page">
-    <div id="shopStats">
-      <div class="loading">Loading shop stats...</div>
+  <!-- REFERRALS -->
+  <div id="page-referrals" class="page">
+    <label>Enter Referral Code</label>
+    <div class="ref-input">
+      <input type="text" id="refCodeInput" placeholder="ABCD1234" maxlength="8" autocomplete="off">
+      <button class="btn btn-primary btn-sm" onclick="checkReferral()">Check</button>
     </div>
+    <div id="refResult" class="mt-12"></div>
   </div>
 
-  <!-- ── CONFIG PAGE ── -->
-  <div id="page-config" class="page">
-    <div id="configForm">
-      <div class="loading">Loading config...</div>
-    </div>
-  </div>
+  <!-- SHOP STATS -->
+  <div id="page-shop" class="page"><div id="shopStats" class="loading">Loading...</div></div>
+
+  <!-- CONFIG -->
+  <div id="page-config" class="page"><div id="configForm" class="loading">Loading...</div></div>
+
+  <!-- CUSTOMER SELF-VIEW -->
+  <div id="customerSelfView" class="mt-12"></div>
 </div>
 
 <script>
-const API_URL = 'https://rewards.onrender.com';
-let USE_LOCAL = false;
+const API = 'https://rewards.onrender.com';
+let LOCAL = false;
+let currentCustomer = null;
+let currentView = 'staff';
 
-// ── LocalStorage fallback ──
-function localStore() {
-  let data = localStorage.getItem('rewards_shop');
-  return data ? JSON.parse(data) : { customers: {}, config: { points_per_dollar: 10, points_value_cents: 1, shop_name: 'Smoke Shop Rewards' } };
+// ── localStorage fallback ──
+function LS() {
+  let d = localStorage.getItem('rewards_v2');
+  if (!d) return { customers: {}, config: { shop_name:'Smoke Shop Rewards', points_per_dollar:10, birthday_bonus:50, referral_bonus:100, double_points_days:[] } };
+  return JSON.parse(d);
 }
-function localSave(data) { localStorage.setItem('rewards_shop', JSON.stringify(data)); }
+function LS_save(data) { localStorage.setItem('rewards_v2', JSON.stringify(data)); }
 
-// Auto-detect: try backend once, fall back to localStorage if offline
-async function tryAPI(url, options, localFallback) {
-  if (USE_LOCAL) return localFallback();
+// ── Tier logic (client-side mirror for offline mode) ──
+const TIERS = [
+  { name:'Bronze', min:0, earn:0.0, redeem:1.0, color:'#cd7f32', icon:'🥉' },
+  { name:'Silver', min:500, earn:0.10, redeem:1.25, color:'#a0a0a0', icon:'🥈' },
+  { name:'Gold', min:2000, earn:0.25, redeem:1.50, color:'#d4a843', icon:'🥇' },
+  { name:'Platinum', min:5000, earn:0.50, redeem:2.00, color:'#c0c0c0', icon:'💎' }
+];
+function getTier(c) {
+  let pts = c.lifetime_points || 0;
+  let t = TIERS[0];
+  TIERS.forEach(x => { if (pts >= x.min) t = x; });
+  return t;
+}
+function nextTier(c) {
+  let pts = c.lifetime_points || 0;
+  for (let t of TIERS) { if (pts < t.min) return { name:t.name, icon:t.icon, needed:t.min - pts }; }
+  return null;
+}
+function redemptionValue(points, tier) { return ((points/100) * tier.redeem).toFixed(2); }
+
+// ── API wrapper ──
+async function call(url, opts, localFn) {
+  if (LOCAL) return localFn();
   try {
-    const r = await fetch(url, { ...options, signal: AbortSignal.timeout(4000) });
-    if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'API error'); }
-    return { api: true, data: await r.json() };
+    let r = await fetch(url, { ...opts||{}, signal: AbortSignal.timeout(4000) });
+    if (!r.ok) throw new Error('API error');
+    return await r.json();
   } catch(e) {
-    if (!USE_LOCAL) {
-      USE_LOCAL = true;
-      document.getElementById('shopNameDisplay').textContent += ' (Demo)';
-    }
-    return { api: false, data: localFallback() };
+    if (!LOCAL) { LOCAL = true; document.getElementById('shopName').textContent += ' (Demo)'; }
+    return localFn();
   }
 }
 
-let currentCustomer = null;
-
 // ── Init ──
-init();
-async function init() {
-  const r = await tryAPI(API_URL + '/api/config', {}, () => localStore().config);
-  if (r.data?.shop_name) {
-    document.getElementById('shopNameDisplay').textContent = r.data.shop_name;
+(async function init() {
+  let r = await call(API+'/api/config', null, () => ({ config: LS().config }));
+  if (r.config?.shop_name) document.getElementById('shopName').textContent = r.config.shop_name;
+})();
+
+// ── Views ──
+function setView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('staffView').classList.toggle('hidden', view !== 'staff');
+  document.getElementById('customerView').classList.toggle('hidden', view === 'staff');
+  document.getElementById('viewLabel').textContent = view === 'staff' ? 'Staff Panel' : 'Customer View';
+  document.getElementById('customerSelfView').innerHTML = '';
+  if (view === 'customer') {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  } else {
+    document.getElementById('page-lookup').classList.add('active');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.tab').classList.add('active');
   }
 }
 
@@ -407,222 +344,400 @@ async function init() {
 function switchTab(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('page-'+name).classList.add('active');
   event.target.classList.add('active');
-  if (name === 'redeem') document.getElementById('redeemPhone').value = document.getElementById('lookupPhone').value;
   if (name === 'shop') loadShopStats();
   if (name === 'config') loadConfig();
 }
 
-function cleanPhone(raw) { return raw.replace(/\D/g, ''); }
+function cleanPhone(r) { return r.replace(/\D/g,''); }
 
-// ── Lookup / Create customer ──
-async function lookupCustomer() {
-  const phone = cleanPhone(document.getElementById('lookupPhone').value);
-  if (!phone) return;
-  const el = document.getElementById('lookupResult');
-  el.innerHTML = '<div class="loading">Looking up...</div>';
-
-  const r = await tryAPI(API_URL + '/api/customer',
-    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone}) },
-    () => {
-      const data = localStore();
-      if (data.customers[phone]) return { found: true, customer: data.customers[phone] };
-      const c = { id: Date.now().toString(36), phone, name: '', points: 0, lifetime_points: 0, lifetime_spend: 0, created_at: new Date().toISOString(), transactions: [] };
-      data.customers[phone] = c;
-      localSave(data);
-      return { found: false, customer: c };
-    }
-  );
-
-  currentCustomer = r.data.customer;
-  renderCustomerCard(el, currentCustomer, r.data.found === false);
+// ── Tier badge HTML ──
+function tierBadge(c) {
+  let t = getTier(c);
+  let cls = 'tier-'+t.name.toLowerCase();
+  return `<span class="tier-badge ${cls}">${t.icon} ${t.name} Tier</span>`;
 }
 
-// ── Render customer card ──
-function renderCustomerCard(el, c, isNew) {
-  const pointsValue = (c.points * 0.01).toFixed(2);
-  const phoneDisplay = c.phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
-  let html = `<div class="customer-card fade-in">
-      <div class="customer-name">${c.name || 'Customer'}</div>
-      <div class="customer-phone">${phoneDisplay}</div>
-      <div class="points-display"><span class="points-number">${c.points.toLocaleString()}</span><span class="points-label">pts</span></div>
-      <div class="points-value">= $${pointsValue} redemption value</div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-number">$${c.lifetime_spend.toLocaleString()}</div><div class="stat-label">Lifetime Spend</div></div>
-        <div class="stat-card"><div class="stat-number">${c.transactions?.length || 0}</div><div class="stat-label">Visits</div></div>
-      </div>
+function tierProgress(c) {
+  let n = nextTier(c);
+  if (!n) return '';
+  let pts = c.lifetime_points || 0;
+  let cur = getTier(c);
+  let range = n.needed + pts - cur.min;
+  let pct = Math.min(100, Math.round(((pts - cur.min) / range) * 100));
+  return `<div class="progress-wrap">
+    <div class="progress-label"><span>Next: ${n.icon} ${n.name}</span><span>${n.needed.toLocaleString()} pts to go</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ── LOOKUP ──
+async function lookupCustomer() {
+  let phone = cleanPhone(document.getElementById('lookupPhone').value);
+  if (!phone) return;
+  let el = document.getElementById('lookupResult');
+  el.innerHTML = '<div class="loading">Looking up...</div>';
+
+  let r = await call(API+'/api/customer', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone})
+  }, () => {
+    let data = LS();
+    if (data.customers[phone]) return { found:true, customer: data.customers[phone] };
+    let c = { id:Date.now().toString(36), phone, name:'', points:0, lifetime_points:0,
+      lifetime_spend:0, visit_count:0, birthday:'', referral_code:(Math.random().toString(36)+Date.now().toString(36)).substring(2,10).toUpperCase(),
+      referred_by:'', created_at:new Date().toISOString(), transactions:[] };
+    data.customers[phone] = c;
+    LS_save(data);
+    return { found:false, customer:c };
+  });
+
+  currentCustomer = enrich(r.customer);
+  renderLookup(el, currentCustomer, r.found===false);
+}
+
+function enrich(c) {
+  c._tier = getTier(c);
+  c._next = nextTier(c);
+  c._value = redemptionValue(c.points||0, c._tier);
+  return c;
+}
+
+function renderLookup(el, c, isNew) {
+  let t = c._tier;
+  let phoneDisp = c.phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+  let bdayNote = c.birthday ? `<div><span class="text-muted">🎂 Birthday: ${c.birthday}</span></div>` : '';
+  let refNote = c.referral_code ? `<div class="mt-8"><span class="text-muted">Ref code:</span> <span class="ref-code" style="font-size:14px;padding:4px 10px;">${c.referral_code}</span></div>` : '';
+
+  let html = `<div class="card fade-in">
+    ${tierBadge(c)} ${tierProgress(c)}
+    <div style="font-size:20px;font-weight:700;">${c.name||'Customer'}</div>
+    <div class="text-muted">${phoneDisp}</div>
+    ${bdayNote}
+    <div class="mt-12">
+      <div class="points-big">${(c.points||0).toLocaleString()}</div>
+      <div class="points-sub">= $${c._value} redemption value (${t.redeem}x ${t.name} rate)</div>
     </div>
-    <div class="amount-section">
-      <label>Purchase Amount</label>
-      <input type="number" id="purchaseAmount" placeholder="0.00" step="0.01" min="0" oninput="updatePointsPreview()" style="font-size:20px;">
-      <div class="amount-preview" id="pointsPreview" style="display:none">Will earn <span id="previewPoints">0</span> points</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="val">$${(c.lifetime_spend||0).toLocaleString()}</div><div class="lbl">Lifetime Spend</div></div>
+      <div class="stat-box"><div class="val">${(c.visit_count||0)}</div><div class="lbl">Visits</div></div>
+      <div class="stat-box"><div class="val">${(c.lifetime_points||0).toLocaleString()}</div><div class="lbl">Lifetime Pts</div></div>
+      <div class="stat-box"><div class="val">${t.earn>0?'+'+(t.earn*100)+'%':'1x'}</div><div class="lbl">Earn Rate</div></div>
     </div>
-    <button class="btn btn-primary btn-block" onclick="addPurchase()">✅ Add Purchase</button>
-    <div id="purchaseMsg"></div>`;
+    ${refNote}
+  </div>
+  <label>Purchase Amount</label>
+  <input type="number" id="purchaseAmount" placeholder="0.00" step="0.01" min="0" oninput="updatePreview()" style="font-size:20px;">
+  <div id="pointsPreview" style="display:none;background:var(--accent-glow);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:10px;text-align:center;margin-top:8px;font-weight:700;color:var(--accent);">
+    Will earn <span id="previewPts">0</span> points
+    <span id="previewTier" style="font-size:11px;display:block;color:var(--muted);"></span>
+  </div>
+  <button class="btn btn-primary btn-block" onclick="addPurchase()">✅ Add Purchase</button>
+  <div id="purchaseMsg"></div>`;
 
   if (c.transactions?.length) {
-    html += '<div class="txn-list"><label>Recent Transactions</label>';
-    c.transactions.slice(-5).reverse().forEach(t => {
-      const date = new Date(t.timestamp).toLocaleDateString();
-      const sign = t.type === 'redeem' ? '-' : '+';
-      html += `<div class="txn-item"><div><div class="txn-type ${t.type}">${t.type==='redeem'?'Redeemed':'Purchase'}</div><div class="txn-date">${date}</div></div>
-        <div><div class="txn-amount">${sign}${Math.abs(t.points).toLocaleString()} pts</div>${t.amount?`<div class="txn-meta">$${t.amount.toFixed(2)}</div>`:''}${t.value?`<div class="txn-meta">$${t.value.toFixed(2)} off</div>`:''}</div></div>`;
+    html += '<div class="mt-16"><label>Recent</label>';
+    c.transactions.slice(-5).reverse().forEach(tx => {
+      let sign = tx.points > 0 ? '+' : '';
+      let date = new Date(tx.timestamp).toLocaleDateString();
+      let typeLabel = tx.type === 'purchase' ? 'Purchase' : tx.type === 'redeem' ? 'Redeemed' : tx.type.replace(/_/g,' ');
+      html += `<div class="txn"><div><div class="txn-type ${tx.type}">${typeLabel}</div><div class="txn-meta">${date}</div></div><div><div class="txn-pts">${sign}${tx.points} pts</div>${tx.amount?`<div class="txn-meta">$${tx.amount.toFixed(2)}</div>`:''}${tx.value?`<div class="txn-meta">$${tx.value.toFixed(2)} off</div>`:''}</div></div>`;
     });
     html += '</div>';
   }
   el.innerHTML = html;
 }
 
-function updatePointsPreview() {
-  const amount = parseFloat(document.getElementById('purchaseAmount').value) || 0;
-  if (amount > 0) {
-    document.getElementById('pointsPreview').style.display = 'block';
-    document.getElementById('previewPoints').textContent = (Math.floor(amount) * 10).toLocaleString();
-  } else {
-    document.getElementById('pointsPreview').style.display = 'none';
-  }
+function updatePreview() {
+  let amt = parseFloat(document.getElementById('purchaseAmount').value) || 0;
+  let el = document.getElementById('pointsPreview'), ptsEl = document.getElementById('previewPts');
+  if (amt > 0) {
+    let t = currentCustomer?._tier || TIERS[0];
+    let base = Math.floor(amt) * 10, bonus = Math.floor(base * t.earn);
+    el.style.display = 'block';
+    ptsEl.textContent = (base+bonus).toLocaleString();
+    document.getElementById('previewTier').textContent = `${base} base + ${bonus} ${t.name} bonus`;
+  } else { el.style.display = 'none'; }
 }
 
-// ── Add Purchase ──
 async function addPurchase() {
-  const amount = parseFloat(document.getElementById('purchaseAmount').value) || 0;
-  if (!currentCustomer || amount <= 0) return;
-  const msgEl = document.getElementById('purchaseMsg');
+  let amt = parseFloat(document.getElementById('purchaseAmount').value) || 0;
+  if (!currentCustomer || amt <= 0) return;
+  let msgEl = document.getElementById('purchaseMsg');
   msgEl.innerHTML = '<div class="loading">Processing...</div>';
 
-  const r = await tryAPI(API_URL + '/api/purchase',
-    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone: currentCustomer.phone, amount}) },
-    () => {
-      const data = localStore();
-      const c = data.customers[currentCustomer.phone];
-      const pts = Math.floor(amount) * 10;
-      c.points += pts;
-      c.lifetime_points = (c.lifetime_points || 0) + pts;
-      c.lifetime_spend = (c.lifetime_spend || 0) + amount;
-      const txn = { id: Date.now().toString(36), type: 'purchase', amount: Math.round(amount*100)/100, points: pts, timestamp: new Date().toISOString() };
-      if (!c.transactions) c.transactions = [];
-      c.transactions.push(txn);
-      localSave(data);
-      return { customer: c, transaction: txn, points_earned: pts };
-    }
-  );
+  let r = await call(API+'/api/purchase', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({phone:currentCustomer.phone, amount:amt})
+  }, () => {
+    let data = LS(), c = data.customers[currentCustomer.phone];
+    let t = getTier(c);
+    let base = Math.floor(amt) * 10, bonus = Math.floor(base * t.earn), pts = base+bonus;
+    c.points = (c.points||0) + pts;
+    c.lifetime_points = (c.lifetime_points||0) + pts;
+    c.lifetime_spend = (c.lifetime_spend||0) + amt;
+    c.visit_count = (c.visit_count||0) + 1;
+    let txn = { id:Date.now().toString(36), type:'purchase', amount:amt, points:pts,
+      tier:t.name, multiplier:1, timestamp:new Date().toISOString() };
+    if (!c.transactions) c.transactions = [];
+    c.transactions.push(txn);
+    LS_save(data);
+    return { customer:c, transaction:txn, points_earned:pts, tier_up:false };
+  });
 
-  currentCustomer = r.data.customer;
-  msgEl.innerHTML = `<div class="success-msg">✅ +${r.data.points_earned.toLocaleString()} points added!</div>`;
-  renderCustomerCard(document.getElementById('lookupResult'), r.data.customer, false);
-  document.getElementById('purchaseAmount').value = '';
-  setTimeout(() => msgEl.innerHTML = '', 3000);
+  currentCustomer = enrich(r.customer);
+  let tierMsg = r.tier_up ? ` 🎉 Upgraded to ${r.new_tier}!` : '';
+  msgEl.innerHTML = `<div class="msg msg-success">✅ +${r.points_earned.toLocaleString()} points!${tierMsg}</div>`;
+  renderLookup(document.getElementById('lookupResult'), currentCustomer, false);
+  setTimeout(() => msgEl.innerHTML='', 3000);
 }
 
-// ── Redeem Flow ──
+// ── REDEEM ──
 async function lookupForRedeem() {
-  const phone = cleanPhone(document.getElementById('redeemPhone').value);
+  let phone = cleanPhone(document.getElementById('redeemPhone').value);
   if (!phone) return;
-  const el = document.getElementById('redeemResult');
+  let el = document.getElementById('redeemResult');
   el.innerHTML = '<div class="loading">Looking up...</div>';
 
-  const r = await tryAPI(API_URL + '/api/customer',
-    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone}) },
-    () => {
-      const data = localStore();
-      const c = data.customers[phone];
-      if (!c) throw new Error('Customer not found');
-      return { found: true, customer: c };
-    }
-  );
+  let r = await call(API+'/api/customer', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone})
+  }, () => {
+    let c = LS().customers[phone];
+    if (!c) throw new Error('Not found');
+    return { found:true, customer:c };
+  });
 
-  const c = r.data.customer;
-  if (!c || c.points === 0) {
-    el.innerHTML = `<div class="customer-card fade-in"><div class="customer-name">${c?.name||'Customer'}</div><div style="text-align:center;padding:20px;color:var(--muted);">No points to redeem</div></div>`;
-    return;
-  }
+  let c = enrich(r.customer);
+  if (!c.points) { el.innerHTML = '<div class="card text-center"><div class="text-muted">No points to redeem</div></div>'; return; }
   currentCustomer = c;
-  el.innerHTML = `<div class="customer-card fade-in">
-      <div class="customer-name">${c.name||'Customer'}</div>
-      <div class="points-display"><span class="points-number">${c.points.toLocaleString()}</span><span class="points-label">pts available</span></div>
-      <div class="points-value">= $${(c.points*0.01).toFixed(2)}</div>
-    </div>
-    <label>Points to Redeem</label>
-    <input type="number" id="redeemAmount" placeholder="100" min="100" step="100" style="font-size:18px">
-    <p style="color:var(--muted);font-size:12px;margin-top:4px;">100 pts = $1.00 &bull; Max: ${c.points} pts</p>
-    <button class="btn btn-warn btn-block" onclick="executeRedeem()">💸 Redeem Points</button>
-    <div id="redeemMsg"></div>`;
+
+  el.innerHTML = `<div class="card fade-in">
+    ${tierBadge(c)}
+    <div style="font-size:20px;font-weight:700;">${c.name||'Customer'}</div>
+    <div class="mt-8"><span class="points-big">${c.points.toLocaleString()}</span> <span class="points-sub">pts available</span></div>
+    <div class="points-sub">= $${c._value} at ${c._tier.redeem}x ${c._tier.name} rate</div>
+  </div>
+  <label>Points to Redeem</label>
+  <select id="redeemAmountSel" onchange="updateRedeemPreview()" style="font-size:16px;padding:13px;">
+    ${[500,1000,2000,5000].filter(p=>p<=c.points).map(p=>`<option value="${p}">${p.toLocaleString()} pts = $${redemptionValue(p,c._tier)} off</option>`).join('')}
+    <option value="custom">Custom amount</option>
+  </select>
+  <input type="number" id="redeemAmountCustom" placeholder="Enter points" min="100" step="100" style="display:none;margin-top:8px;" oninput="updateRedeemPreview()">
+  <div id="redeemPreview" class="mt-8" style="color:var(--accent);font-weight:700;display:none;"></div>
+  <button class="btn btn-primary btn-block" onclick="executeRedeem()" style="background:var(--gold);color:#000;">💸 Redeem Points</button>
+  <div id="redeemMsg"></div>`;
+
+  document.getElementById('redeemAmountSel').addEventListener('change', function() {
+    document.getElementById('redeemAmountCustom').style.display = this.value === 'custom' ? 'block' : 'none';
+    updateRedeemPreview();
+  });
+  updateRedeemPreview();
+}
+
+function updateRedeemPreview() {
+  let sel = document.getElementById('redeemAmountSel');
+  let pts = sel?.value === 'custom' ? (parseInt(document.getElementById('redeemAmountCustom').value)||0) : parseInt(sel?.value)||0;
+  let el = document.getElementById('redeemPreview');
+  if (pts > 0 && currentCustomer) {
+    el.style.display = 'block';
+    el.textContent = `= $${redemptionValue(pts, currentCustomer._tier)} off at ${currentCustomer._tier.redeem}x rate`;
+  } else { el.style.display = 'none'; }
 }
 
 async function executeRedeem() {
-  const points = parseInt(document.getElementById('redeemAmount').value) || 0;
-  if (!currentCustomer || points <= 0) return;
-  const msgEl = document.getElementById('redeemMsg');
+  let sel = document.getElementById('redeemAmountSel');
+  let pts = sel.value === 'custom' ? (parseInt(document.getElementById('redeemAmountCustom').value)||0) : parseInt(sel.value);
+  if (!currentCustomer || pts <= 0) return;
+  let msgEl = document.getElementById('redeemMsg');
   msgEl.innerHTML = '<div class="loading">Processing...</div>';
 
-  const r = await tryAPI(API_URL + '/api/redeem',
-    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone: currentCustomer.phone, points}) },
-    () => {
-      const data = localStore();
-      const c = data.customers[currentCustomer.phone];
-      if (c.points < points) throw new Error('Insufficient points');
-      const value = (points * 0.01).toFixed(2);
-      c.points -= points;
-      const txn = { id: Date.now().toString(36), type: 'redeem', points: -points, value: parseFloat(value), timestamp: new Date().toISOString() };
-      if (!c.transactions) c.transactions = [];
-      c.transactions.push(txn);
-      localSave(data);
-      return { customer: c, transaction: txn, value: parseFloat(value) };
-    }
-  );
+  let r = await call(API+'/api/redeem', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({phone:currentCustomer.phone, points:pts})
+  }, () => {
+    let data = LS(), c = data.customers[currentCustomer.phone];
+    if (c.points < pts) throw new Error('Insufficient');
+    let t = getTier(c), val = parseFloat(redemptionValue(pts, t));
+    c.points -= pts;
+    c.transactions.push({ id:Date.now().toString(36), type:'redeem', points:-pts, value:val, tier:t.name, timestamp:new Date().toISOString() });
+    LS_save(data);
+    return { customer:c, transaction:{points:-pts,value:val}, value:val };
+  });
 
-  msgEl.innerHTML = `<div class="success-msg">💸 $${r.data.value.toFixed(2)} discount applied!</div>`;
+  msgEl.innerHTML = `<div class="msg msg-success">💸 $${r.value.toFixed(2)} discount applied!</div>`;
   setTimeout(() => lookupForRedeem(), 500);
 }
 
-// ── Shop Stats ──
-async function loadShopStats() {
-  const el = document.getElementById('shopStats');
-  const r = await tryAPI(API_URL + '/api/stats', {}, () => {
-    const data = localStore();
-    const custs = Object.values(data.customers);
-    const pts = custs.reduce((s,c) => s + (c.points||0), 0);
-    return { total_customers: custs.length, points_outstanding: pts, outstanding_value: (pts*0.01).toFixed(2), lifetime_points: custs.reduce((s,c) => s + (c.lifetime_points||0), 0) };
+// ── REFERRALS ──
+async function checkReferral() {
+  let code = document.getElementById('refCodeInput').value.toUpperCase().trim();
+  if (!code) return;
+  let el = document.getElementById('refResult');
+
+  let r = await call(API+'/api/referral/'+code, null, () => {
+    let data = LS();
+    for (let [phone, c] of Object.entries(data.customers)) {
+      if (c.referral_code === code) return { valid:true, referrer: c.name||phone };
+    }
+    return { valid:false };
   });
-  const d = r.data;
+
+  if (r.valid) {
+    el.innerHTML = `<div class="msg msg-success fade-in">✅ Valid code! Referrer: <strong>${r.referrer}</strong><br>
+      <span class="text-muted">New customers: use this code when signing up to get 100 bonus points.</span></div>`;
+  } else {
+    el.innerHTML = '<div class="msg msg-error">❌ Invalid referral code</div>';
+  }
+}
+
+// ── SHOP STATS ──
+async function loadShopStats() {
+  let el = document.getElementById('shopStats');
+  let r = await call(API+'/api/stats', null, () => {
+    let data = LS(), custs = Object.values(data.customers);
+    let pts = custs.reduce((s,c)=>s+(c.points||0),0);
+    let tiers = {}; custs.forEach(c => { let t = getTier(c).name; tiers[t]=(tiers[t]||0)+1; });
+    let bdays = new Date().getMonth()+1;
+    let bc = 0; custs.forEach(c => { if (c.birthday) { let m = parseInt(c.birthday.split('-')[0]||c.birthday.split('-')[1]); if (m===bdays) bc++; } });
+    return { total_customers:custs.length, points_outstanding:pts, outstanding_value:(pts/100).toFixed(2),
+      lifetime_points:custs.reduce((s,c)=>s+(c.lifetime_points||0),0),
+      tier_breakdown:tiers, birthday_this_month:bc, total_referrals:custs.filter(c=>c.referred_by).length };
+  });
+
+  let tierBars = '';
+  TIERS.forEach(t => {
+    let count = r.tier_breakdown?.[t.name] || 0;
+    let max = Math.max(1, ...Object.values(r.tier_breakdown||{Bronze:1}));
+    let pct = Math.round((count/max)*100);
+    tierBars += `<div class="tier-row">
+      <span style="width:60px;font-size:12px;font-weight:600;">${t.icon} ${t.name}</span>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${t.color}">${count||''}</div></div>
+      <span class="count">${count}</span>
+    </div>`;
+  });
+
   el.innerHTML = `<div class="fade-in">
-    <div class="shop-stat"><div class="value">${d.total_customers}</div><div class="label">Total Customers</div></div>
-    <div class="shop-stat"><div class="value">${d.points_outstanding.toLocaleString()}</div><div class="label">Points Outstanding</div></div>
-    <div class="shop-stat"><div class="value">$${Number(d.outstanding_value).toLocaleString()}</div><div class="label">Redemption Liability</div></div>
-    <div class="shop-stat"><div class="value">${d.lifetime_points.toLocaleString()}</div><div class="label">Lifetime Points Issued</div></div>
+    <div class="shop-stat"><div class="big">${r.total_customers}</div><div class="lbl">Total Customers</div></div>
+    <div class="shop-stat"><div class="big">${r.points_outstanding.toLocaleString()}</div><div class="lbl">Points Outstanding</div></div>
+    <div class="shop-stat"><div class="big">$${Number(r.outstanding_value).toLocaleString()}</div><div class="lbl">Redemption Liability</div></div>
+    <div class="shop-stat"><div class="big">${r.lifetime_points.toLocaleString()}</div><div class="lbl">Lifetime Points Issued</div></div>
+    <div class="card mt-16"><label>Tier Breakdown</label>${tierBars}</div>
+    <div class="stats-grid mt-12">
+      <div class="stat-box"><div class="val">${r.birthday_this_month||0}</div><div class="lbl">🎂 Birthdays This Month</div></div>
+      <div class="stat-box"><div class="val">${r.total_referrals||0}</div><div class="lbl">👥 Total Referrals</div></div>
+    </div>
   </div>`;
 }
 
-// ── Config ──
+// ── CONFIG ──
 async function loadConfig() {
-  const el = document.getElementById('configForm');
-  const r = await tryAPI(API_URL + '/api/config', {}, () => ({ config: localStore().config }));
-  const c = r.data.config || r.data;
+  let el = document.getElementById('configForm');
+  let r = await call(API+'/api/config', null, () => ({ config: LS().config }));
+  let c = r.config;
   el.innerHTML = `<div class="fade-in">
-    <div class="config-row"><label>Shop Name</label><input type="text" id="cfgShopName" value="${c.shop_name||''}" style="width:160px"></div>
-    <div class="config-row"><label>Points per $1 spent</label><input type="number" id="cfgPtsPerDollar" value="${c.points_per_dollar||10}" min="1"></div>
-    <div class="config-row"><label>Cents per point</label><input type="number" id="cfgPtsValue" value="${c.points_value_cents||1}" min="1"></div>
-    <p style="color:var(--muted);font-size:12px;margin:8px 0 16px;">Default: 10 pts/$1, 1¢/pt = 100 pts = $1.00</p>
-    <button class="btn btn-primary btn-block" onclick="saveConfig()">💾 Save Config</button>
-    <div id="configMsg"></div></div>`;
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+      <span>Shop Name</span><input type="text" id="cfgName" value="${c.shop_name||''}" style="width:180px;font-size:14px;padding:8px;">
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+      <span>Pts per $1</span><input type="number" id="cfgPts" value="${c.points_per_dollar||10}" min="1" style="width:80px;font-size:14px;padding:8px;">
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+      <span>🎂 Birthday Bonus</span><input type="number" id="cfgBday" value="${c.birthday_bonus||50}" min="0" style="width:80px;font-size:14px;padding:8px;">
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+      <span>👥 Referral Bonus</span><input type="number" id="cfgRef" value="${c.referral_bonus||100}" min="0" style="width:80px;font-size:14px;padding:8px;">
+    </div>
+    <div style="padding:12px 0;">
+      <span>Double Points Days (comma-separated YYYY-MM-DD)</span>
+      <input type="text" id="cfgDPD" value="${(c.double_points_days||[]).join(',')}" placeholder="2026-07-04,2026-11-27" style="margin-top:6px;font-size:13px;">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveConfig()">💾 Save</button>
+    <div id="configMsg"></div>
+  </div>`;
 }
 
 async function saveConfig() {
-  const body = { shop_name: document.getElementById('cfgShopName').value, points_per_dollar: parseInt(document.getElementById('cfgPtsPerDollar').value), points_value_cents: parseInt(document.getElementById('cfgPtsValue').value) };
-  const msgEl = document.getElementById('configMsg');
-  const r = await tryAPI(API_URL + '/api/config',
-    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) },
-    () => { const data = localStore(); data.config = body; localSave(data); return { config: body }; }
-  );
-  document.getElementById('shopNameDisplay').textContent = r.data.config.shop_name || 'Smoke Shop Rewards';
-  msgEl.innerHTML = '<div class="success-msg">✅ Config saved!</div>';
-  setTimeout(() => msgEl.innerHTML = '', 3000);
+  let body = {
+    shop_name: document.getElementById('cfgName').value,
+    points_per_dollar: parseInt(document.getElementById('cfgPts').value),
+    birthday_bonus: parseInt(document.getElementById('cfgBday').value),
+    referral_bonus: parseInt(document.getElementById('cfgRef').value),
+    double_points_days: document.getElementById('cfgDPD').value.split(',').map(s=>s.trim()).filter(s=>s)
+  };
+  let msgEl = document.getElementById('configMsg');
+  let r = await call(API+'/api/config', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+  }, () => { let d=LS(); d.config=body; LS_save(d); return {config:body}; });
+  document.getElementById('shopName').textContent = r.config.shop_name || 'Smoke Shop Rewards';
+  msgEl.innerHTML = '<div class="msg msg-success">✅ Saved!</div>';
+  setTimeout(()=>msgEl.innerHTML='',3000);
 }
 
-// ── Enter key handlers ──
-document.getElementById('lookupPhone').addEventListener('keydown', e => { if (e.key === 'Enter') lookupCustomer(); });
-document.getElementById('redeemPhone').addEventListener('keydown', e => { if (e.key === 'Enter') lookupForRedeem(); });
+// ── Customer self-view (enter phone) ──
+document.getElementById('lookupPhone').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (currentView === 'customer') lookupSelf();
+    else lookupCustomer();
+  }
+});
+
+async function lookupSelf() {
+  let phone = cleanPhone(document.getElementById('lookupPhone').value);
+  if (!phone) return;
+  let el = document.getElementById('customerSelfView');
+  el.innerHTML = '<div class="loading">Loading...</div>';
+
+  let r = await call(API+'/api/customer', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone})
+  }, () => {
+    let c = LS().customers[phone];
+    if (!c) throw new Error('Not found');
+    return { found:true, customer:c };
+  });
+
+  let c = enrich(r.customer);
+  let t = c._tier;
+  let n = c._next;
+  let phoneDisp = c.phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+
+  el.innerHTML = `<div class="card fade-in" style="text-align:center;">
+    ${tierBadge(c)}
+    ${tierProgress(c)}
+    <div style="font-size:22px;font-weight:700;margin-top:8px;">${c.name||'Valued Customer'}</div>
+    <div class="text-muted">${phoneDisp}</div>
+    <div class="mt-16">
+      <div class="points-big">${(c.points||0).toLocaleString()}</div>
+      <div class="points-sub">points available</div>
+      <div class="points-sub">= $${c._value} in rewards (${t.redeem}x rate)</div>
+    </div>
+    <div class="stats-grid mt-16">
+      <div class="stat-box"><div class="val">$${(c.lifetime_spend||0).toLocaleString()}</div><div class="lbl">Total Spent</div></div>
+      <div class="stat-box"><div class="val">${(c.visit_count||0)}</div><div class="lbl">Visits</div></div>
+      <div class="stat-box"><div class="val">${(c.lifetime_points||0).toLocaleString()}</div><div class="lbl">Lifetime Pts</div></div>
+      <div class="stat-box"><div class="val">${t.earn>0?'+'+(t.earn*100)+'%':'1x'}</div><div class="lbl">Earn Rate</div></div>
+    </div>
+    ${c.referral_code ? `<div class="mt-16"><div class="text-muted">Your Referral Code</div><div class="ref-code">${c.referral_code}</div><div class="text-muted">Share with friends — you both get 100 bonus points!</div></div>` : ''}
+  </div>`;
+
+  // Show the result in both the staff lookup area and the customer area
+  document.getElementById('lookupResult').innerHTML = '';
+}
+
+// Override lookupCustomer for customer view
+let origLookup = lookupCustomer;
+lookupCustomer = function() {
+  if (currentView === 'customer') return lookupSelf();
+  return origLookup();
+};
+
+// Enter handlers
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement.id === 'redeemPhone') lookupForRedeem();
+});
+
+document.getElementById('refCodeInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkReferral();
+});
 </script>
 </body>
 </html>
