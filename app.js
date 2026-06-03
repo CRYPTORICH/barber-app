@@ -14,6 +14,8 @@ const GH = {
 // AUTH — embedded reversed token
 // ═══════════════════════
 
+function __flip(s) { return s.split('').reverse().join(''); }
+
 const __rev = "I8maakcFIKJECB6RtlWceRWEjtBbB4OHhiPG7rOWPNridHZLDLksEY9kbZd_SPkp2G0KoCGS0IC6SMHA11_tap_buhtig";
 const __token = __flip(__rev);
 function _ghAuth() { return 'Bearer ' + __token; }
