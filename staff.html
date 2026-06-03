@@ -112,7 +112,7 @@
 </div>
 </div>
 
-<script src="app.js?v=5"></script>
+<script src="app.js?v=6"></script>
 <script>
 // ========== PIN ==========
 function tryUnlock(){
@@ -185,7 +185,10 @@ function showCustomer(c,el){
   var ec=enrichCustomer(c);
   var pts=c.points||0;
   var phone=formatPhone(c.phone);
-  el.innerHTML='<div class="glass animate-in" style="padding:1.25rem;">'+
+  var val=ec._value; // dollar value of all points
+  el.innerHTML=
+    '<div class="glass animate-in" style="padding:1.5rem;">'+
+    // ── HEADER: Points + Name ──
     '<div class="flex items-center gap-4 mb-4">'+
     '<div class="pts-ring" style="background:'+t.bg+';border:2px solid '+t.color+';">'+
     '<div class="num">'+pts+'</div><div class="lbl">pts</div></div>'+
@@ -194,16 +197,34 @@ function showCustomer(c,el){
     '<div class="text-muted">'+phone+'</div>'+
     '<div class="mt-2"><span class="badge badge-'+t.name.toLowerCase()+'">'+t.icon+' '+t.name+'</span></div>'+
     '</div></div>'+
+    // ── NAME EDIT ──
     '<div class="flex gap-2 mb-4">'+
     '<input type="text" id="editName" placeholder="'+(c.name||'Add name...')+'" value="'+(c.name||'')+'" style="flex:1">'+
     '<button class="btn btn-outline btn-sm" onclick="doSaveName()">💾 Save</button>'+
+    '</div><div id="nameMsg" class="mb-3"></div>'+
+    // ── PURCHASE ──
+    '<div style="font-weight:600;font-size:0.8125rem;color:var(--text-secondary);margin-bottom:0.5rem;">💰 Add Purchase</div>'+
+    '<div class="flex gap-2 mb-2">'+
+    '<input type="number" id="amtIn" placeholder="$ amount" style="flex:1;text-align:center;font-size:1.1rem;">'+
+    '<button class="btn btn-primary" onclick="doBuy()" style="min-width:120px;">Add Purchase</button>'+
     '</div>'+
-    '<div id="nameMsg" class="mb-4"></div>'+
+    '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">'+
+    [5,10,20,50].map(function(a){return '<button class="btn btn-outline btn-sm" onclick="quickBuy('+a+')" style="flex:1;min-width:60px;">$'+a+'</button>'}).join('')+
+    '</div>'+
+    '<div id="buyMsg" style="margin-bottom:1rem;"></div>'+
+    // ── REDEEM ──
+    '<div style="border-top:1px solid var(--border);padding-top:1rem;margin-bottom:0.5rem;">'+
+    '<div style="font-weight:600;font-size:0.8125rem;color:var(--text-secondary);margin-bottom:0.25rem;">💸 Redeem Points</div>'+
+    '<div class="text-muted" style="font-size:0.75rem;margin-bottom:0.75rem;">'+
+    (pts>0?'Current value: <span style="color:var(--accent);font-weight:600;">'+val+'</span> at '+ec._tier.redeem+'x rate':'No points to redeem')+
+    '</div>'+
+    (pts>0?
     '<div class="flex gap-2">'+
-    '<input type="number" id="amtIn" placeholder="$ amount" style="flex:1;text-align:center">'+
-    '<button class="btn btn-primary" onclick="doBuy()">Add Purchase</button>'+
+    '<input type="number" id="redeemAmt" placeholder="Points" min="100" max="'+pts+'" step="100" style="flex:1;text-align:center;font-size:1.1rem;">'+
+    '<button class="btn btn-gold" onclick="doRedeemFromProfile()" style="min-width:100px;">Redeem</button>'+
+    '</div>':'')+
+    '<div id="redeemProfMsg" class="mt-2"></div>'+
     '</div>'+
-    '<div id="buyMsg" class="mt-3"></div>'+
     '</div>';
 }
 
@@ -236,6 +257,26 @@ async function doBuy(){
     var bonusText=r.bonuses&&r.bonuses.length?' + '+r.bonuses.map(function(b){return b.label+' (+'+b.pts+')'}).join(', '):'';
     var tierText=r.tier_up?' 🎉 '+r.new_tier.icon+' '+r.new_tier.name+'!':'';
     el.innerHTML='<div class="msg msg-success">✅ +'+r.points_earned+' points'+bonusText+tierText+'</div>';
+    setTimeout(function(){doSearch()},1500);
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+function quickBuy(amt){
+  document.getElementById('amtIn').value=amt;
+  doBuy();
+}
+
+async function doRedeemFromProfile(){
+  var pts=parseInt(document.getElementById('redeemAmt').value)||0;
+  var el=document.getElementById('redeemProfMsg');
+  if(pts<=0){el.innerHTML='<div class="msg msg-error">Enter points to redeem</div>';return}
+  try{
+    await loadData();
+    var r=redeemPoints(curPhone,pts);
+    if(r.error){el.innerHTML='<div class="msg msg-error">'+r.error+'</div>';return}
+    el.innerHTML='<div class="msg msg-success">✅ Redeemed '+pts+' pts = $'+r.value+'</div>';
     setTimeout(function(){doSearch()},1500);
   }catch(e){
     el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
