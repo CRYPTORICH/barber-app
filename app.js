@@ -45,8 +45,12 @@ async function hashPin(pin) {
 }
 
 function checkPin(pin) {
-  let stored = (_data?.config?.staff_pin_hash) || hashPin(DEFAULT_PIN);
-  return hashPin(pin) === stored;
+  // Accept plaintext PIN (set via Config) or hashed PIN (legacy default)
+  if (!_data) { console.log('checkPin: _data not loaded, using default'); return pin === DEFAULT_PIN; }
+  let plain = _data?.config?.staff_pin;
+  if (plain) return pin === plain;
+  let hash = _data?.config?.staff_pin_hash || hashPin(DEFAULT_PIN);
+  return hashPin(pin) === hash;
 }
 
 function setPin(newPin) {

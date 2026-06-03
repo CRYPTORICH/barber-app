@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#060906">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Staff Panel · Smoke Shop Rewards</title>
 <link rel="stylesheet" href="styles.css">
 <style>
@@ -359,6 +362,7 @@ async function saveCfg() {
   _data.config = {
     shop_name: document.getElementById('cfgName').value,
     staff_pin: document.getElementById('cfgPin').value || '0000',
+    staff_pin_hash: hashPin(document.getElementById('cfgPin').value || '0000'),
     birthday_bonus: parseInt(document.getElementById('cfgBday').value)||50,
     referral_bonus: parseInt(document.getElementById('cfgRef').value)||100,
     double_points_days: document.getElementById('cfgDPD').value.split(',').map(s=>s.trim()).filter(s=>s)
@@ -376,9 +380,6 @@ document.querySelectorAll('.nav-btn').forEach(b => {
 
 // ── PIN Gate ──
 let pinAttempts = 0;
-function checkPin(pin) {
-  return pin === ((_data?.config?.staff_pin) || '0000');
-}
 function verifyPin() {
   let pin = document.getElementById('pinInput').value;
   if (checkPin(pin)) {
