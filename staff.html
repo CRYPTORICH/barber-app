@@ -10,6 +10,11 @@
 <title>Staff Panel · Smoke Shop Rewards</title>
 <link rel="stylesheet" href="styles.css">
 <style>
+  /* iPhone touch fixes */
+  button, [onclick], input, textarea, select, a {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
   .staff-layout { max-width: 480px; margin: 0 auto; min-height: 100dvh; }
   .nav { display: flex; padding: 0.5rem; margin: 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); gap: 2px; }
   .nav-btn { flex: 1; padding: 0.625rem 0.5rem; border: none; background: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
@@ -61,7 +66,7 @@
   <h1 id="pinTitle">Staff Access</h1>
   <p class="text-muted">Enter staff PIN to continue</p>
   <input type="password" id="pinInput" class="large" placeholder="••••" maxlength="4" autocomplete="off" style="text-align:center;max-width:200px;" onkeydown="if(event.key==='Enter')document.getElementById('unlockBtn').click()">
-  <button id="unlockBtn" class="btn btn-primary btn-lg" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;" onclick="var p=document.getElementById('pinInput').value;var ok=(typeof checkPin==='function')?checkPin(p):(p==='0000');if(ok){document.getElementById('pinGate').style.display='none';document.getElementById('mainApp').classList.remove('hidden');}else{var e=document.getElementById('pinError');e.innerHTML='<div class=&quot;msg msg-error&quot;>Wrong PIN</div>';document.getElementById('pinInput').value='';}">Unlock</button>
+  <button id="unlockBtn" class="btn btn-primary btn-lg" onclick="var p=document.getElementById('pinInput').value;var ok=(typeof checkPin==='function')?checkPin(p):(p==='0000');if(ok){document.getElementById('pinGate').style.display='none';document.getElementById('mainApp').classList.remove('hidden');}else{var e=document.getElementById('pinError');e.innerHTML='<div class=&quot;msg msg-error&quot;>Wrong PIN</div>';document.getElementById('pinInput').value='';}">Unlock</button>
   <div id="pinError" class="mt-2"></div>
   <a href="index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8125rem;">← Back</a>
 </div>
@@ -76,11 +81,11 @@
   </div>
 
   <div class="nav">
-    <button class="nav-btn active" style="touch-action:manipulation;" onclick="switchTo('lookup',this)"><span class="ico">🔍</span>Lookup</button>
-    <button class="nav-btn" style="touch-action:manipulation;" onclick="switchTo('redeem',this)"><span class="ico">💸</span>Redeem</button>
-    <button class="nav-btn" style="touch-action:manipulation;" onclick="switchTo('history',this)"><span class="ico">📋</span>History</button>
-    <button class="nav-btn" style="touch-action:manipulation;" onclick="switchTo('stats',this)"><span class="ico">📊</span>Stats</button>
-    <button class="nav-btn" style="touch-action:manipulation;" onclick="switchTo('config',this)"><span class="ico">⚙️</span>Config</button>
+    <button class="nav-btn active" onclick="switchTo('lookup',this)"><span class="ico">🔍</span>Lookup</button>
+    <button class="nav-btn" onclick="switchTo('redeem',this)"><span class="ico">💸</span>Redeem</button>
+    <button class="nav-btn" onclick="switchTo('history',this)"><span class="ico">📋</span>History</button>
+    <button class="nav-btn" onclick="switchTo('stats',this)"><span class="ico">📊</span>Stats</button>
+    <button class="nav-btn" onclick="switchTo('config',this)"><span class="ico">⚙️</span>Config</button>
   </div>
 
   <!-- LOOKUP -->
@@ -141,16 +146,23 @@ function switchTo(name, btn) {
 // ── Lookup ──
 async function doLookup() {
   let phone = cleanPhone(document.getElementById('phoneInput').value);
-  if (!phone) return;
+  if (!phone) {
+    document.getElementById('custDetail').innerHTML = '<div class="msg msg-error">Enter a phone number</div>';
+    return;
+  }
   currentPhone = phone;
   let el = document.getElementById('custDetail');
   el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div>';
 
-  await loadData();
-  let c = findCustomer(phone);
-  if (!c) { c = createCustomer(phone); await saveData(); }
-
-  renderCustomer(c, el);
+  try {
+    await loadData();
+    let c = findCustomer(phone);
+    if (!c) { c = createCustomer(phone); await saveData(); }
+    renderCustomer(c, el);
+  } catch(e) {
+    el.innerHTML = '<div class="msg msg-error">Error: ' + e.message + '</div>';
+    console.error('doLookup error:', e);
+  }
 }
 
 function renderCustomer(c, el) {
