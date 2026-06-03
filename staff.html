@@ -61,7 +61,7 @@
   <h1 id="pinTitle">Staff Access</h1>
   <p class="text-muted">Enter staff PIN to continue</p>
   <input type="password" id="pinInput" class="large" placeholder="••••" maxlength="4" autocomplete="off" style="text-align:center;max-width:200px;" onkeydown="if(event.key==='Enter')document.getElementById('unlockBtn').click()">
-  <button id="unlockBtn" class="btn btn-primary btn-lg" onclick="var p=document.getElementById('pinInput').value;var ok=(typeof checkPin==='function')?checkPin(p):(p==='0000');if(ok){document.getElementById('pinGate').style.display='none';document.getElementById('mainApp').classList.remove('hidden');}else{var e=document.getElementById('pinError');e.innerHTML='<div class=&quot;msg msg-error&quot;>Wrong PIN</div>';document.getElementById('pinInput').value='';}">Unlock</button>
+  <button id="unlockBtn" class="btn btn-primary btn-lg" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;" onclick="var p=document.getElementById('pinInput').value;var ok=(typeof checkPin==='function')?checkPin(p):(p==='0000');if(ok){document.getElementById('pinGate').style.display='none';document.getElementById('mainApp').classList.remove('hidden');}else{var e=document.getElementById('pinError');e.innerHTML='<div class=&quot;msg msg-error&quot;>Wrong PIN</div>';document.getElementById('pinInput').value='';}">Unlock</button>
   <div id="pinError" class="mt-2"></div>
   <div id="pinDebug" style="margin-top:1rem;font-size:0.75rem;color:#999;font-family:monospace;"></div>
   <a href="index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8125rem;">← Back</a>
