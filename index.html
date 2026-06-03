@@ -367,21 +367,41 @@
 
 <script>
 const API_URL = 'https://rewards.onrender.com';
+let USE_LOCAL = false;
 
-// Cache the current customer for purchase/redeem flows
+// ── LocalStorage fallback ──
+function localStore() {
+  let data = localStorage.getItem('rewards_shop');
+  return data ? JSON.parse(data) : { customers: {}, config: { points_per_dollar: 10, points_value_cents: 1, shop_name: 'Smoke Shop Rewards' } };
+}
+function localSave(data) { localStorage.setItem('rewards_shop', JSON.stringify(data)); }
+
+// Auto-detect: try backend once, fall back to localStorage if offline
+async function tryAPI(url, options, localFallback) {
+  if (USE_LOCAL) return localFallback();
+  try {
+    const r = await fetch(url, { ...options, signal: AbortSignal.timeout(4000) });
+    if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'API error'); }
+    return { api: true, data: await r.json() };
+  } catch(e) {
+    if (!USE_LOCAL) {
+      USE_LOCAL = true;
+      document.getElementById('shopNameDisplay').textContent += ' (Demo)';
+    }
+    return { api: false, data: localFallback() };
+  }
+}
+
 let currentCustomer = null;
 
 // ── Init ──
-async function init() {
-  try {
-    const r = await fetch(API_URL + '/api/config');
-    const d = await r.json();
-    if (d.config?.shop_name) {
-      document.getElementById('shopNameDisplay').textContent = d.config.shop_name;
-    }
-  } catch(e) {}
-}
 init();
+async function init() {
+  const r = await tryAPI(API_URL + '/api/config', {}, () => localStore().config);
+  if (r.data?.shop_name) {
+    document.getElementById('shopNameDisplay').textContent = r.data.shop_name;
+  }
+}
 
 // ── Tabs ──
 function switchTab(name) {
@@ -389,343 +409,220 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   event.target.classList.add('active');
-
-  if (name === 'redeem') {
-    document.getElementById('redeemPhone').value = document.getElementById('lookupPhone').value;
-  }
+  if (name === 'redeem') document.getElementById('redeemPhone').value = document.getElementById('lookupPhone').value;
   if (name === 'shop') loadShopStats();
   if (name === 'config') loadConfig();
 }
 
-// ── Phone formatting ──
-function cleanPhone(raw) {
-  return raw.replace(/\D/g, '');
-}
+function cleanPhone(raw) { return raw.replace(/\D/g, ''); }
 
-// ── Lookup Customer ──
+// ── Lookup / Create customer ──
 async function lookupCustomer() {
   const phone = cleanPhone(document.getElementById('lookupPhone').value);
   if (!phone) return;
+  const el = document.getElementById('lookupResult');
+  el.innerHTML = '<div class="loading">Looking up...</div>';
 
-  const resultEl = document.getElementById('lookupResult');
-  resultEl.innerHTML = '<div class="loading">Looking up...</div>';
-
-  try {
-    const r = await fetch(API_URL + '/api/customer', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({phone})
-    });
-    const d = await r.json();
-
-    if (d.error) {
-      resultEl.innerHTML = `<div class="error-msg">${d.error}</div>`;
-      return;
+  const r = await tryAPI(API_URL + '/api/customer',
+    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone}) },
+    () => {
+      const data = localStore();
+      if (data.customers[phone]) return { found: true, customer: data.customers[phone] };
+      const c = { id: Date.now().toString(36), phone, name: '', points: 0, lifetime_points: 0, lifetime_spend: 0, created_at: new Date().toISOString(), transactions: [] };
+      data.customers[phone] = c;
+      localSave(data);
+      return { found: false, customer: c };
     }
+  );
 
-    currentCustomer = d.customer;
-    renderCustomerCard(resultEl, d.customer, d.found === false);
-  } catch(e) {
-    resultEl.innerHTML = `<div class="error-msg">Connection error. Is the server running?</div>`;
-  }
+  currentCustomer = r.data.customer;
+  renderCustomerCard(el, currentCustomer, r.data.found === false);
 }
 
+// ── Render customer card ──
 function renderCustomerCard(el, c, isNew) {
   const pointsValue = (c.points * 0.01).toFixed(2);
   const phoneDisplay = c.phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
-
-  let html = `
-    <div class="customer-card fade-in">
+  let html = `<div class="customer-card fade-in">
       <div class="customer-name">${c.name || 'Customer'}</div>
       <div class="customer-phone">${phoneDisplay}</div>
-      <div class="points-display">
-        <span class="points-number">${c.points.toLocaleString()}</span>
-        <span class="points-label">pts</span>
-      </div>
+      <div class="points-display"><span class="points-number">${c.points.toLocaleString()}</span><span class="points-label">pts</span></div>
       <div class="points-value">= $${pointsValue} redemption value</div>
       <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-number">$${c.lifetime_spend.toLocaleString()}</div>
-          <div class="stat-label">Lifetime Spend</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">${c.transactions?.length || 0}</div>
-          <div class="stat-label">Visits</div>
-        </div>
+        <div class="stat-card"><div class="stat-number">$${c.lifetime_spend.toLocaleString()}</div><div class="stat-label">Lifetime Spend</div></div>
+        <div class="stat-card"><div class="stat-number">${c.transactions?.length || 0}</div><div class="stat-label">Visits</div></div>
       </div>
     </div>
-  `;
-
-  // Amount input for purchase
-  html += `
     <div class="amount-section">
       <label>Purchase Amount</label>
-      <input type="number" id="purchaseAmount" placeholder="0.00" step="0.01" min="0"
-             oninput="updatePointsPreview()" style="font-size:20px;">
-      <div class="amount-preview" id="pointsPreview" style="display:none">
-        Will earn <span id="previewPoints">0</span> points
-      </div>
+      <input type="number" id="purchaseAmount" placeholder="0.00" step="0.01" min="0" oninput="updatePointsPreview()" style="font-size:20px;">
+      <div class="amount-preview" id="pointsPreview" style="display:none">Will earn <span id="previewPoints">0</span> points</div>
     </div>
     <button class="btn btn-primary btn-block" onclick="addPurchase()">✅ Add Purchase</button>
-    <div id="purchaseMsg"></div>
-  `;
+    <div id="purchaseMsg"></div>`;
 
-  // Recent transactions
-  if (c.transactions && c.transactions.length > 0) {
-    const recent = c.transactions.slice(-5).reverse();
+  if (c.transactions?.length) {
     html += '<div class="txn-list"><label>Recent Transactions</label>';
-    recent.forEach(t => {
+    c.transactions.slice(-5).reverse().forEach(t => {
       const date = new Date(t.timestamp).toLocaleDateString();
       const sign = t.type === 'redeem' ? '-' : '+';
-      const cls = t.type === 'redeem' ? 'redeem' : 'purchase';
-      html += `
-        <div class="txn-item">
-          <div>
-            <div class="txn-type ${cls}">${t.type === 'redeem' ? 'Redeemed' : 'Purchase'}</div>
-            <div class="txn-date">${date}</div>
-          </div>
-          <div>
-            <div class="txn-amount">${sign}${Math.abs(t.points).toLocaleString()} pts</div>
-            ${t.amount ? `<div class="txn-meta">$${t.amount.toFixed(2)}</div>` : ''}
-            ${t.value ? `<div class="txn-meta">$${t.value.toFixed(2)} off</div>` : ''}
-          </div>
-        </div>
-      `;
+      html += `<div class="txn-item"><div><div class="txn-type ${t.type}">${t.type==='redeem'?'Redeemed':'Purchase'}</div><div class="txn-date">${date}</div></div>
+        <div><div class="txn-amount">${sign}${Math.abs(t.points).toLocaleString()} pts</div>${t.amount?`<div class="txn-meta">$${t.amount.toFixed(2)}</div>`:''}${t.value?`<div class="txn-meta">$${t.value.toFixed(2)} off</div>`:''}</div></div>`;
     });
     html += '</div>';
   }
-
   el.innerHTML = html;
 }
 
 function updatePointsPreview() {
   const amount = parseFloat(document.getElementById('purchaseAmount').value) || 0;
-  const preview = document.getElementById('pointsPreview');
-  const previewPts = document.getElementById('previewPoints');
-
   if (amount > 0) {
-    const dollars = Math.floor(amount);
-    const points = dollars * 10;
-    preview.style.display = 'block';
-    previewPts.textContent = points.toLocaleString();
+    document.getElementById('pointsPreview').style.display = 'block';
+    document.getElementById('previewPoints').textContent = (Math.floor(amount) * 10).toLocaleString();
   } else {
-    preview.style.display = 'none';
+    document.getElementById('pointsPreview').style.display = 'none';
   }
 }
 
+// ── Add Purchase ──
 async function addPurchase() {
   const amount = parseFloat(document.getElementById('purchaseAmount').value) || 0;
   if (!currentCustomer || amount <= 0) return;
-
   const msgEl = document.getElementById('purchaseMsg');
   msgEl.innerHTML = '<div class="loading">Processing...</div>';
 
-  try {
-    const r = await fetch(API_URL + '/api/purchase', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({phone: currentCustomer.phone, amount})
-    });
-    const d = await r.json();
-
-    if (d.error) {
-      msgEl.innerHTML = `<div class="error-msg">${d.error}</div>`;
-      return;
+  const r = await tryAPI(API_URL + '/api/purchase',
+    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone: currentCustomer.phone, amount}) },
+    () => {
+      const data = localStore();
+      const c = data.customers[currentCustomer.phone];
+      const pts = Math.floor(amount) * 10;
+      c.points += pts;
+      c.lifetime_points = (c.lifetime_points || 0) + pts;
+      c.lifetime_spend = (c.lifetime_spend || 0) + amount;
+      const txn = { id: Date.now().toString(36), type: 'purchase', amount: Math.round(amount*100)/100, points: pts, timestamp: new Date().toISOString() };
+      if (!c.transactions) c.transactions = [];
+      c.transactions.push(txn);
+      localSave(data);
+      return { customer: c, transaction: txn, points_earned: pts };
     }
+  );
 
-    currentCustomer = d.customer;
-    msgEl.innerHTML = `<div class="success-msg">✅ +${d.points_earned.toLocaleString()} points added!</div>`;
-
-    // Refresh the card
-    const resultEl = document.getElementById('lookupResult');
-    renderCustomerCard(resultEl, d.customer, false);
-    document.getElementById('purchaseAmount').value = '';
-
-    // Clear success after 3s
-    setTimeout(() => { document.getElementById('purchaseMsg').innerHTML = ''; }, 3000);
-  } catch(e) {
-    msgEl.innerHTML = `<div class="error-msg">Connection error.</div>`;
-  }
+  currentCustomer = r.data.customer;
+  msgEl.innerHTML = `<div class="success-msg">✅ +${r.data.points_earned.toLocaleString()} points added!</div>`;
+  renderCustomerCard(document.getElementById('lookupResult'), r.data.customer, false);
+  document.getElementById('purchaseAmount').value = '';
+  setTimeout(() => msgEl.innerHTML = '', 3000);
 }
 
 // ── Redeem Flow ──
 async function lookupForRedeem() {
   const phone = cleanPhone(document.getElementById('redeemPhone').value);
   if (!phone) return;
+  const el = document.getElementById('redeemResult');
+  el.innerHTML = '<div class="loading">Looking up...</div>';
 
-  const resultEl = document.getElementById('redeemResult');
-  resultEl.innerHTML = '<div class="loading">Looking up...</div>';
-
-  try {
-    const r = await fetch(API_URL + '/api/customer', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({phone})
-    });
-    const d = await r.json();
-
-    if (d.error) {
-      resultEl.innerHTML = `<div class="error-msg">${d.error}</div>`;
-      return;
+  const r = await tryAPI(API_URL + '/api/customer',
+    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone}) },
+    () => {
+      const data = localStore();
+      const c = data.customers[phone];
+      if (!c) throw new Error('Customer not found');
+      return { found: true, customer: c };
     }
+  );
 
-    if (d.customer.points === 0) {
-      resultEl.innerHTML = `<div class="customer-card fade-in">
-        <div class="customer-name">${d.customer.name || 'Customer'}</div>
-        <div style="text-align:center;padding:20px;color:var(--muted);">No points to redeem</div>
-      </div>`;
-      return;
-    }
-
-    currentCustomer = d.customer;
-    const pointsValue = (d.customer.points * 0.01).toFixed(2);
-
-    resultEl.innerHTML = `
-      <div class="customer-card fade-in">
-        <div class="customer-name">${d.customer.name || 'Customer'}</div>
-        <div class="points-display">
-          <span class="points-number">${d.customer.points.toLocaleString()}</span>
-          <span class="points-label">pts available</span>
-        </div>
-        <div class="points-value">= $${pointsValue}</div>
-      </div>
-      <label>Points to Redeem</label>
-      <input type="number" id="redeemAmount" placeholder="100" min="100"
-             step="100" style="font-size:18px">
-      <p style="color:var(--muted);font-size:12px;margin-top:4px;">
-        100 pts = $1.00 &bull; Max: ${d.customer.points} pts
-      </p>
-      <button class="btn btn-warn btn-block" onclick="executeRedeem()">💸 Redeem Points</button>
-      <div id="redeemMsg"></div>
-    `;
-  } catch(e) {
-    resultEl.innerHTML = `<div class="error-msg">Connection error.</div>`;
+  const c = r.data.customer;
+  if (!c || c.points === 0) {
+    el.innerHTML = `<div class="customer-card fade-in"><div class="customer-name">${c?.name||'Customer'}</div><div style="text-align:center;padding:20px;color:var(--muted);">No points to redeem</div></div>`;
+    return;
   }
+  currentCustomer = c;
+  el.innerHTML = `<div class="customer-card fade-in">
+      <div class="customer-name">${c.name||'Customer'}</div>
+      <div class="points-display"><span class="points-number">${c.points.toLocaleString()}</span><span class="points-label">pts available</span></div>
+      <div class="points-value">= $${(c.points*0.01).toFixed(2)}</div>
+    </div>
+    <label>Points to Redeem</label>
+    <input type="number" id="redeemAmount" placeholder="100" min="100" step="100" style="font-size:18px">
+    <p style="color:var(--muted);font-size:12px;margin-top:4px;">100 pts = $1.00 &bull; Max: ${c.points} pts</p>
+    <button class="btn btn-warn btn-block" onclick="executeRedeem()">💸 Redeem Points</button>
+    <div id="redeemMsg"></div>`;
 }
 
 async function executeRedeem() {
   const points = parseInt(document.getElementById('redeemAmount').value) || 0;
   if (!currentCustomer || points <= 0) return;
-
   const msgEl = document.getElementById('redeemMsg');
   msgEl.innerHTML = '<div class="loading">Processing...</div>';
 
-  try {
-    const r = await fetch(API_URL + '/api/redeem', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({phone: currentCustomer.phone, points})
-    });
-    const d = await r.json();
-
-    if (d.error) {
-      msgEl.innerHTML = `<div class="error-msg">${d.error} (Available: ${d.available || 0})</div>`;
-      return;
+  const r = await tryAPI(API_URL + '/api/redeem',
+    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone: currentCustomer.phone, points}) },
+    () => {
+      const data = localStore();
+      const c = data.customers[currentCustomer.phone];
+      if (c.points < points) throw new Error('Insufficient points');
+      const value = (points * 0.01).toFixed(2);
+      c.points -= points;
+      const txn = { id: Date.now().toString(36), type: 'redeem', points: -points, value: parseFloat(value), timestamp: new Date().toISOString() };
+      if (!c.transactions) c.transactions = [];
+      c.transactions.push(txn);
+      localSave(data);
+      return { customer: c, transaction: txn, value: parseFloat(value) };
     }
+  );
 
-    msgEl.innerHTML = `<div class="success-msg">💸 $${d.value.toFixed(2)} discount applied!</div>`;
-
-    // Refresh
-    setTimeout(() => lookupForRedeem(), 500);
-  } catch(e) {
-    msgEl.innerHTML = `<div class="error-msg">Connection error.</div>`;
-  }
+  msgEl.innerHTML = `<div class="success-msg">💸 $${r.data.value.toFixed(2)} discount applied!</div>`;
+  setTimeout(() => lookupForRedeem(), 500);
 }
 
 // ── Shop Stats ──
 async function loadShopStats() {
   const el = document.getElementById('shopStats');
-  try {
-    const r = await fetch(API_URL + '/api/stats');
-    const d = await r.json();
-    el.innerHTML = `
-      <div class="fade-in">
-        <div class="shop-stat">
-          <div class="value">${d.total_customers}</div>
-          <div class="label">Total Customers</div>
-        </div>
-        <div class="shop-stat">
-          <div class="value">${d.points_outstanding.toLocaleString()}</div>
-          <div class="label">Points Outstanding</div>
-        </div>
-        <div class="shop-stat">
-          <div class="value">$${d.outstanding_value.toLocaleString()}</div>
-          <div class="label">Redemption Liability</div>
-        </div>
-        <div class="shop-stat">
-          <div class="value">${d.lifetime_points.toLocaleString()}</div>
-          <div class="label">Lifetime Points Issued</div>
-        </div>
-      </div>
-    `;
-  } catch(e) {
-    el.innerHTML = '<div class="error-msg">Cannot load stats. Is the server running?</div>';
-  }
+  const r = await tryAPI(API_URL + '/api/stats', {}, () => {
+    const data = localStore();
+    const custs = Object.values(data.customers);
+    const pts = custs.reduce((s,c) => s + (c.points||0), 0);
+    return { total_customers: custs.length, points_outstanding: pts, outstanding_value: (pts*0.01).toFixed(2), lifetime_points: custs.reduce((s,c) => s + (c.lifetime_points||0), 0) };
+  });
+  const d = r.data;
+  el.innerHTML = `<div class="fade-in">
+    <div class="shop-stat"><div class="value">${d.total_customers}</div><div class="label">Total Customers</div></div>
+    <div class="shop-stat"><div class="value">${d.points_outstanding.toLocaleString()}</div><div class="label">Points Outstanding</div></div>
+    <div class="shop-stat"><div class="value">$${Number(d.outstanding_value).toLocaleString()}</div><div class="label">Redemption Liability</div></div>
+    <div class="shop-stat"><div class="value">${d.lifetime_points.toLocaleString()}</div><div class="label">Lifetime Points Issued</div></div>
+  </div>`;
 }
 
 // ── Config ──
 async function loadConfig() {
   const el = document.getElementById('configForm');
-  try {
-    const r = await fetch(API_URL + '/api/config');
-    const d = await r.json();
-    const c = d.config;
-    el.innerHTML = `
-      <div class="fade-in">
-        <div class="config-row">
-          <label>Shop Name</label>
-          <input type="text" id="cfgShopName" value="${c.shop_name || ''}" style="width:160px">
-        </div>
-        <div class="config-row">
-          <label>Points per $1 spent</label>
-          <input type="number" id="cfgPtsPerDollar" value="${c.points_per_dollar || 10}" min="1">
-        </div>
-        <div class="config-row">
-          <label>Cents per point</label>
-          <input type="number" id="cfgPtsValue" value="${c.points_value_cents || 1}" min="1">
-        </div>
-        <p style="color:var(--muted);font-size:12px;margin:8px 0 16px;">
-          Default: 10 pts/$1, 1¢/pt = 100 pts = $1.00
-        </p>
-        <button class="btn btn-primary btn-block" onclick="saveConfig()">💾 Save Config</button>
-        <div id="configMsg"></div>
-      </div>
-    `;
-  } catch(e) {
-    el.innerHTML = '<div class="error-msg">Cannot load config.</div>';
-  }
+  const r = await tryAPI(API_URL + '/api/config', {}, () => ({ config: localStore().config }));
+  const c = r.data.config || r.data;
+  el.innerHTML = `<div class="fade-in">
+    <div class="config-row"><label>Shop Name</label><input type="text" id="cfgShopName" value="${c.shop_name||''}" style="width:160px"></div>
+    <div class="config-row"><label>Points per $1 spent</label><input type="number" id="cfgPtsPerDollar" value="${c.points_per_dollar||10}" min="1"></div>
+    <div class="config-row"><label>Cents per point</label><input type="number" id="cfgPtsValue" value="${c.points_value_cents||1}" min="1"></div>
+    <p style="color:var(--muted);font-size:12px;margin:8px 0 16px;">Default: 10 pts/$1, 1¢/pt = 100 pts = $1.00</p>
+    <button class="btn btn-primary btn-block" onclick="saveConfig()">💾 Save Config</button>
+    <div id="configMsg"></div></div>`;
 }
 
 async function saveConfig() {
-  const body = {
-    shop_name: document.getElementById('cfgShopName').value,
-    points_per_dollar: parseInt(document.getElementById('cfgPtsPerDollar').value),
-    points_value_cents: parseInt(document.getElementById('cfgPtsValue').value)
-  };
-
+  const body = { shop_name: document.getElementById('cfgShopName').value, points_per_dollar: parseInt(document.getElementById('cfgPtsPerDollar').value), points_value_cents: parseInt(document.getElementById('cfgPtsValue').value) };
   const msgEl = document.getElementById('configMsg');
-  try {
-    const r = await fetch(API_URL + '/api/config', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
-    });
-    const d = await r.json();
-    document.getElementById('shopNameDisplay').textContent = d.config.shop_name || 'Smoke Shop Rewards';
-    msgEl.innerHTML = '<div class="success-msg">✅ Config saved!</div>';
-    setTimeout(() => { msgEl.innerHTML = ''; }, 3000);
-  } catch(e) {
-    msgEl.innerHTML = '<div class="error-msg">Save failed.</div>';
-  }
+  const r = await tryAPI(API_URL + '/api/config',
+    { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) },
+    () => { const data = localStore(); data.config = body; localSave(data); return { config: body }; }
+  );
+  document.getElementById('shopNameDisplay').textContent = r.data.config.shop_name || 'Smoke Shop Rewards';
+  msgEl.innerHTML = '<div class="success-msg">✅ Config saved!</div>';
+  setTimeout(() => msgEl.innerHTML = '', 3000);
 }
 
 // ── Enter key handlers ──
-document.getElementById('lookupPhone').addEventListener('keydown', e => {
-  if (e.key === 'Enter') lookupCustomer();
-});
-document.getElementById('redeemPhone').addEventListener('keydown', e => {
-  if (e.key === 'Enter') lookupForRedeem();
-});
+document.getElementById('lookupPhone').addEventListener('keydown', e => { if (e.key === 'Enter') lookupCustomer(); });
+document.getElementById('redeemPhone').addEventListener('keydown', e => { if (e.key === 'Enter') lookupForRedeem(); });
 </script>
 </body>
 </html>
