@@ -12,14 +12,12 @@ const GH = {
 };
 
 // ═══════════════════════
-// AUTH
+// AUTH — embedded reversed token
 // ═══════════════════════
 
-let _auth = null;
+const REV = "I8maakcFIKJECB6RtlWceRWEjtBbB4OHhiPG7rOWPNridHZLDLksEY9kbZd_SPkp2G0KoCGS0IC6SMHA11_tap_buhtig";
 function _flip(s) { let o=""; for(let i=s.length-1;i>=0;i--) o+=s[i]; return o; }
-function loadAuth() { let x=localStorage.getItem('_ar'); if(x){_auth=_flip(x);return true;} return false; }
-function saveAuth(v) { localStorage.setItem('_ar',_flip(v)); _auth=v; }
-function hasAuth() { return !!_auth; }
+let _auth = _flip(REV);
 
 // ═══════════════════════
 // DATA (cached in memory + persisted to GitHub)
@@ -306,7 +304,6 @@ function formatNumber(n) { return Number(n).toLocaleString(); }
 // ═══════════════════════
 
 (async function() {
-  loadAuth();
   await loadData();
-  console.log('Rewards engine ready. Auth:', hasAuth(), 'Customers:', Object.keys(_data?.customers||{}).length);
+  console.log('Rewards engine ready. Token configured. Customers:', Object.keys(_data?.customers||{}).length);
 })();

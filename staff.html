@@ -332,10 +332,7 @@ async function renderConfig() {
       <input type="text" id="cfgDPD" value="${(c.double_points_days||[]).join(',')}" placeholder="2026-07-04,2026-12-25">
     </div>
     <div style="padding:1rem 0;">
-      <label style="display:block;margin-bottom:0.5rem;">GitHub Token</label>
-      <input type="password" id="cfgToken" placeholder="ghp_... or github_pat_..." style="font-size:0.875rem;">
-      <div class="text-muted mt-2" style="font-size:0.75rem;">Needs Contents R/W on CRYPTORICH/rewards-data</div>
-      ${hasAuth() ? '<div class="msg msg-success mt-3">✅ Token active — saving to GitHub</div>' : '<div class="msg msg-error mt-3">⚠ No token — saving locally only</div>'}
+      <div class="msg msg-success">✅ Token configured — data persists to GitHub</div>
     </div>
     <button class="btn btn-primary btn-block mt-4" onclick="saveCfg()">💾 Save Config</button>
     <div id="cfgMsg" class="mt-3"></div>
@@ -350,8 +347,6 @@ async function saveCfg() {
     referral_bonus: parseInt(document.getElementById('cfgRef').value)||100,
     double_points_days: document.getElementById('cfgDPD').value.split(',').map(s=>s.trim()).filter(s=>s)
   };
-  let tok = document.getElementById('cfgToken').value.trim();
-  if (tok) saveAuth(tok);
   await saveData();
   document.getElementById('shopName').textContent = _data.config.shop_name || 'Staff Panel';
   document.getElementById('cfgMsg').innerHTML = '<div class="msg msg-success">✅ Saved</div>';
