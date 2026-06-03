@@ -115,6 +115,10 @@ async function loadData(force = false) {
 // WRITE QUEUE — prevents concurrent corruption
 // ═══════════════════════
 
+async function saveData() {
+  _enqueueWrite();
+}
+
 function _enqueueWrite() {
   if (!_data) return;
   localStorage.setItem('_rd', JSON.stringify(_data));
