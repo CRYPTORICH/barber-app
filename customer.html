@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#060906">
+<title>My Rewards · Smoke Shop Rewards</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .cust-layout { max-width: 480px; margin: 0 auto; min-height: 100dvh; }
+
+  /* Login screen */
+  .login-screen {
+    min-height: 80dvh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 2rem;
+    gap: 2rem;
+  }
+  .login-card {
+    width: 100%; max-width: 360px; padding: 2rem;
+    animation: scaleIn 0.5s var(--ease-spring) both;
+  }
+  .num-pad {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .num-key {
+    padding: 1rem; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--bg-input);
+    color: var(--text); font-size: 1.25rem; font-weight: 600;
+    cursor: pointer; transition: all 0.1s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .num-key:active { background: var(--accent); border-color: var(--accent); color: white; transform: scale(0.95); }
+  .num-key.del { font-size: 0.875rem; color: var(--text-muted); }
+  .num-key.go { background: var(--accent); border-color: var(--accent); color: white; font-size: 0.875rem; }
+
+  /* Dashboard */
+  .dash-header {
+    padding: 1.5rem 1rem 0.5rem;
+    text-align: center;
+  }
+  .dash-header h1 { font-size: 1.25rem; }
+  .dash-header .phone-display { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem; }
+  .dash-header .signout { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; margin-top: 0.5rem; display: inline-block; }
+
+  /* Membership card */
+  .mcard {
+    margin: 0 1rem 1.5rem;
+    border-radius: var(--radius-lg);
+    padding: 1.75rem; position: relative; overflow: hidden;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.5);
+    animation: scaleIn 0.5s var(--ease-spring) both;
+    min-height: 240px;
+  }
+  .mcard .card-pattern {
+    position: absolute; inset: 0; opacity: 0.03;
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.5) 10px, rgba(255,255,255,0.5) 11px);
+  }
+  .mcard .card-logo { font-size: 1.5rem; margin-bottom: 1rem; position: relative; z-index: 1; }
+  .mcard .card-name { font-size: 1.25rem; font-weight: 700; position: relative; z-index: 1; }
+  .mcard .card-tier { margin-top: 0.5rem; position: relative; z-index: 1; }
+  .mcard .card-pts { font-size: 2.5rem; font-weight: 900; margin-top: 0.75rem; position: relative; z-index: 1; }
+  .mcard .card-id {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.6875rem;
+    letter-spacing: 0.15em; color: var(--text-muted);
+    margin-top: 0.75rem; position: relative; z-index: 1;
+  }
+
+  /* Dashboard sections */
+  .dash-section { margin: 0 1rem 1rem; }
+  .dash-section h2 { font-size: 0.9375rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-secondary); }
+
+  /* Rewards catalog */
+  .reward-card {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 1rem; cursor: pointer; transition: all 0.15s;
+    margin-bottom: 0.5rem;
+  }
+  .reward-card:active { transform: scale(0.98); }
+  .reward-card .reward-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; flex-shrink: 0;
+  }
+  .reward-card .reward-pts {
+    padding: 0.25rem 0.75rem; border-radius: 999px;
+    font-size: 0.75rem; font-weight: 700;
+    background: var(--accent-glow); color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* Tier progress section */
+  .tier-track {
+    display: flex; justify-content: space-between;
+    position: relative; padding: 0 0.5rem;
+  }
+  .tier-track::before {
+    content: ''; position: absolute; top: 16px; left: 20px; right: 20px;
+    height: 2px; background: var(--border); z-index: 0;
+  }
+  .tier-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; z-index: 1; position: relative;
+    border: 2px solid var(--border); background: var(--bg);
+    transition: all 0.3s;
+  }
+  .tier-dot.active { border-color: var(--accent); background: var(--accent-glow); }
+  .tier-dot.current { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+
+  /* Transaction list */
+  .mini-txn {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.625rem 0; border-bottom: 1px solid var(--border);
+  }
+  .mini-txn:last-child { border-bottom: none; }
+  .mini-txn .txn-icon {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.875rem; flex-shrink: 0;
+  }
+
+  /* Share sheet */
+  .share-ref {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem; background: var(--bg-input);
+    border-radius: var(--radius-sm); border: 1px dashed var(--border);
+  }
+  .share-ref code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.25rem; font-weight: 700; letter-spacing: 0.1em;
+    flex: 1; text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="cust-layout">
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="login-screen">
+    <div style="font-size:3rem;">💨</div>
+    <div style="text-align:center;">
+      <h1 id="custTitle">My Rewards</h1>
+      <p class="text-muted" style="margin-top:0.25rem;">Enter your phone number to continue</p>
+    </div>
+    <div class="glass login-card">
+      <input type="tel" id="phoneDisplay" class="large" placeholder="(555) 123-4567" readonly style="text-align:center;">
+      <div class="num-pad">
+        ${[1,2,3,4,5,6,7,8,9,'',0].map(n => n==='' 
+          ? '<div></div>' 
+          : `<button class="num-key" onclick="pressDigit('${n}')">${n}</button>`
+        ).join('')}
+        <button class="num-key del" onclick="pressDelete()">⌫</button>
+        <button class="num-key go" onclick="doLogin()">→</button>
+      </div>
+      <div id="loginError" class="mt-3"></div>
+    </div>
+    <a href="index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8125rem;">← Back</a>
+  </div>
+
+  <!-- DASHBOARD (hidden initially) -->
+  <div id="dashboard" class="hidden">
+    <div class="dash-header">
+      <h1 id="dashShopName">My Rewards</h1>
+      <div class="phone-display" id="dashPhone"></div>
+      <div class="signout" onclick="doLogout()">Sign out</div>
+    </div>
+    <div id="dashContent"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+let loggedInPhone = null;
+let phoneDigits = '';
+
+// Init
+(async function() {
+  await loadData();
+  document.getElementById('custTitle').textContent = (_data?.config?.shop_name || 'Smoke Shop') + ' Rewards';
+  document.getElementById('dashShopName').textContent = _data?.config?.shop_name || 'My Rewards';
+})();
+
+// ── Keypad ──
+function pressDigit(d) { 
+  phoneDigits += d;
+  updatePhoneDisplay();
+}
+function pressDelete() { 
+  phoneDigits = phoneDigits.slice(0, -1);
+  updatePhoneDisplay();
+}
+function updatePhoneDisplay() {
+  let formatted = phoneDigits;
+  if (phoneDigits.length > 3) formatted = '(' + phoneDigits.slice(0,3) + ') ' + phoneDigits.slice(3,6) + (phoneDigits.length>6?'-'+phoneDigits.slice(6,10):'');
+  document.getElementById('phoneDisplay').value = formatted;
+  document.getElementById('loginError').innerHTML = '';
+}
+
+// ── Login ──
+async function doLogin() {
+  let phone = cleanPhone(phoneDigits);
+  if (phone.length < 10) {
+    document.getElementById('loginError').innerHTML = '<div class="msg msg-error">Please enter a 10-digit phone number</div>';
+    return;
+  }
+
+  await loadData();
+  let c = findCustomer(phone);
+  if (!c) {
+    document.getElementById('loginError').innerHTML = '<div class="msg msg-error">Account not found. Visit the shop to sign up.</div>';
+    return;
+  }
+
+  loggedInPhone = phone;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  document.getElementById('dashPhone').textContent = formatPhone(phone);
+  renderDashboard();
+}
+
+function doLogout() {
+  loggedInPhone = null;
+  phoneDigits = '';
+  document.getElementById('phoneDisplay').value = '';
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+}
+
+// ── Dashboard ──
+async function renderDashboard() {
+  if (!loggedInPhone) return;
+  await loadData();
+  let c = findCustomer(loggedInPhone);
+  if (!c) { doLogout(); return; }
+  let ec = enrichCustomer(c);
+  let t = ec._tier;
+
+  // Tier background gradient
+  let cardBg = 'linear-gradient(135deg, #0a150d 0%, #0a1a10 50%, #0a150d 100%)';
+  if (t.name === 'Gold') cardBg = 'linear-gradient(135deg, #1a1508 0%, #1a1a0a 50%, #1a1508 100%)';
+  if (t.name === 'Platinum') cardBg = 'linear-gradient(135deg, #151518 0%, #1a1a1e 50%, #151518 100%)';
+
+  // Tier track
+  let tierTrack = TIERS.map((tr, i) => {
+    let cls = 'tier-dot';
+    if (c.lifetime_points >= tr.min) cls += ' active';
+    if (tr.name === t.name) cls += ' current';
+    return `<div class="${cls}" title="${tr.name} (${tr.min.toLocaleString()} pts)">${tr.icon}</div>`;
+  }).join('');
+
+  // Rewards catalog (based on tier)
+  let catalog = [
+    { icon: '💰', label: '$5 off purchase', pts: 500, desc: 'Instant discount at checkout' },
+    { icon: '💵', label: '$10 off purchase', pts: 1000, desc: 'Save on your next visit' },
+    { icon: '🎫', label: '$25 off purchase', pts: 2500, desc: 'Big savings on any product' },
+    { icon: '⭐', label: '$50 off purchase', pts: 5000, desc: 'Premium reward for loyal members' },
+  ];
+
+  // Show rewards available at this tier's redemption rate
+  let catalogHtml = catalog.map(r => {
+    let actualPts = Math.ceil(r.pts / t.redeem);
+    let canAfford = ec.points >= actualPts;
+    return `<div class="reward-card glass-sm ${canAfford ? '' : ''}" style="opacity:${canAfford?1:0.4}" onclick="${canAfford ? `alert('Redeem at the shop counter with staff.')` : ''}">
+      <div class="reward-icon" style="background:${canAfford?'var(--accent-glow)':'var(--bg-input)'}">${r.icon}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:0.9375rem;">${r.label}</div><div class="text-muted" style="font-size:0.75rem;">${r.desc}</div></div>
+      <div class="reward-pts">${actualPts.toLocaleString()} pts</div>
+    </div>`;
+  }).join('');
+
+  // Recent transactions
+  let txns = (c.transactions||[]).slice(-5).reverse();
+  let txnsHtml = txns.length ? txns.map(tx => {
+    let icon = tx.type === 'purchase' ? '🛒' : tx.type === 'redeem' ? '💸' : '🎁';
+    let label = tx.type === 'purchase' ? 'Purchase' : tx.type === 'redeem' ? 'Redeemed' : (tx.note || tx.type);
+    return `<div class="mini-txn">
+      <div class="txn-icon" style="background:var(--bg-input)">${icon}</div>
+      <div style="flex:1"><div style="font-size:0.8125rem;font-weight:500;">${label}</div><div class="text-muted" style="font-size:0.6875rem;">${formatDate(tx.timestamp)}</div></div>
+      <div style="text-align:right;font-size:0.875rem;font-weight:700;color:${tx.points>0?'var(--accent)':'var(--danger)'}">${tx.points>0?'+':''}${tx.points}</div>
+    </div>`;
+  }).join('') : '<div class="empty"><div class="empty-icon">📭</div><div class="empty-desc">No transactions yet</div></div>';
+
+  let html = `
+  <!-- Membership Card -->
+  <div class="mcard" style="background:${cardBg}">
+    <div class="card-pattern"></div>
+    <div class="card-logo">💨 ${_data?.config?.shop_name || 'Rewards'}</div>
+    <div class="card-name">${c.name || 'Valued Member'}</div>
+    <div class="card-tier"><span class="badge badge-${t.name.toLowerCase()}">${t.icon} ${t.name} Member</span></div>
+    <div class="card-pts">${formatNumber(c.points||0)} <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">pts</span></div>
+    <div class="card-id">${formatCurrency(ec._value)} redemption value · ${t.redeem}x rate</div>
+  </div>
+
+  <!-- Tier Progress -->
+  <div class="dash-section glass p-4 animate-up delay-1">
+    <h2>Tier Progress</h2>
+    <div class="tier-track mb-4">${tierTrack}</div>
+    ${ec._next ? `
+    <div class="mb-2" style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);">
+      <span>${formatNumber(c.lifetime_points||0)} / ${formatNumber(ec._next.min)} lifetime pts</span>
+      <span>${formatNumber(ec._next.min - (c.lifetime_points||0))} to ${ec._next.icon} ${ec._next.name}</span>
+    </div>
+    <div class="progress"><div class="progress-fill" style="width:${ec._progress}%"></div></div>` : '<div class="text-accent" style="text-align:center;font-weight:600;">🏆 Maximum tier reached!</div>'}
+  </div>
+
+  <!-- Stats -->
+  <div class="dash-section animate-up delay-2" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+    <div class="stat"><div class="stat-value">${formatCurrency(c.lifetime_spend||0)}</div><div class="stat-label">Total Spent</div></div>
+    <div class="stat"><div class="stat-value">${c.visit_count||0}</div><div class="stat-label">Visits</div></div>
+    <div class="stat"><div class="stat-value">${t.earn>0?'+'+(t.earn*100)+'%':'1x'}</div><div class="stat-label">Earn Rate</div></div>
+  </div>
+
+  <!-- Rewards Catalog -->
+  <div class="dash-section animate-up delay-3">
+    <h2>Available Rewards</h2>
+    ${catalogHtml}
+  </div>
+
+  <!-- Referral -->
+  ${c.referral_code ? `
+  <div class="dash-section glass p-4 animate-up delay-4">
+    <h2>Share & Earn</h2>
+    <p class="text-muted" style="font-size:0.8125rem;margin-bottom:0.75rem;">Share your code — you both get ${_data?.config?.referral_bonus||100} bonus points when they sign up!</p>
+    <div class="share-ref"><code>${c.referral_code}</code> <button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText('${c.referral_code}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)">Copy</button></div>
+  </div>` : ''}
+
+  <!-- Recent Activity -->
+  <div class="dash-section glass p-4 animate-up delay-4">
+    <h2>Recent Activity</h2>
+    ${txnsHtml}
+  </div>`;
+
+  document.getElementById('dashContent').innerHTML = html;
+}
+
+// Physical keyboard support
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('loginScreen').classList.contains('hidden')) return;
+  if (e.key >= '0' && e.key <= '9') pressDigit(e.key);
+  if (e.key === 'Backspace' || e.key === 'Delete') pressDelete();
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>
