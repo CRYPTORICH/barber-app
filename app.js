@@ -431,6 +431,14 @@ function createCustomer(phone, extra = {}) {
   return c;
 }
 
+function deleteCustomer(phone) {
+  if (!_data) return { error: 'Data not loaded' };
+  if (!_data.customers[phone]) return { error: 'Customer not found' };
+  delete _data.customers[phone];
+  _enqueueWrite();
+  return { success: true };
+}
+
 function _genCode() {
   let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let c = ''; for(let i=0;i<8;i++) c+=chars[Math.floor(Math.random()*chars.length)];

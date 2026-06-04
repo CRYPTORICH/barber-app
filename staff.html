@@ -217,6 +217,19 @@
   </div>
 </div>
 
+<!-- DELETE CONFIRMATION -->
+<div id="deleteOverlay" class="overlay hidden">
+  <div class="confirm-box">
+    <div class="big-icon">⚠️</div>
+    <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.5rem;">Delete Account?</div>
+    <div style="color:var(--text-muted);font-size:0.875rem;margin-bottom:1rem;line-height:1.5;">This will permanently erase<br>ALL points earned and history.<br>This cannot be undone.</div>
+    <div class="btns">
+      <button class="btn" style="background:var(--bg);border:2px solid var(--border);color:var(--text-muted);" onclick="closeDeleteConfirm()">Cancel</button>
+      <button class="btn" style="background:#ef4444;color:#fff;font-weight:800;" onclick="execDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
 <canvas id="confettiCanvas"></canvas>
 
 <script src="app.js"></script>
@@ -359,6 +372,10 @@ function renderCustomer(c){
     '</div>'+
     '<div class="redeem-grid">'+redeemCards+'</div>'+
     '<div id="redeemMsg" style="margin-top:0.75rem;"></div>'+
+    // Delete
+    '<div style="border-top:1px solid var(--border);margin-top:1.25rem;padding-top:1rem;text-align:center;">'+
+    '<button class="btn" style="background:transparent;border:1px solid rgba(239,68,68,0.3);color:#ef4444;font-size:0.75rem;padding:0.5rem 1rem;border-radius:var(--radius-sm);" onclick="openDeleteConfirm()">🗑️ Delete Account</button>'+
+    '</div>'+
     '</div>';
 
   // HISTORY SECTION
@@ -440,6 +457,33 @@ async function execRedeem(){
     launchConfetti();
     showToast('💸 Redeemed '+pts.toLocaleString()+' pts = $'+r.value+' off!', 'success');
     setTimeout(function(){ doSearch(); }, 1200);
+  } catch(e) {
+    showToast('Error: '+e.message, 'error');
+  }
+}
+
+// ========== DELETE ==========
+function openDeleteConfirm(){
+  document.getElementById('deleteOverlay').classList.remove('hidden');
+}
+
+function closeDeleteConfirm(){
+  document.getElementById('deleteOverlay').classList.add('hidden');
+}
+
+async function execDelete(){
+  closeDeleteConfirm();
+  try {
+    await loadData();
+    var r = deleteCustomer(curPhone);
+    if(r.error){
+      showToast('❌ '+r.error, 'error');
+      return;
+    }
+    showToast('🗑️ Account deleted', 'success');
+    document.getElementById('mainContent').innerHTML = '';
+    document.getElementById('phoneInput').value = '';
+    curPhone = null;
   } catch(e) {
     showToast('Error: '+e.message, 'error');
   }
