@@ -280,6 +280,64 @@ body {
   background: var(--bg-raised); color: var(--text-muted); font-size: 1.1rem;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
+
+/* ── GOAL TRACKER ── */
+.goal-card {
+  background: var(--bg-raised); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem; text-align: center;
+  overflow: hidden; position: relative;
+}
+.goal-card.goal-hit {
+  border-color: var(--accent);
+  box-shadow: 0 0 32px rgba(5,150,105,0.15);
+}
+.goal-emoji { font-size: 2.5rem; margin-bottom: 0.25rem; transition: transform 0.3s var(--ease-spring); }
+.goal-card.goal-hit .goal-emoji { animation: celebrateBounce 0.6s var(--ease-spring); }
+@keyframes celebrateBounce { 0%{transform:scale(1)} 30%{transform:scale(1.4)} 60%{transform:scale(0.9)} 100%{transform:scale(1)} }
+.goal-title { font-size: 0.9375rem; font-weight: 700; margin-bottom: 0.125rem; }
+.goal-big-num { font-size: 2.25rem; font-weight: 900; line-height: 1; margin-bottom: 0.375rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+.goal-card.goal-hit .goal-big-num { color: var(--gold); }
+
+.goal-bar-wrap {
+  height: 18px; background: rgba(255,255,255,0.05); border-radius: 100px;
+  overflow: hidden; margin-bottom: 0.5rem; position: relative;
+}
+.goal-bar-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, #059669, #10b981);
+  transition: width 0.8s var(--ease-out);
+  position: relative;
+  min-width: 0;
+}
+.goal-bar-fill.goal-over { background: linear-gradient(90deg, #d4a843, #f0c040); }
+.goal-bar-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+  animation: goalShimmer 2.5s ease-in-out infinite;
+}
+@keyframes goalShimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+.goal-meta {
+  display: flex; justify-content: center; gap: 1.25rem; font-size: 0.75rem; color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.goal-meta span { display: inline-flex; align-items: center; gap: 0.25rem; }
+.goal-streak { font-weight: 700; }
+.goal-streak.has-streak { color: var(--gold); }
+
+/* ── FLOATING ACTION BUTTON ── */
+.fab {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 50;
+  width: 56px; height: 56px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, var(--accent), #047857);
+  color: #fff; font-size: 1.5rem; cursor: pointer;
+  box-shadow: 0 6px 24px rgba(5,150,105,0.35);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s var(--ease-out);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.fab:active { transform: scale(0.9); box-shadow: 0 3px 12px rgba(5,150,105,0.2); }
+@media (min-width: 768px) { .fab { bottom: 2rem; right: 2rem; width: 60px; height: 60px; font-size: 1.75rem; } }
 </style>
 </head>
 <body>
@@ -304,11 +362,8 @@ body {
     <button class="db-gear" onclick="doConfig()">⚙️</button>
   </div>
 
-  <div class="stat-row" id="statRow">
-    <div class="stat-card stat-accent"><div class="stat-num" id="statCusts">—</div><div class="stat-label">Customers</div></div>
-    <div class="stat-card stat-gold"><div class="stat-num" id="statPts">—</div><div class="stat-label">Active Points</div></div>
-    <div class="stat-card stat-muted"><div class="stat-num" id="statToday">—</div><div class="stat-label">Today</div></div>
-  </div>
+  <!-- GOAL TRACKER CARD -->
+  <div id="goalCard" style="padding:0 1rem 0.75rem;"></div>
 
   <div class="search-row">
     <input type="tel" id="phoneInput" placeholder="Quick lookup by phone..." autocomplete="off" inputmode="numeric" onkeydown="if(event.key==='Enter')doSearch()">
@@ -316,6 +371,9 @@ body {
   </div>
 
   <div id="mainContent"></div>
+
+  <!-- FLOATING ACTION BUTTON -->
+  <button class="fab" onclick="focusPhoneSearch()" title="Quick add customer">➕</button>
 </div>
 
 <!-- OVERLAYS -->
@@ -377,24 +435,112 @@ document.getElementById('pinInput').addEventListener('keydown',function(e){ if(e
 async function loadDashboard(){
   try {
     await loadData();
-    var s = getStats();
-    var custs = Object.values(_data.customers||{});
-    // Stats
-    document.getElementById('statCusts').textContent = s.total||0;
-    document.getElementById('statPts').textContent = ((s.points||0)).toLocaleString();
-    // Today's activity
-    var today = new Date().toISOString().split('T')[0];
-    var todayCount = 0;
-    custs.forEach(function(c){
-      var txs = c.transactions||[];
-      if(txs.length && txs[txs.length-1].timestamp && txs[txs.length-1].timestamp.startsWith(today)) todayCount++;
-    });
-    document.getElementById('statToday').textContent = todayCount||'—';
-    // Render table
+    renderGoalCard();
     renderCustomerTable();
   } catch(e) {
     document.getElementById('mainContent').innerHTML = '<div class="msg msg-error">Error: '+e.message+'</div>';
   }
+}
+
+// ========== GOAL TRACKER ==========
+function getTodayNewCustomers(){
+  var custs = Object.values(_data.customers||{});
+  var today = new Date().toISOString().split('T')[0];
+  var count = 0;
+  custs.forEach(function(c){
+    if(c.created_at && c.created_at.startsWith(today)) count++;
+  });
+  return count;
+}
+
+function getStreak(storageKey){
+  storageKey = storageKey || 'rw_streak';
+  try {
+    var data = JSON.parse(localStorage.getItem(storageKey)||'{}');
+    var today = new Date().toISOString().split('T')[0];
+    var yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
+    // If we recorded a hit yesterday, streak continues from yesterday's streak+1
+    // Otherwise reset to 0 (today hasn't been evaluated yet)
+    if(data.lastHitDate === yesterday){
+      return (data.streak||0) + 1;
+    } else if(data.lastHitDate === today){
+      return data.streak||0;
+    }
+    return 0;
+  } catch(e){ return 0; }
+}
+
+function updateStreak(storageKey, goalHit){
+  storageKey = storageKey || 'rw_streak';
+  try {
+    var data = JSON.parse(localStorage.getItem(storageKey)||'{}');
+    var today = new Date().toISOString().split('T')[0];
+    var yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
+    if(goalHit){
+      if(data.lastHitDate === yesterday){
+        data.streak = (data.streak||0) + 1;
+      } else if(data.lastHitDate !== today){
+        data.streak = 1;
+      }
+      data.lastHitDate = today;
+    }
+    localStorage.setItem(storageKey, JSON.stringify(data));
+  } catch(e){}
+}
+
+function renderGoalCard(){
+  var el = document.getElementById('goalCard');
+  var cfg = (_data&&_data.config)?_data.config:{};
+  var goal = cfg.daily_goal||10;
+  var newCusts = getTodayNewCustomers();
+  var hit = newCusts >= goal;
+  var streak = getStreak();
+
+  // Update streak in localStorage (record today's state)
+  updateStreak('rw_streak', hit);
+
+  // Refresh streak after update
+  if(hit) streak = getStreak();
+
+  // Calculate hours left
+  var now = new Date();
+  var midnight = new Date(now);
+  midnight.setHours(24,0,0,0);
+  var hoursLeft = Math.max(0, Math.ceil((midnight - now) / 3600000));
+
+  // Progress percentage
+  var pct = Math.min(100, Math.round((newCusts / goal) * 100));
+
+  // Emoji
+  var emoji = hit ? '🎉' : pct >= 50 ? '🔥' : pct > 0 ? '💪' : '🎯';
+
+  var html = '<div class="goal-card'+(hit?' goal-hit':'')+'">'+
+    '<div class="goal-emoji">'+emoji+'</div>'+
+    '<div class="goal-title">Today\'s Goal</div>'+
+    '<div class="goal-big-num">'+newCusts+' / '+goal+'</div>'+
+    '<div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:0.625rem;">new customers</div>'+
+    '<div class="goal-bar-wrap">'+
+    '<div class="goal-bar-fill'+(hit?' goal-over':'')+'" style="width:'+pct+'%;"></div>'+
+    '</div>'+
+    '<div class="goal-meta">'+
+    '<span class="goal-streak'+(streak>0?' has-streak':'')+'" style="color:var(--text-muted);">🔥 '+(streak>0?streak+' day streak':'No streak')+'</span>'+
+    '<span>⏰ '+(hoursLeft>0?hoursLeft+'h left':'<1h left')+'</span>'+
+    '</div>'+
+    '</div>';
+
+  el.innerHTML = html;
+}
+
+function focusPhoneSearch(){
+  // Scroll to top and focus the phone search input, then scroll it into view
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(function(){
+    var inp = document.getElementById('phoneInput');
+    if(inp){
+      inp.focus();
+      inp.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  }, 200);
 }
 
 function renderCustomerTable(sortBy){
@@ -669,6 +815,7 @@ async function doConfig(){
       '<div class="cfg-row"><label>🔐 Staff PIN</label><input type="password" id="cfgPin" value="0000" maxlength="4"></div>'+
       '<div class="cfg-row"><label>🎂 Birthday Bonus</label><input type="number" id="cfgBday" value="'+(c.birthday_bonus||50)+'"></div>'+
       '<div class="cfg-row"><label>👥 Referral Bonus</label><input type="number" id="cfgRef" value="'+(c.referral_bonus||100)+'"></div>'+
+      '<div class="cfg-row"><label>🎯 Daily Goal</label><input type="number" id="cfgGoal" value="'+(c.daily_goal||10)+'" min="1" max="999"></div>'+
       '<button class="btn btn-primary btn-block" onclick="doSaveCfg()" style="margin-top:1.25rem;">💾 Save Settings</button>'+
       '<div id="cfgMsg" style="margin-top:0.75rem;"></div></div>';
   } catch(e) { showToast('Error: '+e.message,'error'); }
@@ -685,6 +832,7 @@ async function doSaveCfg(){
     _data.config.staff_pin_hash = hashPin(pin);
     _data.config.birthday_bonus = parseInt(document.getElementById('cfgBday').value)||50;
     _data.config.referral_bonus = parseInt(document.getElementById('cfgRef').value)||100;
+    _data.config.daily_goal = parseInt(document.getElementById('cfgGoal').value)||10;
     _data.config.double_points_days = _data.config.double_points_days||[];
     document.getElementById('shopName').textContent = _data.config.shop_name||'Rewards';
     el.innerHTML = '<div class="msg msg-success" style="font-size:0.75rem;">✅ Saved</div>';

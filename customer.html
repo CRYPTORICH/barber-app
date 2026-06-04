@@ -48,6 +48,28 @@
   .landing h1 { font-size: 1.75rem; font-weight: 900; margin: 0; }
   .landing .subtitle { color: var(--text-muted); font-size: 0.9375rem; max-width: 280px; line-height: 1.5; }
 
+  /* ── ACTION CARDS ── */
+  .action-cards { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 0.875rem; }
+  .action-card {
+    width: 100%; padding: 1.5rem 1.25rem; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    cursor: pointer; transition: all 0.2s var(--ease-out);
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem;
+    -webkit-tap-highlight-color: transparent; user-select: none; text-align: left;
+  }
+  .action-card:active { transform: scale(0.97); border-color: var(--accent); background: rgba(5,150,105,0.06); }
+  .action-card-icon { font-size: 2rem; line-height: 1; }
+  .action-card-title { font-size: 1.125rem; font-weight: 800; color: var(--text); }
+  .action-card-sub { font-size: 0.8125rem; color: var(--text-muted); line-height: 1.4; }
+
+  /* ── SLIDE DOWN ANIMATION ── */
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  .slide-in { animation: slideDown 0.4s var(--ease-out) both; }
+
+  /* ── FORM BACK LINK ── */
+  .form-back { text-align: center; margin-top: 0.75rem; font-size: 0.8125rem; color: var(--text-muted); cursor: pointer; }
+  .form-back:hover { color: var(--accent); }
+
   .form-card {
     width: 100%; max-width: 360px; background: var(--bg-card); border: 1px solid var(--border);
     border-radius: var(--radius-lg); padding: 1.75rem; text-align: left;
@@ -203,7 +225,7 @@
 </head>
 <body>
 
-<!-- LANDING — Signup Form -->
+<!-- LANDING — Two Action Cards -->
 <div id="landingScreen" class="landing">
   <div class="hero-icon">💨</div>
   <div>
@@ -211,7 +233,21 @@
     <p class="subtitle">Earn 1 point per $1 spent. Redeem for discounts. It's free.</p>
   </div>
 
-  <div class="form-card" id="signupForm">
+  <!-- Two prominent action cards -->
+  <div class="action-cards" id="actionCards">
+    <div class="action-card" onclick="showSignup()">
+      <div class="action-card-icon">🆕</div>
+      <div class="action-card-title">I'm New Here</div>
+      <div class="action-card-sub">Create a free account in 10 seconds</div>
+    </div>
+    <div class="action-card" onclick="showLogin()">
+      <div class="action-card-icon">🔍</div>
+      <div class="action-card-title">Look Up My Account</div>
+      <div class="action-card-sub">Check my points &amp; rewards</div>
+    </div>
+  </div>
+
+  <div class="form-card hidden" id="signupForm">
     <div class="form-group">
       <label>Phone Number</label>
       <input type="tel" id="signupPhone" placeholder="3055551234" autocomplete="off" inputmode="numeric">
@@ -238,6 +274,7 @@
       <span style="color:var(--text-muted);font-size:0.8125rem;">Already a member?</span>
       <span class="toggle-link" onclick="showLogin()">Look up my account</span>
     </div>
+    <div class="form-back" onclick="showActionCards()">← Back</div>
   </div>
 
   <!-- VERIFICATION STEP -->
@@ -280,6 +317,7 @@
       <span style="color:var(--text-muted);font-size:0.8125rem;">New here?</span>
       <span class="toggle-link" onclick="showSignup()">Create an account</span>
     </div>
+    <div class="form-back" onclick="showActionCards()">← Back</div>
   </div>
 </div>
 
@@ -347,15 +385,35 @@ var pendingVerify = null;
 var verifyCode = null;
 
 // ========== LANDING TOGGLE ==========
-function showLogin(){
+function showActionCards(){
   document.getElementById('signupForm').classList.add('hidden');
-  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('verifyStep').classList.add('hidden');
+  document.getElementById('actionCards').classList.remove('hidden');
+  document.getElementById('landingTitle').textContent = 'Join Rewards';
+  document.querySelector('.subtitle').textContent = 'Earn 1 point per $1 spent. Redeem for discounts. It\'s free.';
+}
+function showLogin(){
+  document.getElementById('actionCards').classList.add('hidden');
+  document.getElementById('signupForm').classList.add('hidden');
+  document.getElementById('verifyStep').classList.add('hidden');
+  var lf = document.getElementById('loginForm');
+  lf.classList.remove('hidden');
+  lf.classList.remove('slide-in');
+  void lf.offsetWidth; // force reflow
+  lf.classList.add('slide-in');
   document.getElementById('landingTitle').textContent = 'My Rewards';
   document.querySelector('.subtitle').textContent = 'Enter your phone number to continue';
 }
 function showSignup(){
+  document.getElementById('actionCards').classList.add('hidden');
   document.getElementById('loginForm').classList.add('hidden');
-  document.getElementById('signupForm').classList.remove('hidden');
+  document.getElementById('verifyStep').classList.add('hidden');
+  var sf = document.getElementById('signupForm');
+  sf.classList.remove('hidden');
+  sf.classList.remove('slide-in');
+  void sf.offsetWidth; // force reflow
+  sf.classList.add('slide-in');
   document.getElementById('landingTitle').textContent = 'Join Rewards';
   document.querySelector('.subtitle').textContent = 'Earn 1 point per $1 spent. Redeem for discounts. It\'s free.';
 }
@@ -566,7 +624,7 @@ function signOut(){
   document.getElementById('loginPhone').value = '';
   document.getElementById('dashScreen').classList.add('hidden');
   document.getElementById('landingScreen').classList.remove('hidden');
-  showSignup();
+  showActionCards();
 }
 
 function copyRef(){
