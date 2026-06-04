@@ -8,417 +8,566 @@
 <title>Staff Panel · Smoke Shop Rewards</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  button, [onclick], input, textarea, select, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-  .staff-layout { max-width: 480px; margin: 0 auto; min-height: 100dvh; }
-  .nav { display: flex; padding: 0.5rem; margin: 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); gap: 2px; }
-  .nav-btn { flex: 1; padding: 0.625rem 0.5rem; border: none; background: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-  .nav-btn.active { background: var(--accent); color: white; }
-  .nav-btn .ico { display: block; font-size: 1.1rem; margin-bottom: 2px; }
-  .section { display: none; padding: 0 1rem 2rem; }
-  .section.active { display: block; animation: fadeIn 0.25s var(--ease-out); }
-  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem 0; }
-  .top-bar h1 { font-size: 1.25rem; }
-  .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; }
-  .search-wrap { margin-bottom: 1rem; }
-  .pts-ring { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; flex-shrink: 0; }
-  .pts-ring .num { font-size: 1.25rem; font-weight: 800; }
-  .pts-ring .lbl { font-size: 0.5625rem; color: var(--text-muted); text-transform: uppercase; }
-  .txn-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
-  .txn-item:last-child { border-bottom: none; }
-  .config-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); }
-  .config-row label { font-size: 0.875rem; color: var(--text); }
-  .config-row input { width: auto; min-width: 80px; text-align: right; }
+  *, *::before, *::after { box-sizing: border-box; }
+  button, [onclick], input, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #060906; --bg-card: #0d110d; --border: #1a241a;
+    --text: #e8ede8; --text-muted: #6b7a6b; --text-secondary: #8a9a8a;
+    --accent: #059669; --accent-glow: rgba(5,150,105,0.18);
+    --danger: #ef4444; --gold: #d4a843; --radius: 16px; --radius-sm: 10px;
+    --ease-out: cubic-bezier(0.16,1,0.3,1);
+  }
+
+  body {
+    background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0; padding: 0; min-height: 100dvh; -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 500px; margin: 0 auto; padding: 1rem; min-height: 100dvh; }
+
+  /* ── PIN ── */
+  #pinGate {
+    min-height: 100dvh; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 2rem; gap: 1.5rem;
+  }
+  #pinGate h1 { font-size: 1.5rem; font-weight: 800; margin: 0; }
+  #pinGate .lock-icon { font-size: 4rem; margin-bottom: 0.5rem; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  #pinGate input {
+    width: 100%; max-width: 240px; padding: 1rem; font-size: 1.5rem; text-align: center;
+    background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
+    color: var(--text); letter-spacing: 0.5rem; outline: none; transition: border 0.2s;
+  }
+  #pinGate input:focus { border-color: var(--accent); }
+
   .hidden { display: none !important; }
-  .flex { display: flex; }
-  .items-center { align-items: center; }
-  .gap-4 { gap: 1rem; }
-  .gap-2 { gap: 0.5rem; }
-  .mb-4 { margin-bottom: 1rem; }
-  .mt-2 { margin-top: 0.5rem; }
-  .mt-3 { margin-top: 0.75rem; }
-  .mt-4 { margin-top: 1rem; }
-  .p-4 { padding: 1rem; }
-  .justify-between { justify-content: space-between; }
-  .w-full { width: 100%; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.875rem 1.5rem; border: none; border-radius: var(--radius);
+    font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s var(--ease-out);
+    white-space: nowrap; -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 20px var(--accent-glow); }
+  .btn-primary:active { box-shadow: 0 2px 10px var(--accent-glow); }
+  .btn-gold { background: linear-gradient(135deg, #d4a843, #b8860b); color: #fff; font-weight: 800; box-shadow: 0 4px 20px rgba(212,168,67,0.25); }
+  .btn-block { width: 100%; }
+  .btn-lg { padding: 1rem 2rem; font-size: 1.125rem; border-radius: 18px; }
+
+  .quick-buy { flex: 1; min-width: 60px; padding: 0.75rem 0.5rem; font-size: 1rem; font-weight: 700;
+    background: var(--bg-card); border: 2px solid var(--accent); color: var(--accent);
+    border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s var(--ease-out); }
+  .quick-buy:active { background: var(--accent); color: #fff; transform: scale(0.95); }
+
+  /* ── SEARCH ── */
+  .search-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .search-bar input {
+    flex: 1; padding: 0.875rem 1rem; font-size: 1.05rem; background: var(--bg-card);
+    border: 2px solid var(--border); border-radius: var(--radius); color: var(--text); outline: none;
+    transition: border 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar .btn { flex-shrink: 0; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 1.5rem; margin-bottom: 1rem; animation: slideUp 0.35s var(--ease-out);
+    position: relative; overflow: hidden;
+  }
+  @keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+
+  .card-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.25rem; }
+  .pts-circle {
+    width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; flex-direction: column; flex-shrink: 0; position: relative;
+  }
+  .pts-circle .num { font-size: 1.75rem; font-weight: 900; line-height: 1; }
+  .pts-circle .lbl { font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; }
+  .pts-circle svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .pts-circle svg circle { fill: none; stroke-width: 4; }
+  .pts-circle svg .bg-ring { stroke: rgba(255,255,255,0.06); }
+  .pts-circle svg .fg-ring { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 0.8s var(--ease-out); }
+
+  .tier-badge {
+    display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem;
+    border-radius: 100px; font-size: 0.75rem; font-weight: 700; margin-top: 0.375rem;
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 0.625rem;
+  }
+
+  /* ── REDEEM CARDS ── */
+  .redeem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.625rem; }
+  .redeem-card {
+    position: relative; padding: 1rem 0.75rem; border-radius: var(--radius-sm);
+    border: 2px solid var(--border); cursor: pointer; transition: all 0.2s var(--ease-out);
+    text-align: center; -webkit-tap-highlight-color: transparent; overflow: hidden;
+  }
+  .redeem-card.can-afford { border-color: var(--accent); background: rgba(5,150,105,0.06); }
+  .redeem-card.can-afford:active { transform: scale(0.95); background: rgba(5,150,105,0.14); }
+  .redeem-card.cant-afford { opacity: 0.38; cursor: default; }
+  .redeem-card .pts-needed { font-size: 1.25rem; font-weight: 800; }
+  .redeem-card .pts-label { font-size: 0.625rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; }
+  .redeem-card .dollar-value { font-size: 1.5rem; font-weight: 900; color: var(--accent); line-height: 1; }
+  .redeem-card.cant-afford .dollar-value { color: var(--text-muted); }
+  .redeem-card .checkmark {
+    position: absolute; top: 6px; right: 8px; font-size: 0.75rem; opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .redeem-card.can-afford .checkmark { opacity: 1; }
+
+  /* ── CONFIRM OVERLAY ── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center;
+    justify-content: center; z-index: 100; padding: 1rem; animation: fadeIn 0.15s;
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+  @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+  .confirm-box {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 2rem; text-align: center; max-width: 300px; width: 100%;
+    animation: popIn 0.3s var(--ease-out);
+  }
+  @keyframes popIn { from { opacity:0; transform:scale(0.9) } to { opacity:1; transform:scale(1) } }
+  .confirm-box .big-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+  .confirm-box .confirm-pts { font-size: 2rem; font-weight: 900; }
+  .confirm-box .confirm-val { font-size: 2.5rem; font-weight: 900; color: var(--accent); margin-bottom: 1rem; }
+  .confirm-box .btns { display: flex; gap: 0.75rem; }
+  .confirm-box .btns button { flex: 1; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 200;
+    padding: 1rem 2rem; border-radius: 100px; font-weight: 700; font-size: 1rem;
+    animation: toastIn 0.35s var(--ease-out); box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .toast-success { background: var(--accent); color: #fff; }
+  .toast-error { background: var(--danger); color: #fff; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(-16px) } to { opacity:1; transform:translateX(-50%) translateY(0) } }
+
+  /* ── HISTORY ── */
+  .txn-row {
+    display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0;
+    border-bottom: 1px solid var(--border); font-size: 0.8125rem;
+  }
+  .txn-row:last-child { border-bottom: none; }
+  .txn-icon { font-size: 1.25rem; width: 36px; height: 36px; display: flex; align-items: center;
+    justify-content: center; background: rgba(255,255,255,0.03); border-radius: 50%; flex-shrink: 0; }
+
+  /* ── MESSAGES ── */
+  .msg { padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 600; }
+  .msg-success { background: rgba(5,150,105,0.12); color: var(--accent); }
+  .msg-error { background: rgba(239,68,68,0.1); color: var(--danger); }
+
+  /* ── CANVAS FOR CONFETTI ── */
+  #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 300; }
 </style>
 </head>
 <body>
 
 <!-- PIN GATE -->
-<div id="pinGate" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:1.5rem;">
-  <div style="font-size:3rem;">🔐</div>
+<div id="pinGate">
+  <div class="lock-icon">🔐</div>
   <h1>Staff Access</h1>
-  <p class="text-muted">Enter staff PIN to continue</p>
-  <input type="password" id="pinInput" class="large" placeholder="••••" maxlength="4" autocomplete="off" style="text-align:center;max-width:200px;">
-  <button class="btn btn-primary btn-lg" onclick="tryUnlock()">Unlock</button>
-  <div id="pinError" class="mt-2"></div>
-  <a href="index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8125rem;">← Back</a>
+  <p style="color:var(--text-muted);margin:0;">Enter staff PIN</p>
+  <input type="password" id="pinInput" placeholder="••••" maxlength="4" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+  <button class="btn btn-primary btn-lg btn-block" onclick="tryUnlock()" style="max-width:240px;">Unlock</button>
+  <div id="pinError"></div>
 </div>
 
-<!-- MAIN APP -->
+<!-- MAIN -->
 <div id="mainApp" class="hidden">
-<div class="staff-layout" style="max-width:none;">
-  <div class="top-bar">
-    <a href="index.html" class="back-link">← Back</a>
-    <h1 id="shopName">Staff Panel</h1>
-    <div style="width:40px"></div>
-  </div>
-
-  <div class="nav">
-    <button class="nav-btn active" onclick="showTab('lookup',this)"><span class="ico">🔍</span>Lookup</button>
-    <button class="nav-btn" onclick="showTab('redeem',this)"><span class="ico">💸</span>Redeem</button>
-    <button class="nav-btn" onclick="showTab('history',this)"><span class="ico">📋</span>History</button>
-    <button class="nav-btn" onclick="showTab('stats',this)"><span class="ico">📊</span>Stats</button>
-    <button class="nav-btn" onclick="showTab('config',this)"><span class="ico">⚙️</span>Config</button>
-  </div>
-
-  <!-- LOOKUP -->
-  <div id="sec-lookup" class="section active">
-    <div class="search-wrap">
-      <input type="tel" id="phoneInput" class="large" placeholder="Phone number..." autocomplete="off">
-      <button class="btn btn-primary btn-block mt-3" onclick="doSearch()">🔍 Search</button>
+<div class="page">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+    <h1 id="shopName" style="font-size:1.25rem;margin:0;">Staff Panel</h1>
+    <div style="display:flex;gap:0.5rem;">
+      <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:var(--radius-sm);" onclick="doConfig()">⚙️</button>
+      <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:var(--radius-sm);" onclick="doStats()">📊</button>
     </div>
-    <div id="custDetail"></div>
   </div>
 
-  <!-- REDEEM -->
-  <div id="sec-redeem" class="section">
-    <div class="search-wrap">
-      <input type="tel" id="redeemPhone" class="large" placeholder="Phone number..." autocomplete="off">
-      <button class="btn btn-primary btn-block mt-3" onclick="doRedeemSearch()">Lookup for Redemption</button>
-    </div>
-    <div id="redeemDetail"></div>
+  <div class="search-bar">
+    <input type="tel" id="phoneInput" placeholder="Customer phone..." autocomplete="off" inputmode="numeric" onkeydown="if(event.key==='Enter')doSearch()">
+    <button class="btn btn-primary" onclick="doSearch()">🔍</button>
   </div>
 
-  <!-- HISTORY -->
-  <div id="sec-history" class="section">
-    <div class="search-wrap">
-      <input type="tel" id="histPhone" class="large" placeholder="Phone number..." autocomplete="off">
-      <button class="btn btn-outline btn-block mt-3" onclick="doHist()">View History</button>
-    </div>
-    <div id="histDetail"></div>
-  </div>
-
-  <!-- STATS -->
-  <div id="sec-stats" class="section">
-    <div id="statsContent"><button class="btn btn-outline btn-block" onclick="doStats()">Load Stats</button></div>
-  </div>
-
-  <!-- CONFIG -->
-  <div id="sec-config" class="section">
-    <div id="configContent"><button class="btn btn-outline btn-block" onclick="doConfig()">Load Config</button></div>
-  </div>
+  <div id="mainContent"></div>
 </div>
 </div>
 
-<script src="app.js?v=6"></script>
+<!-- CONFIRMATION OVERLAY -->
+<div id="confirmOverlay" class="overlay hidden">
+  <div class="confirm-box">
+    <div class="big-icon">💸</div>
+    <div style="color:var(--text-muted);margin-bottom:0.25rem;">Redeem</div>
+    <div class="confirm-pts" id="confirmPts">0</div>
+    <div style="color:var(--text-muted);margin-bottom:0.25rem;">points for</div>
+    <div class="confirm-val" id="confirmVal">$0</div>
+    <div class="btns">
+      <button class="btn" style="background:var(--bg);border:2px solid var(--border);color:var(--text-muted);" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-gold" id="confirmBtn" onclick="execRedeem()">Redeem</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confettiCanvas"></canvas>
+
+<script src="app.js"></script>
 <script>
+// ========== STATE ==========
+var curPhone = null;
+var pendingRedeem = null;
+
 // ========== PIN ==========
 function tryUnlock(){
-  var p=document.getElementById('pinInput').value;
-  var ok=false;
-  if(typeof checkPin==='function'){try{ok=checkPin(p)}catch(e){ok=(p==='0000')}}
-  else{ok=(p==='0000')}
+  var p = document.getElementById('pinInput').value;
+  var ok = false;
+  if(typeof checkPin==='function'){ try{ ok=checkPin(p) }catch(e){ ok=(p==='0000') } }
+  else { ok=(p==='0000') }
   if(ok){
     document.getElementById('pinGate').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
-    document.getElementById('shopName').textContent=(_data&&_data.config&&_data.config.shop_name)||'Staff Panel';
-  }else{
-    document.getElementById('pinError').innerHTML='<div class="msg msg-error">Wrong PIN</div>';
+    document.getElementById('shopName').textContent = (_data&&_data.config&&_data.config.shop_name)||'Staff Panel';
+  } else {
+    document.getElementById('pinError').innerHTML='<div class="msg msg-error" style="margin-top:0.5rem;">Wrong PIN</div>';
     document.getElementById('pinInput').value='';
   }
 }
-document.getElementById('pinInput').addEventListener('keydown',function(e){if(e.key==='Enter')tryUnlock()});
+document.getElementById('pinInput').addEventListener('keydown',function(e){ if(e.key==='Enter') tryUnlock(); });
 
-// ========== TABS ==========
-function showTab(name,btn){
-  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
-  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});
-  document.getElementById('sec-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
-  if(name==='stats')doStats();
-  if(name==='config')doConfig();
-}
-
-// ========== LOOKUP ==========
-var curPhone=null;
-
+// ========== SEARCH ==========
 async function doSearch(){
-  var ph=document.getElementById('phoneInput').value.replace(/\D/g,'');
-  var el=document.getElementById('custDetail');
-  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
-  curPhone=ph;
-  el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-muted);">Searching...</div>';
-  try{
+  var ph = document.getElementById('phoneInput').value.replace(/\D/g,'');
+  var el = document.getElementById('mainContent');
+  if(!ph){ el.innerHTML=''; return; }
+  curPhone = ph;
+  el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">Searching...</div>';
+  try {
     await loadData();
-    var c=findCustomer(ph);
+    var c = findCustomer(ph);
     if(c){
-      showCustomer(c,el);
-    }else{
-      el.innerHTML='<div class="glass p-4" style="text-align:center">'+
-        '<div style="font-size:2rem;margin-bottom:0.5rem;">📱</div>'+
-        '<div style="font-weight:700;font-size:1.1rem;margin-bottom:0.25rem;">Account Not Found</div>'+
-        '<div class="text-muted mb-4">'+formatPhone(ph)+'</div>'+
+      renderCustomer(c);
+    } else {
+      el.innerHTML = '<div class="card" style="text-align:center;">'+
+        '<div style="font-size:3rem;margin-bottom:0.5rem;">📱</div>'+
+        '<div style="font-weight:800;font-size:1.2rem;margin-bottom:0.25rem;">Account Not Found</div>'+
+        '<div style="color:var(--text-muted);margin-bottom:1.25rem;">'+formatPhone(ph)+'</div>'+
         '<button class="btn btn-primary btn-block" onclick="doCreate()">➕ Create Account</button>'+
         '</div>';
     }
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  } catch(e) {
+    el.innerHTML = '<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
 async function doCreate(){
-  var el=document.getElementById('custDetail');
-  try{
+  var el = document.getElementById('mainContent');
+  try {
     await loadData();
-    var c=createCustomer(curPhone);
-    await saveData();
-    showCustomer(c,el);
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+    var c = createCustomer(curPhone);
+    renderCustomer(c);
+  } catch(e) {
+    el.innerHTML = '<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
-function showCustomer(c,el){
-  var t=getTier(c);
-  var ec=enrichCustomer(c);
-  var pts=c.points||0;
-  var phone=formatPhone(c.phone);
-  var val=ec._value; // dollar value of all points
-  el.innerHTML=
-    '<div class="glass animate-in" style="padding:1.5rem;">'+
-    // ── HEADER: Points + Name ──
-    '<div class="flex items-center gap-4 mb-4">'+
-    '<div class="pts-ring" style="background:'+t.bg+';border:2px solid '+t.color+';">'+
-    '<div class="num">'+pts+'</div><div class="lbl">pts</div></div>'+
-    '<div style="flex:1">'+
-    '<div style="font-size:1.25rem;font-weight:700;">'+(c.name||'Customer')+'</div>'+
-    '<div class="text-muted">'+phone+'</div>'+
-    '<div class="mt-2"><span class="badge badge-'+t.name.toLowerCase()+'">'+t.icon+' '+t.name+'</span></div>'+
+// ========== RENDER CUSTOMER CARD ==========
+function renderCustomer(c){
+  var t = getTier(c);
+  var ec = enrichCustomer(c);
+  var pts = c.points || 0;
+  var phone = formatPhone(c.phone);
+  var val = ec._value;
+  var progress = tierProgress(c);
+  var circumference = 2 * Math.PI * 44; // r=44 on 100px circle
+  var dashOffset = circumference * (1 - progress/100);
+
+  // Build redeem cards
+  var redeemCards = '';
+  REDEEM_TIERS.forEach(function(rt){
+    var needed = rt[0];
+    var dollars = rt[1];
+    var can = pts >= needed;
+    redeemCards += '<div class="redeem-card '+(can?'can-afford':'cant-afford')+'"'+
+      (can?' onclick="openRedeemConfirm('+needed+','+dollars+')"':'')+'>'+
+      '<div class="checkmark">'+(can?'✅':'')+'</div>'+
+      '<div class="pts-label">'+needed.toLocaleString()+' pts</div>'+
+      '<div class="dollar-value">$'+dollars+'</div>'+
+      '<div style="font-size:0.75rem;color:var(--text-muted);">off</div>'+
+      '</div>';
+  });
+
+  // Build history (last 5)
+  var txs = (c.transactions||[]).slice(-5).reverse();
+  var historyHtml = '';
+  txs.forEach(function(tx){
+    var icon = tx.type==='purchase'?'🛒':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
+    var label = tx.type==='purchase'?'Purchase £'+formatCurrency(tx.amount||0):
+                tx.type==='redeem'?'Redeemed $'+tx.value+' off':
+                (tx.note||tx.type.replace(/_/g,' '));
+    var ptsStr = tx.points>0?'+'+tx.points:''+tx.points;
+    historyHtml += '<div class="txn-row">'+
+      '<div class="txn-icon">'+icon+'</div>'+
+      '<div style="flex:1;"><div style="font-weight:600;">'+label+'</div><div style="font-size:0.6875rem;color:var(--text-muted);">'+formatDate(tx.timestamp)+'</div></div>'+
+      '<div style="font-weight:700;color:'+(tx.points>0?'var(--accent)':'var(--danger)')+'">'+ptsStr+' pts</div>'+
+      '</div>';
+  });
+
+  var html = '<div class="card">'+
+    // HEADER
+    '<div class="card-header">'+
+    '<div class="pts-circle" style="background:'+t.bg+';border:2px solid '+t.color+';">'+
+    '<svg viewBox="0 0 100 100"><circle class="bg-ring" cx="50" cy="50" r="44"/><circle class="fg-ring" cx="50" cy="50" r="44" stroke-dasharray="'+circumference+'" stroke-dashoffset="'+dashOffset+'"/></svg>'+
+    '<div class="num">'+pts.toLocaleString()+'</div><div class="lbl">pts</div></div>'+
+    '<div style="flex:1;min-width:0;">'+
+    '<div style="font-size:1.25rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(c.name||'Customer')+'</div>'+
+    '<div style="color:var(--text-muted);font-size:0.8125rem;">'+phone+'</div>'+
+    '<span class="tier-badge" style="background:'+t.bg+';color:'+t.color+';">'+t.icon+' '+t.name+'</span>'+
     '</div></div>'+
-    // ── NAME EDIT ──
-    '<div class="flex gap-2 mb-4">'+
-    '<input type="text" id="editName" placeholder="'+(c.name||'Add name...')+'" value="'+(c.name||'')+'" style="flex:1">'+
-    '<button class="btn btn-outline btn-sm" onclick="doSaveName()">💾 Save</button>'+
-    '</div><div id="nameMsg" class="mb-3"></div>'+
-    // ── PURCHASE ──
-    '<div style="font-weight:600;font-size:0.8125rem;color:var(--text-secondary);margin-bottom:0.5rem;">💰 Add Purchase</div>'+
-    '<div class="flex gap-2 mb-2">'+
-    '<input type="number" id="amtIn" placeholder="$ amount" style="flex:1;text-align:center;font-size:1.1rem;">'+
-    '<button class="btn btn-primary" onclick="doBuy()" style="min-width:120px;">Add Purchase</button>'+
+
+    // NAME EDIT
+    '<div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;">'+
+    '<input type="text" id="editName" placeholder="'+(c.name||'Add name...')+'" value="'+(c.name||'')+'" style="flex:1;padding:0.625rem 0.75rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:0.875rem;outline:none;">'+
+    '<button class="btn" style="padding:0.625rem 1rem;font-size:0.8125rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);" onclick="doSaveName()">💾 Save</button>'+
+    '</div><div id="nameMsg"></div>'+
+
+    // PURCHASE
+    '<div class="section-label">💰 Add Purchase</div>'+
+    '<div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">'+
+    '<button class="quick-buy" onclick="quickBuy(5)">$5</button>'+
+    '<button class="quick-buy" onclick="quickBuy(10)">$10</button>'+
+    '<button class="quick-buy" onclick="quickBuy(20)">$20</button>'+
+    '<button class="quick-buy" onclick="quickBuy(50)">$50</button>'+
     '</div>'+
-    '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">'+
-    [5,10,20,50].map(function(a){return '<button class="btn btn-outline btn-sm" onclick="quickBuy('+a+')" style="flex:1;min-width:60px;">$'+a+'</button>'}).join('')+
+    '<div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">'+
+    '<input type="number" id="amtIn" placeholder="Custom $" style="flex:1;padding:0.625rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:0.9375rem;text-align:center;outline:none;" inputmode="decimal">'+
+    '<button class="btn btn-primary" onclick="doBuy()" style="min-width:100px;">Add</button>'+
     '</div>'+
-    '<div id="buyMsg" style="margin-bottom:1rem;"></div>'+
-    // ── REDEEM ──
-    '<div style="border-top:1px solid var(--border);padding-top:1rem;margin-bottom:0.5rem;">'+
-    '<div style="font-weight:600;font-size:0.8125rem;color:var(--text-secondary);margin-bottom:0.25rem;">💸 Redeem Points</div>'+
-    '<div class="text-muted" style="font-size:0.75rem;margin-bottom:0.75rem;">'+
-    (pts>0?'Current value: <span style="color:var(--accent);font-weight:600;">'+val+'</span> at 1pt per $1':'No points to redeem')+
+    '<div id="buyMsg" style="margin-bottom:1.25rem;"></div>'+
+
+    // REDEEM
+    '<div class="section-label">💸 Redeem Points</div>'+
+    '<div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:0.75rem;">'+
+    (pts>0?'Current balance: <span style="color:var(--accent);font-weight:700;">$'+val+' off</span> · 1pt = $1 spent':'No points yet')+
     '</div>'+
-    (pts>0?
-    '<div class="flex gap-2">'+
-    '<input type="number" id="redeemAmt" placeholder="Points" min="100" max="'+pts+'" step="100" style="flex:1;text-align:center;font-size:1.1rem;">'+
-    '<button class="btn btn-gold" onclick="doRedeemFromProfile()" style="min-width:100px;">Redeem</button>'+
-    '</div>':'')+
-    '<div id="redeemProfMsg" class="mt-2"></div>'+
-    '</div>'+
+    '<div class="redeem-grid">'+redeemCards+'</div>'+
+    '<div id="redeemMsg" style="margin-top:0.75rem;"></div>'+
     '</div>';
+
+  // HISTORY SECTION
+  if(historyHtml){
+    html += '<div class="card">'+
+      '<div class="section-label">📋 Recent Activity</div>'+
+      historyHtml+
+      '</div>';
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
 }
 
+// ========== SAVE NAME ==========
 async function doSaveName(){
-  var nm=document.getElementById('editName').value.trim();
-  var el=document.getElementById('nameMsg');
-  if(!nm){el.innerHTML='<div class="msg msg-error">Enter a name</div>';return}
-  try{
+  var nm = document.getElementById('editName').value.trim();
+  var el = document.getElementById('nameMsg');
+  if(!nm){ el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">Enter a name</div>'; return; }
+  try {
     await loadData();
-    var c=findCustomer(curPhone);
-    if(!c){el.innerHTML='<div class="msg msg-error">Customer not found</div>';return}
-    c.name=nm;
-    await saveData();
-    el.innerHTML='<div class="msg msg-success">✅ Name saved</div>';
-    setTimeout(function(){doSearch()},800);
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+    var c = findCustomer(curPhone);
+    if(!c){ el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">Customer not found</div>'; return; }
+    c.name = nm;
+    el.innerHTML='<div class="msg msg-success" style="font-size:0.75rem;">✅ Saved</div>';
+    setTimeout(function(){ doSearch(); }, 600);
+  } catch(e) {
+    el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">'+e.message+'</div>';
   }
 }
 
+// ========== PURCHASE ==========
 async function doBuy(){
-  var amt=parseFloat(document.getElementById('amtIn').value)||0;
-  var el=document.getElementById('buyMsg');
-  if(amt<=0){el.innerHTML='<div class="msg msg-error">Enter amount</div>';return}
-  el.innerHTML='<div style="color:var(--text-muted);">Processing...</div>';
-  try{
+  var amt = parseFloat(document.getElementById('amtIn').value)||0;
+  var el = document.getElementById('buyMsg');
+  if(amt<=0){ el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">Enter amount</div>'; return; }
+  el.innerHTML='<div style="color:var(--text-muted);font-size:0.75rem;">Processing...</div>';
+  try {
     await loadData();
-    var r=addPurchase(curPhone,amt);
-    if(!r||r.error){el.innerHTML='<div class="msg msg-error">'+(r?r.error:'Failed')+'</div>';return}
-    var bonusText=r.bonuses&&r.bonuses.length?' + '+r.bonuses.map(function(b){return b.label+' (+'+b.pts+')'}).join(', '):'';
-    var tierText=r.tier_up?' 🎉 '+r.new_tier.icon+' '+r.new_tier.name+'!':'';
-    el.innerHTML='<div class="msg msg-success">✅ +'+r.points_earned+' points'+bonusText+tierText+'</div>';
-    setTimeout(function(){doSearch()},1500);
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+    var r = addPurchase(curPhone, amt);
+    if(!r||r.error){ el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">'+(r?r.error:'Failed')+'</div>'; return; }
+    var bonusText = r.bonuses&&r.bonuses.length?' + '+r.bonuses.map(function(b){return b.label+' (+'+b.pts+')'}).join(', '):'';
+    var tierText = r.tier_up?' 🎉 '+r.new_tier.icon+' '+r.new_tier.name+'!':'';
+    showToast('✅ +'+r.points_earned+' points'+bonusText+tierText, 'success');
+    setTimeout(function(){ doSearch(); }, 1000);
+  } catch(e) {
+    el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">'+e.message+'</div>';
   }
 }
 
 function quickBuy(amt){
-  document.getElementById('amtIn').value=amt;
+  document.getElementById('amtIn').value = amt;
   doBuy();
 }
 
-async function doRedeemFromProfile(){
-  var pts=parseInt(document.getElementById('redeemAmt').value)||0;
-  var el=document.getElementById('redeemProfMsg');
-  if(pts<=0){el.innerHTML='<div class="msg msg-error">Enter points to redeem</div>';return}
-  try{
-    await loadData();
-    var r=redeemPoints(curPhone,pts);
-    if(r.error){el.innerHTML='<div class="msg msg-error">'+r.error+'</div>';return}
-    el.innerHTML='<div class="msg msg-success">✅ Redeemed '+pts+' pts = $'+r.value+'</div>';
-    setTimeout(function(){doSearch()},1500);
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
-  }
-}
-
 // ========== REDEEM ==========
-async function doRedeemSearch(){
-  var ph=document.getElementById('redeemPhone').value.replace(/\D/g,'');
-  var el=document.getElementById('redeemDetail');
-  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
-  curPhone=ph;
-  el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div>';
-  try{
-    await loadData();
-    var c=findCustomer(ph);
-    if(!c){el.innerHTML='<div class="msg msg-error">Customer not found</div>';return}
-    var ec=enrichCustomer(c);
-    if(!ec.points){el.innerHTML='<div class="glass p-4 text-center text-muted">No points to redeem</div>';return}
-    var pts=ec.points;
-    el.innerHTML='<div class="glass animate-in p-4">'+
-      '<div class="flex items-center gap-4 mb-4">'+
-      '<div class="pts-ring" style="background:'+ec._tier.bg+';border:2px solid '+ec._tier.color+';">'+
-      '<div class="num">'+pts+'</div><div class="lbl">pts</div></div>'+
-      '<div><div style="font-weight:700;">'+(c.name||'Customer')+'</div>'+
-      '<div class="text-muted">'+ec._tier.icon+' '+ec._tier.name+' · 1pt/$1 spent</div>'+
-      '<div class="text-accent mt-1" style="font-weight:600;">= '+ec._value+' off</div></div>'+
-      '</div>'+
-      '<div class="flex gap-2">'+
-      '<input type="number" id="redeemAmt" placeholder="Points (max '+pts+')" min="100" max="'+pts+'" style="flex:1;text-align:center">'+
-      '<button class="btn btn-gold" onclick="doRedeemGo()">Redeem</button>'+
-      '</div>'+
-      '<div id="redeemMsg" class="mt-3"></div>'+
-      '</div>';
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
-  }
+function openRedeemConfirm(pts, dollars){
+  pendingRedeem = { pts: pts, dollars: dollars };
+  document.getElementById('confirmPts').textContent = pts.toLocaleString();
+  document.getElementById('confirmVal').textContent = '$'+dollars;
+  document.getElementById('confirmOverlay').classList.remove('hidden');
 }
 
-async function doRedeemGo(){
-  var pts=parseInt(document.getElementById('redeemAmt').value)||0;
-  var el=document.getElementById('redeemMsg');
-  if(pts<=0){el.innerHTML='<div class="msg msg-error">Enter points to redeem</div>';return}
-  try{
-    await loadData();
-    var r=redeemPoints(curPhone,pts);
-    if(r.error){el.innerHTML='<div class="msg msg-error">'+r.error+'</div>';return}
-    el.innerHTML='<div class="msg msg-success">✅ Redeemed '+pts+' pts = '+r.value+'</div>';
-    setTimeout(function(){doRedeemSearch()},1500);
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
-  }
+function closeConfirm(){
+  document.getElementById('confirmOverlay').classList.add('hidden');
+  pendingRedeem = null;
 }
 
-// ========== HISTORY ==========
-async function doHist(){
-  var ph=document.getElementById('histPhone').value.replace(/\D/g,'');
-  var el=document.getElementById('histDetail');
-  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
-  try{
+async function execRedeem(){
+  if(!pendingRedeem) return;
+  var pts = pendingRedeem.pts;
+  closeConfirm();
+  try {
     await loadData();
-    var c=findCustomer(ph);
-    if(!c){el.innerHTML='<div class="msg msg-error">Not found</div>';return}
-    var txs=(c.transactions||[]).slice().reverse();
-    var html='<div class="glass p-4"><div style="font-weight:700;margin-bottom:0.75rem;">'+(c.name||formatPhone(ph))+'</div>';
-    if(!txs.length){html+='<div class="text-muted">No transactions</div>'}
-    else{txs.forEach(function(tx){
-      var icon=tx.type==='purchase'?'💰':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
-      html+='<div class="txn-item"><span style="font-size:1.25rem;">'+icon+'</span><span style="flex:1">'+(tx.note||tx.type)+'</span><span style="font-weight:600">'+(tx.points>0?'+':'')+tx.points+' pts</span></div>';
-    })}
-    html+='</div>';
-    el.innerHTML=html;
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
-  }
-}
-
-// ========== STATS ==========
-async function doStats(){
-  var el=document.getElementById('statsContent');
-  try{
-    await loadData();
-    var s=getStats();
-    if(!s||!s.total){el.innerHTML='<div class="glass p-4 text-muted text-center">No data yet</div>';return}
-    var html='<div class="glass p-4"><div style="font-weight:700;margin-bottom:0.75rem;">Overview</div>'+
-      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Customers</span><span style="font-weight:700">'+s.total+'</span></div>'+
-      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Active Points</span><span style="font-weight:700">'+s.points+'</span></div>'+
-      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Lifetime Points</span><span style="font-weight:700">'+s.lifetime+'</span></div>'+
-      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>🎂 Birthdays</span><span>'+s.birthdays+'</span></div>'+
-      '<div class="flex justify-between" style="padding:0.5rem 0"><span>👥 Referrals</span><span>'+s.referrals+'</span></div>'+
-      '</div>'+
-      '<div class="glass p-4 mt-3"><div style="font-weight:700;margin-bottom:0.75rem;">Tiers</div>';
-    var tiers=s.tiers||{};
-    for(var name in tiers){
-      html+='<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>'+name+'</span><span>'+tiers[name]+'</span></div>';
+    var r = redeemPoints(curPhone, pts);
+    if(r.error){
+      showToast('❌ '+r.error, 'error');
+      return;
     }
-    html+='</div>';
-    el.innerHTML=html;
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+    launchConfetti();
+    showToast('💸 Redeemed '+pts.toLocaleString()+' pts = $'+r.value+' off!', 'success');
+    setTimeout(function(){ doSearch(); }, 1200);
+  } catch(e) {
+    showToast('Error: '+e.message, 'error');
   }
 }
 
-// ========== CONFIG ==========
-async function doConfig(){
-  var el=document.getElementById('configContent');
-  try{
+// ========== TOAST ==========
+function showToast(msg, type){
+  var t = document.createElement('div');
+  t.className = 'toast toast-'+type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 2500);
+}
+
+// ========== CONFETTI ==========
+function launchConfetti(){
+  var canvas = document.getElementById('confettiCanvas');
+  var ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  var colors = ['#059669','#d4a843','#ef4444','#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981'];
+  var particles = [];
+  for(var i=0;i<80;i++){
+    particles.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height*0.3 - canvas.height*0.3,
+      w: Math.random()*8+4,
+      h: Math.random()*6+3,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      vx: (Math.random()-0.5)*3,
+      vy: Math.random()*3+2,
+      rot: Math.random()*360,
+      rotV: (Math.random()-0.5)*10,
+      opacity: 1
+    });
+  }
+
+  var start = Date.now();
+  function draw(){
+    var elapsed = Date.now()-start;
+    if(elapsed>2000){ ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(function(p){
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.05; // gravity
+      p.rot += p.rotV;
+      p.opacity = Math.max(0, 1 - elapsed/2000);
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ========== STATS (inline modal) ==========
+async function doStats(){
+  try {
     await loadData();
-    var c=_data&&_data.config?_data.config:{};
-    el.innerHTML='<div class="glass p-4">'+
-      '<div class="config-row"><label>Shop Name</label><input type="text" id="cfgName" value="'+(c.shop_name||'')+'"></div>'+
-      '<div class="config-row"><label>🔐 Staff PIN</label><input type="password" id="cfgPin" value="'+(c.staff_pin||'0000')+'" maxlength="4" style="text-align:center;max-width:100px;"></div>'+
-      '<div class="config-row"><label>🎂 Birthday Bonus</label><input type="number" id="cfgBday" value="'+(c.birthday_bonus||50)+'" min="0"></div>'+
-      '<div class="config-row"><label>👥 Referral Bonus</label><input type="number" id="cfgRef" value="'+(c.referral_bonus||100)+'" min="0"></div>'+
-      '<div style="padding:1rem 0;border-bottom:1px solid var(--border);"><label style="display:block;margin-bottom:0.5rem;">Double Points Days (comma-separated)</label>'+
-      '<input type="text" id="cfgDPD" value="'+(c.double_points_days||[]).join(',')+'" placeholder="2026-07-04,2026-12-25"></div>'+
-      '<button class="btn btn-primary btn-block mt-4" onclick="doSaveCfg()">💾 Save Config</button>'+
-      '<div id="cfgMsg" class="mt-3"></div>'+
-      '</div>';
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+    var s = getStats();
+    if(!s||!s.total){ showToast('No data yet','error'); return; }
+    var tiers = s.tiers||{};
+    var tierHtml = '';
+    for(var name in tiers){ tierHtml += '<div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);"><span>'+name+'</span><span style="font-weight:700;">'+tiers[name]+'</span></div>'; }
+    document.getElementById('mainContent').innerHTML =
+      '<div class="card">'+
+      '<div style="font-weight:800;font-size:1.1rem;margin-bottom:1rem;">📊 Overview</div>'+
+      '<div style="display:flex;justify-content:space-between;padding:0.625rem 0;border-bottom:1px solid var(--border);"><span>Customers</span><span style="font-weight:700;">'+s.total+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;padding:0.625rem 0;border-bottom:1px solid var(--border);"><span>Active Points</span><span style="font-weight:700;">'+s.points.toLocaleString()+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;padding:0.625rem 0;border-bottom:1px solid var(--border);"><span>Lifetime Points</span><span style="font-weight:700;">'+s.lifetime.toLocaleString()+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;padding:0.625rem 0;"><span>🎂 Birthdays</span><span>'+s.birthdays+'</span></div>'+
+      '</div>'+
+      '<div class="card">'+
+      '<div style="font-weight:800;font-size:1.1rem;margin-bottom:1rem;">🏅 Tiers</div>'+
+      tierHtml+
+      '</div>'+
+      '<button class="btn btn-block" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);margin-top:0.5rem;" onclick="document.getElementById(\'phoneInput\').value=\'\';doSearch()">← Back to Search</button>';
+  } catch(e) {
+    showToast('Error: '+e.message, 'error');
+  }
+}
+
+// ========== CONFIG (inline) ==========
+async function doConfig(){
+  try {
+    await loadData();
+    var c = _data&&_data.config?_data.config:{};
+    document.getElementById('mainContent').innerHTML =
+      '<div class="card">'+
+      '<div style="font-weight:800;font-size:1.1rem;margin-bottom:1rem;">⚙️ Settings</div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid var(--border);"><label style="font-size:0.875rem;">Shop Name</label><input type="text" id="cfgName" value="'+(c.shop_name||'')+'" style="width:180px;padding:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);text-align:right;font-size:0.875rem;"></div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid var(--border);"><label style="font-size:0.875rem;">🔐 Staff PIN</label><input type="password" id="cfgPin" value="0000" maxlength="4" style="width:100px;padding:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);text-align:center;font-size:0.875rem;"></div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid var(--border);"><label style="font-size:0.875rem;">🎂 Birthday Bonus</label><input type="number" id="cfgBday" value="'+(c.birthday_bonus||50)+'" style="width:100px;padding:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);text-align:center;font-size:0.875rem;"></div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid var(--border);"><label style="font-size:0.875rem;">👥 Referral Bonus</label><input type="number" id="cfgRef" value="'+(c.referral_bonus||100)+'" style="width:100px;padding:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);text-align:center;font-size:0.875rem;"></div>'+
+      '<button class="btn btn-primary btn-block" onclick="doSaveCfg()" style="margin-top:1rem;">💾 Save Config</button>'+
+      '<div id="cfgMsg" style="margin-top:0.75rem;"></div>'+
+      '</div>'+
+      '<button class="btn btn-block" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);margin-top:0.5rem;" onclick="document.getElementById(\'phoneInput\').value=\'\';doSearch()">← Back to Search</button>';
+  } catch(e) {
+    showToast('Error: '+e.message, 'error');
   }
 }
 
 async function doSaveCfg(){
-  var el=document.getElementById('cfgMsg');
-  try{
+  var el = document.getElementById('cfgMsg');
+  try {
     await loadData();
-    _data.config={
-      shop_name:document.getElementById('cfgName').value,
-      staff_pin:document.getElementById('cfgPin').value||'0000',
-      staff_pin_hash:hashPin(document.getElementById('cfgPin').value||'0000'),
-      birthday_bonus:parseInt(document.getElementById('cfgBday').value)||50,
-      referral_bonus:parseInt(document.getElementById('cfgRef').value)||100,
-      double_points_days:document.getElementById('cfgDPD').value.split(',').map(function(s){return s.trim()}).filter(function(s){return s})
+    var pin = document.getElementById('cfgPin').value||'0000';
+    _data.config = {
+      shop_name: document.getElementById('cfgName').value,
+      staff_pin: pin,
+      staff_pin_hash: hashPin(pin),
+      birthday_bonus: parseInt(document.getElementById('cfgBday').value)||50,
+      referral_bonus: parseInt(document.getElementById('cfgRef').value)||100,
+      double_points_days: _data.config?(_data.config.double_points_days||[]):[]
     };
-    await saveData();
-    document.getElementById('shopName').textContent=_data.config.shop_name||'Staff Panel';
-    el.innerHTML='<div class="msg msg-success">✅ Saved</div>';
-    setTimeout(function(){doConfig()},1500);
-  }catch(e){
-    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+    document.getElementById('shopName').textContent = _data.config.shop_name||'Staff Panel';
+    el.innerHTML = '<div class="msg msg-success" style="font-size:0.75rem;">✅ Saved</div>';
+    setTimeout(function(){ doConfig(); }, 800);
+  } catch(e) {
+    el.innerHTML = '<div class="msg msg-error" style="font-size:0.75rem;">'+e.message+'</div>';
   }
 }
 </script>
