@@ -217,10 +217,12 @@ function savePendingTransaction(phone, txn) {
 // ═══════════════════════
 
 const TIERS = [
-  { name:'Bronze',   min:0,   color:'#cd7f32', bg:'rgba(205,127,50,0.12)', icon:'🥉' },
-  { name:'Silver',   min:50,  color:'#a8a8b0', bg:'rgba(168,168,176,0.10)', icon:'🥈' },
-  { name:'Gold',     min:200, color:'#d4a843', bg:'rgba(212,168,67,0.10)', icon:'🥇' },
-  { name:'Platinum', min:500, color:'#d4d4dc', bg:'rgba(212,212,220,0.10)', icon:'💎' }
+  { name:'Bronze',   min:0,    color:'#cd7f32', bg:'rgba(205,127,50,0.12)',  icon:'🥉' },
+  { name:'Silver',   min:50,   color:'#a8a8b0', bg:'rgba(168,168,176,0.10)', icon:'🥈' },
+  { name:'Gold',     min:175,  color:'#d4a843', bg:'rgba(212,168,67,0.10)',  icon:'🥇' },
+  { name:'Platinum', min:400,  color:'#d4d4dc', bg:'rgba(212,212,220,0.10)', icon:'💎' },
+  { name:'Diamond',  min:850,  color:'#7dd3fc', bg:'rgba(125,211,252,0.10)', icon:'👑' },
+  { name:'Elite',    min:1750, color:'#fbbf24', bg:'rgba(251,191,36,0.10)',  icon:'⚡' }
 ];
 
 const REDEEM_TIERS = [
@@ -230,6 +232,105 @@ const REDEEM_TIERS = [
   [750, 25],
   [1000, 30]
 ];
+
+// ═══════════════════════
+// ACHIEVEMENT SYSTEM
+// ═══════════════════════
+
+const ACHIEVEMENTS = {
+  first_visit:     { id:'first_visit',     icon:'🆕', name:'First Visit',        desc:'Made your first purchase',                    pts:10 },
+  streak_3:        { id:'streak_3',        icon:'🔥', name:'3-Visit Streak',     desc:'Visited 3 times in a row',                   pts:25 },
+  streak_5:        { id:'streak_5',        icon:'🔥🔥', name:'5-Visit Streak',   desc:'Visited 5 times without breaking streak',     pts:50 },
+  streak_10:       { id:'streak_10',       icon:'💀', name:'Loyal Regular',      desc:'10 visits — you basically live here',         pts:100 },
+  big_spender:     { id:'big_spender',     icon:'💸', name:'Big Spender',        desc:'Single purchase of $75 or more',              pts:25 },
+  weekend_warrior: { id:'weekend_warrior', icon:'🎉', name:'Weekend Warrior',    desc:'Visited on both Saturday and Sunday',         pts:15 },
+  night_owl:       { id:'night_owl',       icon:'🦉', name:'Night Owl',          desc:'Visited after 8 PM',                         pts:10 },
+  points_100:      { id:'points_100',      icon:'💯', name:'Century Club',       desc:'Earned 100 lifetime points',                  pts:0 },
+  points_500:      { id:'points_500',      icon:'🏅', name:'Halfway to Legend',  desc:'Earned 500 lifetime points',                  pts:0 },
+  points_1000:     { id:'points_1000',     icon:'🏆', name:'1K Club',            desc:'Earned 1,000 lifetime points',                pts:0 },
+  points_2500:     { id:'points_2500',     icon:'🌟', name:'Legend Status',      desc:'Earned 2,500 lifetime points',                pts:0 },
+  referral_1:      { id:'referral_1',      icon:'👥', name:'Connector',          desc:'Referred your first friend',                  pts:100 },
+  comeback:        { id:'comeback',        icon:'👻', name:'Welcome Back!',      desc:'Returned after 30+ days away',                pts:25 },
+  tier_silver:     { id:'tier_silver',     icon:'🥈', name:'Silver Status',      desc:'Reached Silver tier',                         pts:0 },
+  tier_gold:       { id:'tier_gold',       icon:'🥇', name:'Gold Status',        desc:'Reached Gold tier',                           pts:0 },
+  tier_platinum:   { id:'tier_platinum',   icon:'💎', name:'Platinum Status',    desc:'Reached Platinum tier',                       pts:0 },
+  tier_diamond:    { id:'tier_diamond',    icon:'👑', name:'Diamond Status',     desc:'Reached Diamond tier',                        pts:0 },
+  tier_elite:      { id:'tier_elite',      icon:'⚡', name:'Elite Status',       desc:'Reached Elite tier',                          pts:0 }
+};
+
+function checkAchievements(c, trigger) {
+  if (!c.achievements) c.achievements = [];
+  let earned = c.achievements.map(a => a.id);
+  let newAchievements = [];
+  let bonusPts = 0;
+
+  function award(aid) {
+    if (earned.includes(aid)) return;
+    let a = ACHIEVEMENTS[aid];
+    if (!a) return;
+    c.achievements.push({ id: a.id, icon: a.icon, name: a.name, desc: a.desc, earned_at: new Date().toISOString() });
+    newAchievements.push(a);
+    if (a.pts) bonusPts += a.pts;
+  }
+
+  if (trigger === 'purchase') {
+    award('first_visit');
+    if (c.visit_count >= 3) award('streak_3');
+    if (c.visit_count >= 5) award('streak_5');
+    if (c.visit_count >= 10) award('streak_10');
+    let now = new Date();
+    let hour = now.getHours();
+    let day = now.getDay();
+    if (hour >= 20 || hour < 6) award('night_owl');
+    if (day === 0 || day === 6) award('weekend_warrior');
+  }
+
+  if (trigger === 'big_spender') award('big_spender');
+
+  let lp = c.lifetime_points || 0;
+  if (lp >= 100) award('points_100');
+  if (lp >= 500) award('points_500');
+  if (lp >= 1000) award('points_1000');
+  if (lp >= 2500) award('points_2500');
+
+  if ((c.referral_count || 0) >= 1) award('referral_1');
+
+  // Comeback: check if last visit was 30+ days ago
+  let txs = c.transactions || [];
+  if (txs.length >= 2) {
+    let lastTwo = txs.slice(-2);
+    let gap = (new Date(lastTwo[1].timestamp) - new Date(lastTwo[0].timestamp)) / (1000*60*60*24);
+    if (gap > 30) award('comeback');
+  }
+
+  // Tier achievements
+  let t = getTier(c);
+  let tierMap = { 'Silver':'tier_silver','Gold':'tier_gold','Platinum':'tier_platinum','Diamond':'tier_diamond','Elite':'tier_elite' };
+  let taid = tierMap[t.name];
+  if (taid) award(taid);
+
+  if (bonusPts > 0) {
+    c.points = (c.points || 0) + bonusPts;
+    if (!c.transactions) c.transactions = [];
+    c.transactions.push({ id: _genId(), type: 'achievement_bonus', points: bonusPts, note: newAchievements.map(a => a.icon+' '+a.name).join(', '), timestamp: new Date().toISOString() });
+  }
+
+  return { achievements: newAchievements, bonusPts };
+}
+
+function getAchievements(c) {
+  if (!c) return [];
+  let earned = (c.achievements || []).map(a => a.id);
+  // Return ALL achievements with earned status
+  return Object.values(ACHIEVEMENTS).map(a => ({
+    ...a, earned: earned.includes(a.id),
+    earned_at: earned.includes(a.id) ? (c.achievements.find(ea => ea.id === a.id)?.earned_at || '') : ''
+  }));
+}
+
+function getUnearnedCount(c) {
+  return Object.keys(ACHIEVEMENTS).length - (c?.achievements?.length || 0);
+}
 
 function getTier(c) {
   let pts = c.lifetime_points || 0;
@@ -321,6 +422,7 @@ function createCustomer(phone, extra = {}) {
     birthday: extra.birthday || '',
     referral_code: _genCode(),
     referred_by: extra.referred_by || '',
+    achievements: [],
     created_at: new Date().toISOString(),
     transactions: []
   };
@@ -388,8 +490,20 @@ function addPurchase(phone, amount) {
   bonuses.forEach(b => c.transactions.push({ id: _genId(), type: b.type, points: b.pts, note: b.label, timestamp: nowISO }));
 
   addRecent(phone);
+
+  // Check achievements
+  let achResult = checkAchievements(c, 'purchase');
+  if (amount >= 75) {
+    let bigSpenderResult = checkAchievements(c, 'big_spender');
+    if (bigSpenderResult.achievements.length) {
+      achResult.achievements = achResult.achievements.concat(bigSpenderResult.achievements);
+      achResult.bonusPts += bigSpenderResult.bonusPts;
+    }
+  }
+  if (achResult.achievements.length) bonuses.push({ type:'achievement', pts:achResult.bonusPts, label:achResult.achievements.map(a=>a.icon+' '+a.name).join(', ') });
+
   _enqueueWrite();
-  return { customer: c, points_earned: pts, tier_up: tierUp, new_tier: newTier, bonuses };
+  return { customer: c, points_earned: pts + achResult.bonusPts, tier_up: tierUp, new_tier: newTier, bonuses };
 }
 
 function redeemPoints(phone, points) {
@@ -434,7 +548,7 @@ function getStats() {
   if (!_data) return {};
   let custs = Object.values(_data.customers || {});
   let now = new Date();
-  let tiers = { Bronze: 0, Silver: 0, Gold: 0, Platinum: 0 };
+  let tiers = { Bronze: 0, Silver: 0, Gold: 0, Platinum: 0, Diamond: 0, Elite: 0 };
   custs.forEach(c => { tiers[getTier(c).name]++; });
 
   return {
@@ -486,7 +600,9 @@ function enrichCustomer(c) {
     ...c,
     _tier: t, _next: n,
     _progress: tierProgress(c),
-    _value: redemptionValue(c.points || 0)
+    _value: redemptionValue(c.points || 0),
+    _achievements: getAchievements(c),
+    _unearned: getUnearnedCount(c)
   };
 }
 
