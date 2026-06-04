@@ -226,12 +226,34 @@
       <input type="text" id="signupBday" placeholder="MM/DD" autocomplete="off" inputmode="numeric" maxlength="5">
       <div class="hint">Birthday month = bonus points! 🎂</div>
     </div>
+    <div class="form-group">
+      <label>Referral Code (optional)</label>
+      <input type="text" id="signupRef" placeholder="Enter code from a friend" autocomplete="off" style="text-transform:uppercase;letter-spacing:0.1em;">
+      <div class="hint">You both get bonus points! 👥</div>
+    </div>
     <button class="btn btn-primary btn-block btn-lg" onclick="doSignup()">🎉 Join Now — Free</button>
     <div id="signupMsg" class="mt-2"></div>
 
     <div style="text-align:center;margin-top:1.25rem;">
       <span style="color:var(--text-muted);font-size:0.8125rem;">Already a member?</span>
       <span class="toggle-link" onclick="showLogin()">Look up my account</span>
+    </div>
+  </div>
+
+  <!-- VERIFICATION STEP -->
+  <div class="form-card hidden" id="verifyStep" style="text-align:center;">
+    <div style="font-size:3rem;margin-bottom:0.5rem;">📱</div>
+    <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem;">Verify Your Number</div>
+    <div style="color:var(--text-muted);font-size:0.8125rem;margin-bottom:1rem;">We sent a 4-digit code to<br><strong id="verifyPhoneDisplay"></strong></div>
+    <div style="background:rgba(5,150,105,0.08);border:1px dashed var(--accent);border-radius:var(--radius-sm);padding:0.5rem;margin-bottom:1rem;font-size:0.6875rem;color:var(--text-muted);">
+      📟 SIMULATION MODE — Code: <strong id="simCode" style="color:var(--accent);font-size:1rem;">----</strong><br>
+      <span style="font-size:0.625rem;">(Replace with Twilio/Textbelt for real SMS)</span>
+    </div>
+    <input type="text" id="verifyCode" placeholder="0000" maxlength="4" autocomplete="off" inputmode="numeric" style="text-align:center;font-size:1.5rem;letter-spacing:0.5rem;width:100%;padding:0.75rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text);outline:none;">
+    <div id="verifyMsg" style="margin-top:0.75rem;"></div>
+    <button class="btn btn-primary btn-block btn-lg" onclick="doVerify()" style="margin-top:0.75rem;">✅ Verify</button>
+    <div style="margin-top:0.75rem;">
+      <span class="toggle-link" onclick="skipVerify()" style="font-size:0.75rem;color:var(--text-muted);">Skip for now</span>
     </div>
   </div>
 
@@ -321,6 +343,8 @@
 <script src="app.js"></script>
 <script>
 var curPhone = null;
+var pendingVerify = null;
+var verifyCode = null;
 
 // ========== LANDING TOGGLE ==========
 function showLogin(){
@@ -362,14 +386,44 @@ async function doSignup(){
       el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">⚠️ An account with this phone already exists. <span class="toggle-link" onclick="doLoginDirect(\''+ph+'\')">View your account</span></div>';
       return;
     }
-    var c = createCustomer(ph, { name: nm, birthday: bday });
+    var result = createCustomer(ph, { name: nm, birthday: bday, referral_code: document.getElementById('signupRef').value.trim().toUpperCase() });
+    var c = result.customer;
     await saveData();
     curPhone = ph;
-    showToast('✅ Account created!');
-    showDashboard();
+    var refMsg = result.referral ? ' (+'+result.referral.bonus+' referral pts!)' : '';
+    showToast('✅ Account created!'+refMsg);
+    // Show verification
+    verifyCode = Math.floor(1000 + Math.random() * 9000).toString();
+    pendingVerify = ph;
+    document.getElementById('verifyPhoneDisplay').textContent = formatPhone(ph);
+    document.getElementById('simCode').textContent = verifyCode;
+    document.getElementById('verifyCode').value = '';
+    document.getElementById('verifyMsg').innerHTML = '';
+    document.getElementById('signupForm').classList.add('hidden');
+    document.getElementById('verifyStep').classList.remove('hidden');
+    document.getElementById('landingTitle').textContent = 'Verify Number';
   } catch(e) {
     el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Error: '+e.message+'</div>';
   }
+}
+
+// ========== VERIFY ==========
+function doVerify(){
+  var code = document.getElementById('verifyCode').value.trim();
+  var el = document.getElementById('verifyMsg');
+  if(!code||code.length<4){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Enter the 4-digit code</div>'; return; }
+  if(code !== verifyCode){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Wrong code. Try again.</div>'; return; }
+  // Mark as verified
+  var c = findCustomer(pendingVerify);
+  if(c){ c.verified = true; }
+  document.getElementById('verifyStep').classList.add('hidden');
+  showToast('✅ Number verified!', 'success');
+  showDashboard();
+}
+
+function skipVerify(){
+  document.getElementById('verifyStep').classList.add('hidden');
+  showDashboard();
 }
 
 // ========== LOGIN ==========

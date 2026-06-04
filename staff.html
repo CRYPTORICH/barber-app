@@ -230,6 +230,19 @@
   </div>
 </div>
 
+<!-- DELETE CONFIRMATION -->
+<div id="deleteOverlay" class="overlay hidden">
+  <div class="confirm-box">
+    <div class="big-icon">⚠️</div>
+    <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.5rem;">Delete Account?</div>
+    <div style="color:var(--text-muted);font-size:0.875rem;margin-bottom:1rem;line-height:1.5;">This will permanently erase<br>ALL points earned and history.<br>This cannot be undone.</div>
+    <div class="btns">
+      <button class="btn" style="background:var(--bg);border:2px solid var(--border);color:var(--text-muted);" onclick="closeDeleteConfirm()">Cancel</button>
+      <button class="btn" style="background:#ef4444;color:#fff;font-weight:800;" onclick="execDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
 <canvas id="confettiCanvas"></canvas>
 
 <script src="app.js"></script>
@@ -284,7 +297,9 @@ async function doCreate(){
   var el = document.getElementById('mainContent');
   try {
     await loadData();
-    var c = createCustomer(curPhone);
+    var result = createCustomer(curPhone);
+    var c = result.customer;
+    if(result.referral){ showToast('👥 Referral bonus: +'+result.referral.bonus+' pts!', 'success'); }
     renderCustomer(c);
   } catch(e) {
     el.innerHTML = '<div class="msg msg-error">Error: '+e.message+'</div>';
@@ -343,6 +358,11 @@ function renderCustomer(c){
     '<div style="font-size:1.25rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(c.name||'Customer')+'</div>'+
     '<div style="color:var(--text-muted);font-size:0.8125rem;">'+phone+'</div>'+
     '<span class="tier-badge" style="background:'+t.bg+';color:'+t.color+';">'+t.icon+' '+t.name+'</span>'+
+    // Referral
+    '<div style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);">'+
+    '👥 '+ (c.referral_count||0) +' referred · Code: <span style="font-family:monospace;color:var(--accent);font-weight:700;">'+(c.referral_code||'---')+'</span>'+
+    (c.referred_by?' · Referred by: '+formatPhone(c.referred_by):'')+
+    '</div>'+
     '</div></div>'+
 
     // NAME EDIT

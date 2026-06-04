@@ -422,13 +422,38 @@ function createCustomer(phone, extra = {}) {
     birthday: extra.birthday || '',
     referral_code: _genCode(),
     referred_by: extra.referred_by || '',
+    referral_count: 0,
+    verified: extra.verified || false,
     achievements: [],
     created_at: new Date().toISOString(),
     transactions: []
   };
   _data.customers[phone] = c;
+
+  // Referral bonus
+  let referralResult = null;
+  if (extra.referral_code) {
+    let referrer = lookupReferral(extra.referral_code);
+    if (referrer && referrer.phone !== phone) {
+      c.referred_by = referrer.phone;
+      let bonus = _data.config?.referral_bonus || 100;
+      // Award referrer
+      let rc = findCustomer(referrer.phone);
+      if (rc) {
+        rc.points = (rc.points || 0) + bonus;
+        rc.referral_count = (rc.referral_count || 0) + 1;
+        if (!rc.transactions) rc.transactions = [];
+        rc.transactions.push({ id: _genId(), type: 'referral_bonus', points: bonus, note: 'Referred '+ (c.name||phone), timestamp: new Date().toISOString() });
+      }
+      // Award new customer
+      c.points = (c.points || 0) + bonus;
+      c.transactions.push({ id: _genId(), type: 'referral_bonus', points: bonus, note: 'Signed up with '+referrer.name+'\'s code', timestamp: new Date().toISOString() });
+      referralResult = { referrer: referrer, bonus: bonus };
+    }
+  }
+
   addRecent(phone);
-  return c;
+  return { customer: c, referral: referralResult };
 }
 
 function deleteCustomer(phone) {
