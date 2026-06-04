@@ -396,12 +396,27 @@ async function doSignup(){
     verifyCode = Math.floor(1000 + Math.random() * 9000).toString();
     pendingVerify = ph;
     document.getElementById('verifyPhoneDisplay').textContent = formatPhone(ph);
-    document.getElementById('simCode').textContent = verifyCode;
     document.getElementById('verifyCode').value = '';
     document.getElementById('verifyMsg').innerHTML = '';
     document.getElementById('signupForm').classList.add('hidden');
     document.getElementById('verifyStep').classList.remove('hidden');
     document.getElementById('landingTitle').textContent = 'Verify Number';
+
+    // Try real SMS via proxy — fall back to simulation if unavailable
+    var smsSent = false;
+    try {
+      var resp = await fetch('https://sms-proxy-xxxx.onrender.com/send', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ phone: ph, message: 'Your Smoke Shop Rewards code: '+verifyCode })
+      });
+      if(resp.ok){ smsSent = true; }
+    } catch(e) { /* proxy not deployed yet — use simulation */ }
+
+    if(smsSent){
+      document.getElementById('simCode').parentElement.style.display = 'none';
+    } else {
+      document.getElementById('simCode').textContent = verifyCode;
+    }
   } catch(e) {
     el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Error: '+e.message+'</div>';
   }
