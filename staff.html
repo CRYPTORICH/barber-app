@@ -234,8 +234,8 @@ async function doRedeemLookup() {
   let ec = enrichCustomer(c);
   if (!ec.points) { el.innerHTML = '<div class="glass p-4 text-center text-muted">No points to redeem</div>'; return; }
 
-  let opts = [500,1000,2000,5000].filter(p => p <= ec.points)
-    .map(p => `<button class="amount-btn" onclick="doRedeem(${p})">${formatNumber(p)} pts<br><span style="font-size:0.6875rem;">${formatCurrency(redemptionValue(p, ec._tier))}</span></button>`).join('');
+  let opts = [100,300,500,750,1000].filter(p => p <= ec.points)
+    .map(p => `<button class="amount-btn" onclick="doRedeem(${p})">${formatNumber(p)} pts<br><span style="font-size:0.6875rem;">${formatCurrency(redemptionValue(p))}</span></button>`).join('');
 
   el.innerHTML = `<div class="glass animate-in p-4">
     <div class="flex items-center gap-4 mb-4">
@@ -244,8 +244,8 @@ async function doRedeemLookup() {
       </div>
       <div>
         <div style="font-weight:700;">${c.name||'Customer'}</div>
-        <div class="text-muted">${ec._tier.icon} ${ec._tier.name} · ${ec._tier.redeem}x rate</div>
-        <div class="text-accent mt-1" style="font-weight:600;">= ${formatCurrency(ec._value)} value</div>
+        <div class="text-muted">${ec._tier.icon} ${ec._tier.name} · 1pt/$1 spent</div>
+        <div class="text-accent mt-1" style="font-weight:600;">= ${formatCurrency(ec._value)} off</div>
       </div>
     </div>
     <div style="font-weight:700;margin-bottom:0.5rem;">Quick Redeem</div>

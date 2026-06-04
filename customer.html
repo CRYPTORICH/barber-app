@@ -257,15 +257,16 @@ async function renderDashboard() {
 
   // Rewards catalog (based on tier)
   let catalog = [
-    { icon: '💰', label: '$5 off purchase', pts: 500, desc: 'Instant discount at checkout' },
-    { icon: '💵', label: '$10 off purchase', pts: 1000, desc: 'Save on your next visit' },
-    { icon: '🎫', label: '$25 off purchase', pts: 2500, desc: 'Big savings on any product' },
-    { icon: '⭐', label: '$50 off purchase', pts: 5000, desc: 'Premium reward for loyal members' },
+    { icon: '💰', label: '$5 off purchase', pts: 100, desc: 'Instant discount at checkout' },
+    { icon: '💵', label: '$15 off purchase', pts: 300, desc: 'Save on your next visit' },
+    { icon: '🎫', label: '$20 off purchase', pts: 500, desc: 'Big savings on any product' },
+    { icon: '🎟️', label: '$25 off purchase', pts: 750, desc: 'Even bigger savings' },
+    { icon: '⭐', label: '$30 off purchase', pts: 1000, desc: 'Premium reward for loyal members' },
   ];
 
   // Show rewards available at this tier's redemption rate
   let catalogHtml = catalog.map(r => {
-    let actualPts = Math.ceil(r.pts / t.redeem);
+    let actualPts = r.pts;
     let canAfford = ec.points >= actualPts;
     return `<div class="reward-card glass-sm ${canAfford ? '' : ''}" style="opacity:${canAfford?1:0.4}" onclick="${canAfford ? `alert('Redeem at the shop counter with staff.')` : ''}">
       <div class="reward-icon" style="background:${canAfford?'var(--accent-glow)':'var(--bg-input)'}">${r.icon}</div>
@@ -294,7 +295,7 @@ async function renderDashboard() {
     <div class="card-name">${c.name || 'Valued Member'}</div>
     <div class="card-tier"><span class="badge badge-${t.name.toLowerCase()}">${t.icon} ${t.name} Member</span></div>
     <div class="card-pts">${formatNumber(c.points||0)} <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">pts</span></div>
-    <div class="card-id">${formatCurrency(ec._value)} redemption value · ${t.redeem}x rate</div>
+    <div class="card-id">${formatCurrency(ec._value)} redemption value · earn 1pt per $1</div>
   </div>
 
   <!-- Tier Progress -->

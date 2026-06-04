@@ -207,10 +207,18 @@ function savePendingTransaction(phone, txn) {
 // ═══════════════════════
 
 const TIERS = [
-  { name:'Bronze',   min:0,    earn:0.0,  redeem:1.0,  color:'#cd7f32', bg:'rgba(205,127,50,0.12)', icon:'🥉' },
-  { name:'Silver',   min:500,  earn:0.10, redeem:1.25, color:'#a8a8b0', bg:'rgba(168,168,176,0.10)', icon:'🥈' },
-  { name:'Gold',     min:2000, earn:0.25, redeem:1.50, color:'#d4a843', bg:'rgba(212,168,67,0.10)', icon:'🥇' },
-  { name:'Platinum', min:5000, earn:0.50, redeem:2.00, color:'#d4d4dc', bg:'rgba(212,212,220,0.10)', icon:'💎' }
+  { name:'Bronze',   min:0,   color:'#cd7f32', bg:'rgba(205,127,50,0.12)', icon:'🥉' },
+  { name:'Silver',   min:50,  color:'#a8a8b0', bg:'rgba(168,168,176,0.10)', icon:'🥈' },
+  { name:'Gold',     min:200, color:'#d4a843', bg:'rgba(212,168,67,0.10)', icon:'🥇' },
+  { name:'Platinum', min:500, color:'#d4d4dc', bg:'rgba(212,212,220,0.10)', icon:'💎' }
+];
+
+const REDEEM_TIERS = [
+  [100, 5],
+  [300, 15],
+  [500, 20],
+  [750, 25],
+  [1000, 30]
 ];
 
 function getTier(c) {
@@ -235,13 +243,16 @@ function tierProgress(c) {
   return Math.min(100, Math.round((progress / total) * 100));
 }
 
-function calcPoints(amount, tier) {
-  let base = Math.floor(amount) * 10;
-  return base + Math.floor(base * tier.earn);
+function calcPoints(amount) {
+  return Math.floor(amount);  // 1 point per $1
 }
 
-function redemptionValue(points, tier) {
-  return ((points / 100) * tier.redeem).toFixed(2);
+function redemptionValue(points) {
+  let value = 0;
+  for (let [threshold, val] of REDEEM_TIERS) {
+    if (points >= threshold) value = val;
+  }
+  return value;
 }
 
 const VISIT_BONUSES = { 3: 25, 5: 50, 10: 100 };
@@ -324,7 +335,7 @@ function addPurchase(phone, amount) {
   if (!c) return { error: 'Customer not found' };
 
   let tier = getTier(c);
-  let pts = calcPoints(amount, tier);
+  let pts = calcPoints(amount);
 
   // Double points
   let today = new Date().toISOString().split('T')[0];
@@ -378,7 +389,7 @@ function redeemPoints(phone, points) {
   if ((c.points||0) < points) return { error: 'Insufficient points', available: c.points };
 
   let tier = getTier(c);
-  let value = parseFloat(redemptionValue(points, tier));
+  let value = redemptionValue(points);
   c.points -= points;
 
   if (!c.transactions) c.transactions = [];
@@ -465,7 +476,7 @@ function enrichCustomer(c) {
     ...c,
     _tier: t, _next: n,
     _progress: tierProgress(c),
-    _value: redemptionValue(c.points || 0, t)
+    _value: redemptionValue(c.points || 0)
   };
 }
 
