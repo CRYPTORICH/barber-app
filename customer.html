@@ -4,53 +4,96 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#060906">
-<title>My Rewards · Smoke Shop Rewards</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Rewards · Smoke Shop Rewards</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  .cust-layout { max-width: 480px; margin: 0 auto; min-height: 100dvh; }
+  *, *::before, *::after { box-sizing: border-box; }
+  button, [onclick], input, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
-  /* Login screen */
-  .login-screen {
-    min-height: 80dvh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; padding: 2rem;
-    gap: 2rem;
+  :root {
+    --bg: #060906; --bg-card: #0d110d; --border: #1a241a;
+    --text: #e8ede8; --text-muted: #6b7a6b; --text-secondary: #8a9a8a;
+    --accent: #059669; --accent-glow: rgba(5,150,105,0.18);
+    --gold: #d4a843; --radius: 16px; --radius-sm: 10px; --radius-lg: 20px;
+    --ease-out: cubic-bezier(0.16,1,0.3,1); --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
   }
-  .login-card {
-    width: 100%; max-width: 360px; padding: 2rem;
-    animation: scaleIn 0.5s var(--ease-spring) both;
-  }
-  .num-pad {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
-    margin-top: 1rem;
-  }
-  .num-key {
-    padding: 1rem; border: 1px solid var(--border);
-    border-radius: var(--radius-sm); background: var(--bg-input);
-    color: var(--text); font-size: 1.25rem; font-weight: 600;
-    cursor: pointer; transition: all 0.1s;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .num-key:active { background: var(--accent); border-color: var(--accent); color: white; transform: scale(0.95); }
-  .num-key.del { font-size: 0.875rem; color: var(--text-muted); }
-  .num-key.go { background: var(--accent); border-color: var(--accent); color: white; font-size: 0.875rem; }
 
-  /* Dashboard */
-  .dash-header {
-    padding: 1.5rem 1rem 0.5rem;
+  body {
+    background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0; padding: 0; min-height: 100dvh; -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 500px; margin: 0 auto; padding: 1rem; min-height: 100dvh; }
+  .hidden { display: none !important; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.875rem 1.5rem; border: none; border-radius: var(--radius);
+    font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s var(--ease-out);
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 20px var(--accent-glow); }
+  .btn-block { width: 100%; }
+  .btn-lg { padding: 1rem 2rem; font-size: 1.125rem; border-radius: 18px; }
+  .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-muted); }
+
+  /* ── SIGNUP / LOGIN ── */
+  .landing {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100dvh; padding: 2rem 1rem; text-align: center; gap: 2rem;
+  }
+  .landing .hero-icon { font-size: 4rem; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  .landing h1 { font-size: 1.75rem; font-weight: 900; margin: 0; }
+  .landing .subtitle { color: var(--text-muted); font-size: 0.9375rem; max-width: 280px; line-height: 1.5; }
+
+  .form-card {
+    width: 100%; max-width: 360px; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.75rem; text-align: left;
+  }
+  .form-card .form-group { margin-bottom: 1rem; }
+  .form-card label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.375rem; }
+  .form-card input {
+    width: 100%; padding: 0.75rem; font-size: 1rem; background: var(--bg);
+    border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text); outline: none;
+    transition: border 0.2s;
+  }
+  .form-card input:focus { border-color: var(--accent); }
+  .form-card .hint { font-size: 0.6875rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+  .toggle-link { color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+  /* ── QR SECTION ── */
+  .qr-section {
+    margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
     text-align: center;
   }
-  .dash-header h1 { font-size: 1.25rem; }
-  .dash-header .phone-display { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem; }
-  .dash-header .signout { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; margin-top: 0.5rem; display: inline-block; }
+  .qr-section .qr-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
 
-  /* Membership card */
+  /* ── NUMBER PAD (for returning login) ── */
+  .num-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.75rem; }
+  .num-key {
+    padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--bg); color: var(--text); font-size: 1.25rem; font-weight: 600;
+    cursor: pointer; transition: all 0.1s; display: flex; align-items: center; justify-content: center;
+  }
+  .num-key:active { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(0.95); }
+  .num-key.del { font-size: 0.875rem; color: var(--text-muted); }
+  .num-key.go { background: var(--accent); border-color: var(--accent); color: #fff; font-size: 0.875rem; font-weight: 700; }
+
+  /* ── DASHBOARD ── */
+  .dash-header { padding: 1rem 0 0.5rem; text-align: center; }
+  .dash-header h1 { font-size: 1.25rem; margin: 0; }
+  .dash-header .phone-display { font-size: 0.8125rem; color: var(--text-muted); }
+  .dash-header .signout { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; margin-top: 0.5rem; display: inline-block; text-decoration: underline; }
+
+  /* ── MEMBERSHIP CARD ── */
   .mcard {
-    margin: 0 1rem 1.5rem;
-    border-radius: var(--radius-lg);
+    margin-bottom: 1.25rem; border-radius: var(--radius-lg);
     padding: 1.75rem; position: relative; overflow: hidden;
-    box-shadow: 0 8px 48px rgba(0,0,0,0.5);
-    animation: scaleIn 0.5s var(--ease-spring) both;
-    min-height: 240px;
+    background: linear-gradient(135deg, #0d1a11 0%, #0d110d 50%, #0a1a0f 100%);
+    border: 1px solid var(--border); box-shadow: 0 8px 48px rgba(0,0,0,0.4);
   }
   .mcard .card-pattern {
     position: absolute; inset: 0; opacity: 0.03;
@@ -60,293 +103,424 @@
   .mcard .card-name { font-size: 1.25rem; font-weight: 700; position: relative; z-index: 1; }
   .mcard .card-tier { margin-top: 0.5rem; position: relative; z-index: 1; }
   .mcard .card-pts { font-size: 2.5rem; font-weight: 900; margin-top: 0.75rem; position: relative; z-index: 1; }
-  .mcard .card-id {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.6875rem;
-    letter-spacing: 0.15em; color: var(--text-muted);
-    margin-top: 0.75rem; position: relative; z-index: 1;
+  .mcard .card-value {
+    font-size: 0.8125rem; color: var(--text-muted); position: relative; z-index: 1;
+    margin-top: 0.25rem;
   }
 
-  /* Dashboard sections */
-  .dash-section { margin: 0 1rem 1rem; }
-  .dash-section h2 { font-size: 0.9375rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-secondary); }
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 1.25rem; }
+  .section-label {
+    font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 0.625rem;
+  }
 
-  /* Rewards catalog */
+  /* ── REWARDS CATALOG ── */
   .reward-card {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 1rem; cursor: pointer; transition: all 0.15s;
-    margin-bottom: 0.5rem;
+    display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    margin-bottom: 0.5rem; transition: all 0.15s;
   }
-  .reward-card:active { transform: scale(0.98); }
+  .reward-card.affordable { border-color: var(--accent); background: rgba(5,150,105,0.05); }
   .reward-card .reward-icon {
     width: 44px; height: 44px; border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.25rem; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;
   }
   .reward-card .reward-pts {
-    padding: 0.25rem 0.75rem; border-radius: 999px;
-    font-size: 0.75rem; font-weight: 700;
-    background: var(--accent-glow); color: var(--accent);
-    flex-shrink: 0;
+    padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;
+    background: var(--accent-glow); color: var(--accent); flex-shrink: 0;
   }
+  .reward-card.locked .reward-pts { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+  .reward-card.locked { opacity: 0.5; }
 
-  /* Tier progress section */
+  /* ── TIER TRACK ── */
   .tier-track {
-    display: flex; justify-content: space-between;
-    position: relative; padding: 0 0.5rem;
+    display: flex; justify-content: space-between; position: relative; padding: 0 0.5rem;
   }
   .tier-track::before {
     content: ''; position: absolute; top: 16px; left: 20px; right: 20px;
     height: 2px; background: var(--border); z-index: 0;
   }
   .tier-dot {
-    width: 32px; height: 32px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.75rem; z-index: 1; position: relative;
-    border: 2px solid var(--border); background: var(--bg);
-    transition: all 0.3s;
+    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 0.75rem; z-index: 1; position: relative;
+    border: 2px solid var(--border); background: var(--bg); transition: all 0.3s;
   }
   .tier-dot.active { border-color: var(--accent); background: var(--accent-glow); }
-  .tier-dot.current { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+  .tier-dot.current { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
 
-  /* Transaction list */
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    height: 6px; background: var(--border); border-radius: 3px; margin: 0.75rem 0; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent); border-radius: 3px;
+    transition: width 0.6s var(--ease-out);
+  }
+
+  /* ── TRANSACTIONS ── */
   .mini-txn {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.625rem 0; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0;
+    border-bottom: 1px solid var(--border);
   }
   .mini-txn:last-child { border-bottom: none; }
   .mini-txn .txn-icon {
-    width: 32px; height: 32px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.875rem; flex-shrink: 0;
+    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 0.875rem; flex-shrink: 0; background: rgba(255,255,255,0.04);
   }
 
-  /* Share sheet */
+  /* ── SHARE ── */
   .share-ref {
-    display: flex; align-items: center; gap: 0.5rem;
-    padding: 0.75rem; background: var(--bg-input);
-    border-radius: var(--radius-sm); border: 1px dashed var(--border);
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem;
+    background: var(--bg); border-radius: var(--radius-sm); border: 1px dashed var(--border);
   }
   .share-ref code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.25rem; font-weight: 700; letter-spacing: 0.1em;
-    flex: 1; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
+    font-weight: 700; letter-spacing: 0.1em; flex: 1; text-align: center; color: var(--accent);
   }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-up { animation: slideUp 0.4s var(--ease-out) both; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 100;
+    padding: 0.875rem 2rem; border-radius: 100px; font-weight: 700; font-size: 0.9375rem;
+    animation: toastIn 0.35s var(--ease-out); box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .toast-success { background: var(--accent); color: #fff; }
+  .toast-error { background: #ef4444; color: #fff; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(-16px) } to { opacity:1; transform:translateX(-50%) translateY(0) } }
+
+  /* hidden class override */
+  .hidden { display: none !important; }
+  .flex { display: flex; }
+  .gap-2 { gap: 0.5rem; }
+  .mt-2 { margin-top: 0.5rem; }
 </style>
 </head>
 <body>
-<div class="cust-layout">
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen" class="login-screen">
-    <div style="font-size:3rem;">💨</div>
-    <div style="text-align:center;">
-      <h1 id="custTitle">My Rewards</h1>
-      <p class="text-muted" style="margin-top:0.25rem;">Enter your phone number to continue</p>
-    </div>
-    <div class="glass login-card">
-      <input type="tel" id="phoneDisplay" class="large" placeholder="(555) 123-4567" readonly style="text-align:center;">
-      <div class="num-pad">
-        <button class="num-key" onclick="pressDigit('1')">1</button>
-        <button class="num-key" onclick="pressDigit('2')">2</button>
-        <button class="num-key" onclick="pressDigit('3')">3</button>
-        <button class="num-key" onclick="pressDigit('4')">4</button>
-        <button class="num-key" onclick="pressDigit('5')">5</button>
-        <button class="num-key" onclick="pressDigit('6')">6</button>
-        <button class="num-key" onclick="pressDigit('7')">7</button>
-        <button class="num-key" onclick="pressDigit('8')">8</button>
-        <button class="num-key" onclick="pressDigit('9')">9</button>
-        <div></div>
-        <button class="num-key" onclick="pressDigit('0')">0</button>
-        <button class="num-key del" onclick="pressDelete()">⌫</button>
-        <button class="num-key go" onclick="doLogin()">→</button>
-      </div>
-      <div id="loginError" class="mt-3"></div>
-    </div>
-    <a href="index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8125rem;">← Back</a>
+
+<!-- LANDING — Signup Form -->
+<div id="landingScreen" class="landing">
+  <div class="hero-icon">💨</div>
+  <div>
+    <h1 id="landingTitle">Join Rewards</h1>
+    <p class="subtitle">Earn 1 point per $1 spent. Redeem for discounts. It's free.</p>
   </div>
 
-  <!-- DASHBOARD (hidden initially) -->
-  <div id="dashboard" class="hidden">
-    <div class="dash-header">
-      <h1 id="dashShopName">My Rewards</h1>
-      <div class="phone-display" id="dashPhone"></div>
-      <div class="signout" onclick="doLogout()">Sign out</div>
+  <div class="form-card" id="signupForm">
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" id="signupPhone" placeholder="3055551234" autocomplete="off" inputmode="numeric">
+      <div class="hint">You'll use this to check your rewards</div>
     </div>
-    <div id="dashContent"></div>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="signupName" placeholder="Your name" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>Birthday (optional)</label>
+      <input type="text" id="signupBday" placeholder="MM/DD" autocomplete="off" inputmode="numeric" maxlength="5">
+      <div class="hint">Birthday month = bonus points! 🎂</div>
+    </div>
+    <button class="btn btn-primary btn-block btn-lg" onclick="doSignup()">🎉 Join Now — Free</button>
+    <div id="signupMsg" class="mt-2"></div>
+
+    <div style="text-align:center;margin-top:1.25rem;">
+      <span style="color:var(--text-muted);font-size:0.8125rem;">Already a member?</span>
+      <span class="toggle-link" onclick="showLogin()">Look up my account</span>
+    </div>
+  </div>
+
+  <div class="form-card hidden" id="loginForm">
+    <div style="font-weight:800;margin-bottom:0.75rem;">Welcome back</div>
+    <input type="tel" id="loginPhone" class="large" placeholder="(555) 123-4567" readonly style="text-align:center;width:100%;padding:0.75rem;font-size:1.25rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text);">
+    <div class="num-pad">
+      <button class="num-key" onclick="pressDigit('1')">1</button>
+      <button class="num-key" onclick="pressDigit('2')">2</button>
+      <button class="num-key" onclick="pressDigit('3')">3</button>
+      <button class="num-key" onclick="pressDigit('4')">4</button>
+      <button class="num-key" onclick="pressDigit('5')">5</button>
+      <button class="num-key" onclick="pressDigit('6')">6</button>
+      <button class="num-key" onclick="pressDigit('7')">7</button>
+      <button class="num-key" onclick="pressDigit('8')">8</button>
+      <button class="num-key" onclick="pressDigit('9')">9</button>
+      <button class="num-key del" onclick="pressDigit('del')">⌫</button>
+      <button class="num-key" onclick="pressDigit('0')">0</button>
+      <button class="num-key go" onclick="doLogin()">Go →</button>
+    </div>
+    <div id="loginMsg" class="mt-2"></div>
+
+    <div style="text-align:center;margin-top:1rem;">
+      <span style="color:var(--text-muted);font-size:0.8125rem;">New here?</span>
+      <span class="toggle-link" onclick="showSignup()">Create an account</span>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashScreen" class="hidden page">
+  <div class="dash-header">
+    <h1 id="shopName">My Rewards</h1>
+    <div class="phone-display" id="dashPhone"></div>
+    <span class="signout" onclick="signOut()">← Sign out</span>
+  </div>
+
+  <!-- Membership Card -->
+  <div class="mcard animate-up" id="mcard">
+    <div class="card-pattern"></div>
+    <div class="card-logo">💳</div>
+    <div class="card-name" id="cardName">Valued Member</div>
+    <div class="card-tier" id="cardTier"></div>
+    <div class="card-pts" id="cardPts">0 <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">pts</span></div>
+    <div class="card-value" id="cardValue"></div>
+  </div>
+
+  <!-- Tier Progress -->
+  <div class="section animate-up" style="animation-delay:0.1s">
+    <div class="section-label">🏅 Tier Progress</div>
+    <div class="tier-track" id="tierTrack"></div>
+    <div class="progress-bar"><div class="progress-fill" id="tierProgressBar" style="width:0%"></div></div>
+    <div style="font-size:0.75rem;color:var(--text-muted);" id="tierNext"></div>
+  </div>
+
+  <!-- Rewards Catalog -->
+  <div class="section animate-up" style="animation-delay:0.15s">
+    <div class="section-label">🎁 Rewards You Can Redeem</div>
+    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.75rem;">Ask staff at the counter to redeem</div>
+    <div id="rewardsList"></div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="section animate-up" style="animation-delay:0.2s">
+    <div class="section-label">📋 Recent Activity</div>
+    <div id="recentTxns"></div>
+  </div>
+
+  <!-- Referral -->
+  <div class="section animate-up" style="animation-delay:0.25s">
+    <div class="section-label">👥 Refer a Friend</div>
+    <div class="share-ref">
+      <span style="font-size:0.875rem;">Your code:</span>
+      <code id="refCode">--------</code>
+      <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);" onclick="copyRef()">Copy</button>
+    </div>
+    <div style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.375rem;">Friend uses your code → you both get bonus points</div>
   </div>
 </div>
 
 <script src="app.js"></script>
 <script>
-let loggedInPhone = null;
-let phoneDigits = '';
+var curPhone = null;
 
-// Init
-(async function() {
-  await loadData();
-  document.getElementById('custTitle').textContent = (_data?.config?.shop_name || 'Smoke Shop') + ' Rewards';
-  document.getElementById('dashShopName').textContent = _data?.config?.shop_name || 'My Rewards';
+// ========== LANDING TOGGLE ==========
+function showLogin(){
+  document.getElementById('signupForm').classList.add('hidden');
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('landingTitle').textContent = 'My Rewards';
+  document.querySelector('.subtitle').textContent = 'Enter your phone number to continue';
+}
+function showSignup(){
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('signupForm').classList.remove('hidden');
+  document.getElementById('landingTitle').textContent = 'Join Rewards';
+  document.querySelector('.subtitle').textContent = 'Earn 1 point per $1 spent. Redeem for discounts. It\'s free.';
+}
+
+// ========== NUMPAD (login) ==========
+var loginDigits = '';
+function pressDigit(d){
+  if(d==='del'){ loginDigits=loginDigits.slice(0,-1); }
+  else { if(loginDigits.length<10) loginDigits+=d; }
+  document.getElementById('loginPhone').value = loginDigits.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+}
+
+// ========== SIGNUP ==========
+async function doSignup(){
+  var ph = document.getElementById('signupPhone').value.replace(/\D/g,'');
+  var nm = document.getElementById('signupName').value.trim();
+  var bday = document.getElementById('signupBday').value.trim();
+  var el = document.getElementById('signupMsg');
+
+  if(!ph||ph.length<10){ el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">Enter a valid 10-digit phone number</div>'; return; }
+  if(!nm){ el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">Enter your name</div>'; return; }
+
+  el.innerHTML='<div style="color:var(--text-muted);font-size:0.8125rem;">Creating account...</div>';
+  try {
+    await loadData();
+    var existing = findCustomer(ph);
+    if(existing){
+      el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">⚠️ An account with this phone already exists. <span class="toggle-link" onclick="doLoginDirect(\''+ph+'\')">View your account</span></div>';
+      return;
+    }
+    var c = createCustomer(ph, { name: nm, birthday: bday });
+    await saveData();
+    curPhone = ph;
+    showToast('✅ Account created!');
+    showDashboard();
+  } catch(e) {
+    el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Error: '+e.message+'</div>';
+  }
+}
+
+// ========== LOGIN ==========
+async function doLogin(){
+  var ph = loginDigits;
+  var el = document.getElementById('loginMsg');
+  if(ph.length<10){ el.innerHTML='<div style="color:#ef4444;font-size:0.75rem;">Enter 10 digits</div>'; return; }
+  el.innerHTML='<div style="color:var(--text-muted);font-size:0.75rem;">Looking up...</div>';
+  await doLoginDirect(ph, el);
+}
+
+async function doLoginDirect(ph, el){
+  if(!el) el = document.getElementById('loginMsg');
+  try {
+    await loadData();
+    var c = findCustomer(ph);
+    if(!c){
+      el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Account not found. <span class="toggle-link" onclick="showSignup()">Create one?</span></div>';
+      return;
+    }
+    curPhone = ph;
+    showDashboard();
+  } catch(e) {
+    el.innerHTML='<div style="color:#ef4444;font-size:0.75rem;">Error: '+e.message+'</div>';
+  }
+}
+
+// ========== DASHBOARD ==========
+function showDashboard(){
+  document.getElementById('landingScreen').classList.add('hidden');
+  document.getElementById('dashScreen').classList.remove('hidden');
+  document.getElementById('shopName').textContent = (_data&&_data.config&&_data.config.shop_name)||'My Rewards';
+  refreshDashboard();
+}
+
+async function refreshDashboard(){
+  try {
+    await loadData();
+    var c = findCustomer(curPhone);
+    if(!c) return signOut();
+    var t = getTier(c);
+    var ec = enrichCustomer(c);
+    var pts = c.points||0;
+
+    document.getElementById('dashPhone').textContent = formatPhone(curPhone);
+    document.getElementById('cardName').textContent = c.name||'Valued Member';
+    document.getElementById('cardTier').innerHTML = '<span class="tier-badge" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.375rem 0.75rem;border-radius:100px;font-size:0.75rem;font-weight:700;background:'+t.bg+';color:'+t.color+';">'+t.icon+' '+t.name+'</span>';
+    document.getElementById('cardPts').innerHTML = pts.toLocaleString()+' <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">pts</span>';
+    document.getElementById('cardValue').textContent = '$'+ec._value+' redemption value';
+
+    // Tier progress
+    var progress = tierProgress(c);
+    var n = ec._next;
+    var tierTrackHtml = '';
+    TIERS.forEach(function(tier){
+      var isActive = pts >= tier.min;
+      var isCurrent = t.name === tier.name;
+      tierTrackHtml += '<div class="tier-dot '+(isCurrent?'current':isActive?'active':'')+'" title="'+tier.name+' ('+tier.min+' pts)">'+tier.icon+'</div>';
+    });
+    document.getElementById('tierTrack').innerHTML = tierTrackHtml;
+    document.getElementById('tierProgressBar').style.width = progress+'%';
+    document.getElementById('tierNext').textContent = n ? 'Next: '+n.icon+' '+n.name+' at '+n.min.toLocaleString()+' pts ('+(n.min-pts).toLocaleString()+' more)' : '🎉 Max tier reached!';
+
+    // Rewards
+    var rewardsHtml = '';
+    REDEEM_TIERS.forEach(function(rt){
+      var needed = rt[0];
+      var dollars = rt[1];
+      var can = pts >= needed;
+      rewardsHtml += '<div class="reward-card '+(can?'affordable':'locked')+'">'+
+        '<div class="reward-icon" style="background:'+(can?'var(--accent-glow)':'rgba(255,255,255,0.05)')+'">'+(can?'✅':'🔒')+'</div>'+
+        '<div style="flex:1;"><div style="font-weight:600;font-size:0.9375rem;">$'+dollars+' off purchase</div><div style="font-size:0.75rem;color:var(--text-muted);">Redeem at counter with staff</div></div>'+
+        '<div class="reward-pts">'+needed.toLocaleString()+' pts</div>'+
+        '</div>';
+    });
+    document.getElementById('rewardsList').innerHTML = rewardsHtml;
+
+    // Recent transactions
+    var txs = (c.transactions||[]).slice(-5).reverse();
+    var txnsHtml = '';
+    if(!txs.length){
+      txnsHtml = '<div style="text-align:center;padding:2rem 0;color:var(--text-muted);">No purchases yet. Visit the shop to start earning!</div>';
+    } else {
+      txs.forEach(function(tx){
+        var icon = tx.type==='purchase'?'🛒':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
+        var label = tx.type==='purchase'?'Purchase $'+(tx.amount||0).toFixed(2):
+                    tx.type==='redeem'?'Redeemed $'+tx.value+' off':
+                    (tx.note||tx.type.replace(/_/g,' '));
+        txnsHtml += '<div class="mini-txn">'+
+          '<div class="txn-icon">'+icon+'</div>'+
+          '<div style="flex:1"><div style="font-size:0.8125rem;font-weight:500;">'+label+'</div><div style="font-size:0.6875rem;color:var(--text-muted);">'+formatDate(tx.timestamp)+'</div></div>'+
+          '<div style="font-size:0.875rem;font-weight:700;color:'+(tx.points>0?'var(--accent)':'#ef4444')+'">'+(tx.points>0?'+':'')+tx.points+'</div>'+
+          '</div>';
+      });
+    }
+    document.getElementById('recentTxns').innerHTML = txnsHtml;
+
+    // Referral
+    document.getElementById('refCode').textContent = c.referral_code||'--------';
+  } catch(e) {
+    showToast('Error loading: '+e.message, 'error');
+  }
+}
+
+function signOut(){
+  curPhone = null;
+  loginDigits = '';
+  document.getElementById('loginPhone').value = '';
+  document.getElementById('dashScreen').classList.add('hidden');
+  document.getElementById('landingScreen').classList.remove('hidden');
+  showSignup();
+}
+
+function copyRef(){
+  var code = document.getElementById('refCode').textContent;
+  if(code==='--------') return;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(code).then(function(){ showToast('📋 Code copied!', 'success'); });
+  }
+}
+
+// ========== TOAST ==========
+function showToast(msg, type){
+  var t = document.createElement('div');
+  t.className = 'toast toast-'+type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 2500);
+}
+
+// ========== AUTO-REDIRECT if already logged in ==========
+(function(){
+  var saved = localStorage.getItem('_cust_phone');
+  if(saved){
+    curPhone = saved;
+    loadData().then(function(){
+      var c = findCustomer(saved);
+      if(c){
+        document.getElementById('landingScreen').classList.add('hidden');
+        document.getElementById('dashScreen').classList.remove('hidden');
+        document.getElementById('shopName').textContent = (_data&&_data.config&&_data.config.shop_name)||'My Rewards';
+        refreshDashboard();
+      }
+    }).catch(function(){});
+  }
+  // Save phone on signout/dashboard for return visits
+  var origSignOut = signOut;
+  signOut = function(){
+    localStorage.removeItem('_cust_phone');
+    origSignOut();
+  };
+  var origShowDashboard = showDashboard;
+  showDashboard = function(){
+    localStorage.setItem('_cust_phone', curPhone);
+    origShowDashboard();
+  };
 })();
-
-// ── Keypad ──
-function pressDigit(d) { 
-  phoneDigits += d;
-  updatePhoneDisplay();
-}
-function pressDelete() { 
-  phoneDigits = phoneDigits.slice(0, -1);
-  updatePhoneDisplay();
-}
-function updatePhoneDisplay() {
-  let formatted = phoneDigits;
-  if (phoneDigits.length > 3) formatted = '(' + phoneDigits.slice(0,3) + ') ' + phoneDigits.slice(3,6) + (phoneDigits.length>6?'-'+phoneDigits.slice(6,10):'');
-  document.getElementById('phoneDisplay').value = formatted;
-  document.getElementById('loginError').innerHTML = '';
-}
-
-// ── Login ──
-async function doLogin() {
-  let phone = cleanPhone(phoneDigits);
-  if (phone.length < 10) {
-    document.getElementById('loginError').innerHTML = '<div class="msg msg-error">Please enter a 10-digit phone number</div>';
-    return;
-  }
-
-  await loadData();
-  let c = findCustomer(phone);
-  if (!c) {
-    document.getElementById('loginError').innerHTML = '<div class="msg msg-error">Account not found. Visit the shop to sign up.</div>';
-    return;
-  }
-
-  loggedInPhone = phone;
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('dashboard').classList.remove('hidden');
-  document.getElementById('dashPhone').textContent = formatPhone(phone);
-  renderDashboard();
-}
-
-function doLogout() {
-  loggedInPhone = null;
-  phoneDigits = '';
-  document.getElementById('phoneDisplay').value = '';
-  document.getElementById('loginScreen').classList.remove('hidden');
-  document.getElementById('dashboard').classList.add('hidden');
-}
-
-// ── Dashboard ──
-async function renderDashboard() {
-  if (!loggedInPhone) return;
-  await loadData();
-  let c = findCustomer(loggedInPhone);
-  if (!c) { doLogout(); return; }
-  let ec = enrichCustomer(c);
-  let t = ec._tier;
-
-  // Tier background gradient
-  let cardBg = 'linear-gradient(135deg, #0a150d 0%, #0a1a10 50%, #0a150d 100%)';
-  if (t.name === 'Gold') cardBg = 'linear-gradient(135deg, #1a1508 0%, #1a1a0a 50%, #1a1508 100%)';
-  if (t.name === 'Platinum') cardBg = 'linear-gradient(135deg, #151518 0%, #1a1a1e 50%, #151518 100%)';
-
-  // Tier track
-  let tierTrack = TIERS.map((tr, i) => {
-    let cls = 'tier-dot';
-    if (c.lifetime_points >= tr.min) cls += ' active';
-    if (tr.name === t.name) cls += ' current';
-    return `<div class="${cls}" title="${tr.name} (${tr.min.toLocaleString()} pts)">${tr.icon}</div>`;
-  }).join('');
-
-  // Rewards catalog (based on tier)
-  let catalog = [
-    { icon: '💰', label: '$5 off purchase', pts: 100, desc: 'Instant discount at checkout' },
-    { icon: '💵', label: '$15 off purchase', pts: 300, desc: 'Save on your next visit' },
-    { icon: '🎫', label: '$20 off purchase', pts: 500, desc: 'Big savings on any product' },
-    { icon: '🎟️', label: '$25 off purchase', pts: 750, desc: 'Even bigger savings' },
-    { icon: '⭐', label: '$30 off purchase', pts: 1000, desc: 'Premium reward for loyal members' },
-  ];
-
-  // Show rewards available at this tier's redemption rate
-  let catalogHtml = catalog.map(r => {
-    let actualPts = r.pts;
-    let canAfford = ec.points >= actualPts;
-    return `<div class="reward-card glass-sm ${canAfford ? '' : ''}" style="opacity:${canAfford?1:0.4}" onclick="${canAfford ? `alert('Redeem at the shop counter with staff.')` : ''}">
-      <div class="reward-icon" style="background:${canAfford?'var(--accent-glow)':'var(--bg-input)'}">${r.icon}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:0.9375rem;">${r.label}</div><div class="text-muted" style="font-size:0.75rem;">${r.desc}</div></div>
-      <div class="reward-pts">${actualPts.toLocaleString()} pts</div>
-    </div>`;
-  }).join('');
-
-  // Recent transactions
-  let txns = (c.transactions||[]).slice(-5).reverse();
-  let txnsHtml = txns.length ? txns.map(tx => {
-    let icon = tx.type === 'purchase' ? '🛒' : tx.type === 'redeem' ? '💸' : '🎁';
-    let label = tx.type === 'purchase' ? 'Purchase' : tx.type === 'redeem' ? 'Redeemed' : (tx.note || tx.type);
-    return `<div class="mini-txn">
-      <div class="txn-icon" style="background:var(--bg-input)">${icon}</div>
-      <div style="flex:1"><div style="font-size:0.8125rem;font-weight:500;">${label}</div><div class="text-muted" style="font-size:0.6875rem;">${formatDate(tx.timestamp)}</div></div>
-      <div style="text-align:right;font-size:0.875rem;font-weight:700;color:${tx.points>0?'var(--accent)':'var(--danger)'}">${tx.points>0?'+':''}${tx.points}</div>
-    </div>`;
-  }).join('') : '<div class="empty"><div class="empty-icon">📭</div><div class="empty-desc">No transactions yet</div></div>';
-
-  let html = `
-  <!-- Membership Card -->
-  <div class="mcard" style="background:${cardBg}">
-    <div class="card-pattern"></div>
-    <div class="card-logo">💨 ${_data?.config?.shop_name || 'Rewards'}</div>
-    <div class="card-name">${c.name || 'Valued Member'}</div>
-    <div class="card-tier"><span class="badge badge-${t.name.toLowerCase()}">${t.icon} ${t.name} Member</span></div>
-    <div class="card-pts">${formatNumber(c.points||0)} <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">pts</span></div>
-    <div class="card-id">${formatCurrency(ec._value)} redemption value · earn 1pt per $1</div>
-  </div>
-
-  <!-- Tier Progress -->
-  <div class="dash-section glass p-4 animate-up delay-1">
-    <h2>Tier Progress</h2>
-    <div class="tier-track mb-4">${tierTrack}</div>
-    ${ec._next ? `
-    <div class="mb-2" style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);">
-      <span>${formatNumber(c.lifetime_points||0)} / ${formatNumber(ec._next.min)} lifetime pts</span>
-      <span>${formatNumber(ec._next.min - (c.lifetime_points||0))} to ${ec._next.icon} ${ec._next.name}</span>
-    </div>
-    <div class="progress"><div class="progress-fill" style="width:${ec._progress}%"></div></div>` : '<div class="text-accent" style="text-align:center;font-weight:600;">🏆 Maximum tier reached!</div>'}
-  </div>
-
-  <!-- Stats -->
-  <div class="dash-section animate-up delay-2" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
-    <div class="stat"><div class="stat-value">${formatCurrency(c.lifetime_spend||0)}</div><div class="stat-label">Total Spent</div></div>
-    <div class="stat"><div class="stat-value">${c.visit_count||0}</div><div class="stat-label">Visits</div></div>
-    <div class="stat"><div class="stat-value">${t.earn>0?'+'+(t.earn*100)+'%':'1x'}</div><div class="stat-label">Earn Rate</div></div>
-  </div>
-
-  <!-- Rewards Catalog -->
-  <div class="dash-section animate-up delay-3">
-    <h2>Available Rewards</h2>
-    ${catalogHtml}
-  </div>
-
-  <!-- Referral -->
-  ${c.referral_code ? `
-  <div class="dash-section glass p-4 animate-up delay-4">
-    <h2>Share & Earn</h2>
-    <p class="text-muted" style="font-size:0.8125rem;margin-bottom:0.75rem;">Share your code — you both get ${_data?.config?.referral_bonus||100} bonus points when they sign up!</p>
-    <div class="share-ref"><code>${c.referral_code}</code> <button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText('${c.referral_code}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)">Copy</button></div>
-  </div>` : ''}
-
-  <!-- Recent Activity -->
-  <div class="dash-section glass p-4 animate-up delay-4">
-    <h2>Recent Activity</h2>
-    ${txnsHtml}
-  </div>`;
-
-  document.getElementById('dashContent').innerHTML = html;
-}
-
-// Physical keyboard support
-document.addEventListener('keydown', function(e) {
-  if (document.getElementById('loginScreen').classList.contains('hidden')) return;
-  if (e.key >= '0' && e.key <= '9') pressDigit(e.key);
-  if (e.key === 'Backspace' || e.key === 'Delete') pressDelete();
-  if (e.key === 'Enter') doLogin();
-});
 </script>
 </body>
 </html>

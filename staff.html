@@ -555,14 +555,13 @@ async function doSaveCfg(){
   try {
     await loadData();
     var pin = document.getElementById('cfgPin').value||'0000';
-    _data.config = {
-      shop_name: document.getElementById('cfgName').value,
-      staff_pin: pin,
-      staff_pin_hash: hashPin(pin),
-      birthday_bonus: parseInt(document.getElementById('cfgBday').value)||50,
-      referral_bonus: parseInt(document.getElementById('cfgRef').value)||100,
-      double_points_days: _data.config?(_data.config.double_points_days||[]):[]
-    };
+    if(!_data.config) _data.config = {};
+    _data.config.shop_name = document.getElementById('cfgName').value;
+    _data.config.staff_pin = pin;
+    _data.config.staff_pin_hash = hashPin(pin);
+    _data.config.birthday_bonus = parseInt(document.getElementById('cfgBday').value)||50;
+    _data.config.referral_bonus = parseInt(document.getElementById('cfgRef').value)||100;
+    _data.config.double_points_days = _data.config.double_points_days||[];
     document.getElementById('shopName').textContent = _data.config.shop_name||'Staff Panel';
     el.innerHTML = '<div class="msg msg-success" style="font-size:0.75rem;">✅ Saved</div>';
     setTimeout(function(){ doConfig(); }, 800);
