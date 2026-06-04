@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIN Test - With app.js</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#060906;color:#e0e0e0;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
+input{font-size:1.5rem;text-align:center;padding:10px;width:120px;border:2px solid #059669;border-radius:8px;background:#111;color:#fff;}
+button{font-size:1.2rem;padding:12px 40px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer;}
+#debug{margin-top:1rem;font-size:0.75rem;color:#888;font-family:monospace;max-width:500px;text-align:center;}
+#result{margin-top:1rem;font-size:1.2rem;font-weight:bold;}
+</style>
+</head>
+<body>
+<div id="debug">Loading app.js...</div>
+<h2>🔐 PIN Test + app.js</h2>
+<p>Tests if app.js breaks the page</p>
+<input type="password" id="pin" maxlength="4" placeholder="0000" onkeydown="if(event.key==='Enter')testUnlock()">
+<button id="btn" onclick="testUnlock()">Unlock</button>
+<div id="result"></div>
+
+<script src="app.js?v=3"></script>
+<script>
+var dbg = document.getElementById('debug');
+dbg.innerHTML = 'app.js loaded. checkPin=' + typeof checkPin + ' __flip=' + typeof __flip + ' hashPin=' + typeof hashPin + ' _data=' + typeof _data;
+
+function testUnlock() {
+    var pin = document.getElementById('pin').value;
+    var res = document.getElementById('result');
+    dbg.innerHTML += '<br>Unlock clicked. PIN="' + pin + '"';
+    
+    // Try checkPin if it exists
+    if (typeof checkPin === 'function') {
+        try {
+            var ok = checkPin(pin);
+            dbg.innerHTML += ' checkPin result=' + ok;
+            if (ok) {
+                res.innerHTML = '✅ UNLOCKED via checkPin!';
+                res.style.color = '#059669';
+            } else {
+                res.innerHTML = '❌ checkPin returned FALSE for "' + pin + '"';
+                res.style.color = '#ff4444';
+            }
+        } catch(e) {
+            dbg.innerHTML += ' checkPin ERROR: ' + e.message;
+            res.innerHTML = '💥 checkPin threw: ' + e.message;
+            res.style.color = '#ff4444';
+        }
+    } else {
+        // Fallback
+        if (pin === '0000') {
+            res.innerHTML = '✅ UNLOCKED (fallback, no checkPin)';
+            res.style.color = '#059669';
+        } else {
+            res.innerHTML = '❌ Wrong PIN (fallback)';
+            res.style.color = '#ff4444';
+        }
+    }
+}
+
+window.onerror = function(msg, url, line) {
+    dbg.innerHTML = '💥 JS ERROR: ' + msg + ' (line ' + line + ')';
+};
+</script>
+</body>
+</html>

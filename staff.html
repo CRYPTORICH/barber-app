@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#060906">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Staff Panel · Smoke Shop Rewards</title>
 <link rel="stylesheet" href="styles.css">
 <style>
+  button, [onclick], input, textarea, select, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .staff-layout { max-width: 480px; margin: 0 auto; min-height: 100dvh; }
   .nav { display: flex; padding: 0.5rem; margin: 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); gap: 2px; }
   .nav-btn { flex: 1; padding: 0.625rem 0.5rem; border: none; background: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
@@ -14,56 +16,47 @@
   .nav-btn .ico { display: block; font-size: 1.1rem; margin-bottom: 2px; }
   .section { display: none; padding: 0 1rem 2rem; }
   .section.active { display: block; animation: fadeIn 0.25s var(--ease-out); }
-
   .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem 0; }
   .top-bar h1 { font-size: 1.25rem; }
   .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; }
-
   .search-wrap { margin-bottom: 1rem; }
-  .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; }
-
-  .cust-card { padding: 1rem; margin-bottom: 0.75rem; cursor: pointer; transition: border-color 0.15s; }
-  .cust-card:hover { border-color: var(--accent); }
-  .cust-card:active { transform: scale(0.985); }
-
-  .pts-ring {
-    width: 72px; height: 72px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column; flex-shrink: 0;
-  }
+  .pts-ring { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; flex-shrink: 0; }
   .pts-ring .num { font-size: 1.25rem; font-weight: 800; }
   .pts-ring .lbl { font-size: 0.5625rem; color: var(--text-muted); text-transform: uppercase; }
-
   .txn-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
   .txn-item:last-child { border-bottom: none; }
-  .txn-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-  .txn-dot.purchase { background: rgba(5,150,105,0.12); }
-  .txn-dot.redeem { background: rgba(239,68,68,0.12); }
-  .txn-dot.birthday_bonus, .txn-dot.visit_bonus, .txn-dot.referral_bonus { background: rgba(212,168,67,0.12); }
-
-  .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99; animation: fadeIn 0.2s; }
-  .amount-btns { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.5rem; margin-top: 0.5rem; }
-  .amount-btn { padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-input); color: var(--text); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-  .amount-btn:active { background: var(--accent); border-color: var(--accent); color: white; }
-
   .config-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); }
   .config-row label { font-size: 0.875rem; color: var(--text); }
   .config-row input { width: auto; min-width: 80px; text-align: right; }
+  .hidden { display: none !important; }
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .gap-4 { gap: 1rem; }
+  .gap-2 { gap: 0.5rem; }
+  .mb-4 { margin-bottom: 1rem; }
+  .mt-2 { margin-top: 0.5rem; }
+  .mt-3 { margin-top: 0.75rem; }
+  .mt-4 { margin-top: 1rem; }
+  .p-4 { padding: 1rem; }
+  .justify-between { justify-content: space-between; }
+  .w-full { width: 100%; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
 <body>
+
 <!-- PIN GATE -->
 <div id="pinGate" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:1.5rem;">
   <div style="font-size:3rem;">🔐</div>
-  <h1 id="pinTitle">Staff Access</h1>
+  <h1>Staff Access</h1>
   <p class="text-muted">Enter staff PIN to continue</p>
-  <input type="password" id="pinInput" class="large" placeholder="••••" maxlength="4" autocomplete="off" style="text-align:center;max-width:200px;" onkeydown="if(event.key==='Enter')verifyPin()">
-  <button class="btn btn-primary btn-lg" onclick="verifyPin()">Unlock</button>
+  <input type="password" id="pinInput" class="large" placeholder="••••" maxlength="4" autocomplete="off" style="text-align:center;max-width:200px;">
+  <button class="btn btn-primary btn-lg" onclick="tryUnlock()">Unlock</button>
   <div id="pinError" class="mt-2"></div>
   <a href="index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8125rem;">← Back</a>
 </div>
 
-<!-- MAIN APP (hidden until PIN verified) -->
+<!-- MAIN APP -->
 <div id="mainApp" class="hidden">
 <div class="staff-layout" style="max-width:none;">
   <div class="top-bar">
@@ -73,375 +66,361 @@
   </div>
 
   <div class="nav">
-    <button class="nav-btn active" onclick="switchTo('lookup')"><span class="ico">🔍</span>Lookup</button>
-    <button class="nav-btn" onclick="switchTo('redeem')"><span class="ico">💸</span>Redeem</button>
-    <button class="nav-btn" onclick="switchTo('history')"><span class="ico">📋</span>History</button>
-    <button class="nav-btn" onclick="switchTo('stats')"><span class="ico">📊</span>Stats</button>
-    <button class="nav-btn" onclick="switchTo('config')"><span class="ico">⚙️</span>Config</button>
+    <button class="nav-btn active" onclick="showTab('lookup',this)"><span class="ico">🔍</span>Lookup</button>
+    <button class="nav-btn" onclick="showTab('redeem',this)"><span class="ico">💸</span>Redeem</button>
+    <button class="nav-btn" onclick="showTab('history',this)"><span class="ico">📋</span>History</button>
+    <button class="nav-btn" onclick="showTab('stats',this)"><span class="ico">📊</span>Stats</button>
+    <button class="nav-btn" onclick="showTab('config',this)"><span class="ico">⚙️</span>Config</button>
   </div>
 
   <!-- LOOKUP -->
   <div id="sec-lookup" class="section active">
     <div class="search-wrap">
-      <input type="tel" id="phoneInput" class="large" placeholder="Phone or name..." autocomplete="off" onkeydown="if(event.key==='Enter')doLookup()" oninput="liveSearch()">
-      <div class="quick-actions">
-        <button class="btn btn-primary btn-block btn-sm" onclick="doLookup()">🔍 Lookup / Create</button>
-      </div>
+      <input type="tel" id="phoneInput" class="large" placeholder="Phone number..." autocomplete="off">
+      <button class="btn btn-primary btn-block mt-3" onclick="doSearch()">🔍 Search</button>
     </div>
-    <div id="searchResults" class="mt-2"></div>
-    <div id="recentCustomers" class="mt-3"></div>
     <div id="custDetail"></div>
   </div>
 
   <!-- REDEEM -->
   <div id="sec-redeem" class="section">
-    <input type="tel" id="redeemPhone" class="large" placeholder="Customer phone" autocomplete="off" onkeydown="if(event.key==='Enter')doRedeemLookup()">
-    <button class="btn btn-gold btn-block mt-4" onclick="doRedeemLookup()">Lookup for Redemption</button>
-    <div id="redeemDetail" class="mt-4"></div>
+    <div class="search-wrap">
+      <input type="tel" id="redeemPhone" class="large" placeholder="Phone number..." autocomplete="off">
+      <button class="btn btn-primary btn-block mt-3" onclick="doRedeemSearch()">Lookup for Redemption</button>
+    </div>
+    <div id="redeemDetail"></div>
   </div>
 
   <!-- HISTORY -->
   <div id="sec-history" class="section">
-    <input type="tel" id="histPhone" class="large" placeholder="Customer phone" autocomplete="off" onkeydown="if(event.key==='Enter')doHistory()">
-    <button class="btn btn-outline btn-block mt-4" onclick="doHistory()">View History</button>
-    <div id="histDetail" class="mt-4"></div>
+    <div class="search-wrap">
+      <input type="tel" id="histPhone" class="large" placeholder="Phone number..." autocomplete="off">
+      <button class="btn btn-outline btn-block mt-3" onclick="doHist()">View History</button>
+    </div>
+    <div id="histDetail"></div>
   </div>
 
   <!-- STATS -->
-  <div id="sec-stats" class="section"><div id="statsContent" class="loading" style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div></div>
-
-  <!-- CONFIG -->
-  <div id="sec-config" class="section"><div id="configContent" class="loading" style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div></div>
-</div>
-
-<script src="app.js"></script>
-<script>
-let currentPhone = null;
-
-// Init
-(async function() {
-  await loadData();
-  document.getElementById('shopName').textContent = _data?.config?.shop_name || 'Staff Panel';
-  document.getElementById('phoneInput').focus();
-})();
-
-// ── Navigation ──
-function switchTo(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('sec-' + name).classList.add('active');
-  event.target.classList.add('active');
-  if (name === 'stats') renderStats();
-  if (name === 'config') renderConfig();
-}
-
-// ── Lookup ──
-async function doLookup() {
-  let phone = cleanPhone(document.getElementById('phoneInput').value);
-  if (!phone) return;
-  currentPhone = phone;
-  let el = document.getElementById('custDetail');
-  el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div>';
-
-  await loadData();
-  let c = findCustomer(phone);
-  if (!c) { c = createCustomer(phone); await saveData(); }
-
-  renderCustomer(c, el);
-}
-
-function renderCustomer(c, el) {
-  let ec = enrichCustomer(c);
-  let t = ec._tier;
-  let displayPhone = formatPhone(c.phone);
-
-  let html = `<div class="glass animate-in" style="padding:1.25rem;">
-    <div class="flex items-center gap-4 mb-4">
-      <div class="pts-ring" style="background:${t.bg};border:2px solid ${t.color};">
-        <div class="num">${formatNumber(c.points||0)}</div>
-        <div class="lbl">pts</div>
-      </div>
-      <div style="flex:1">
-        <div style="font-size:1.25rem;font-weight:700;">${c.name || 'Customer'}</div>
-        <div class="text-muted">${displayPhone}</div>
-        <div class="mt-2"><span class="badge badge-${t.name.toLowerCase()}">${t.icon} ${t.name}</span></div>
-        ${c.birthday ? `<div class="text-muted mt-2" style="font-size:0.75rem;">🎂 ${c.birthday}</div>` : ''}
-      </div>
-    </div>
-    ${ec._next ? `<div class="mb-4">
-      <div class="flex justify-between" style="font-size:0.6875rem;color:var(--text-muted);margin-bottom:4px;">
-        <span>Next: ${ec._next.icon} ${ec._next.name}</span>
-        <span>${formatNumber(ec._next.min - c.lifetime_points)} pts to go</span>
-      </div>
-      <div class="progress"><div class="progress-fill" style="width:${ec._progress}%"></div></div>
-    </div>` : '<div class="mb-4"><span class="badge badge-platinum">💎 Maximum Tier</span></div>'}
-
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1rem;">
-      <div class="stat"><div class="stat-value">${formatCurrency(c.lifetime_spend||0)}</div><div class="stat-label">Spent</div></div>
-      <div class="stat"><div class="stat-value">${c.visit_count||0}</div><div class="stat-label">Visits</div></div>
-      <div class="stat"><div class="stat-value">${formatNumber(c.lifetime_points||0)}</div><div class="stat-label">Lifetime</div></div>
-    </div>
-
-    ${c.referral_code ? `<div class="text-muted mb-4" style="font-size:0.75rem;">Ref: <span class="mono">${c.referral_code}</span></div>` : ''}
+  <div id="sec-stats" class="section">
+    <div id="statsContent"><button class="btn btn-outline btn-block" onclick="doStats()">Load Stats</button></div>
   </div>
 
-  <div class="glass animate-in delay-1 mt-4" style="padding:1.25rem;">
-    <div style="font-weight:700;margin-bottom:0.75rem;">Add Purchase</div>
-    <div class="amount-btns">
-      ${[10,20,30,50,75,100].map(a => `<button class="amount-btn" onclick="quickPurchase(${a})">$${a}</button>`).join('')}
-    </div>
-    <div class="flex gap-2 mt-3">
-      <input type="number" id="customAmount" placeholder="Custom" step="0.01" min="0" style="flex:1">
-      <button class="btn btn-primary" onclick="quickPurchase(parseFloat(document.getElementById('customAmount').value)||0)">Add</button>
-    </div>
-    <div id="purchaseMsg" class="mt-3"></div>
-  </div>`;
+  <!-- CONFIG -->
+  <div id="sec-config" class="section">
+    <div id="configContent"><button class="btn btn-outline btn-block" onclick="doConfig()">Load Config</button></div>
+  </div>
+</div>
+</div>
 
-  el.innerHTML = html;
-}
-
-async function quickPurchase(amount) {
-  if (!currentPhone || amount <= 0) return;
-  let msgEl = document.getElementById('purchaseMsg');
-  msgEl.innerHTML = '<div style="padding:0.5rem;color:var(--text-muted);">Processing...</div>';
-
-  await loadData();
-  let result = addPurchase(currentPhone, amount);
-  if (!result) { msgEl.innerHTML = '<div class="toast toast-error">Failed</div>'; return; }
-
-  let ec = enrichCustomer(result.customer);
-  let bonusText = result.bonuses.length ? ' + ' + result.bonuses.map(b => b.label + ' (+' + b.pts + ')').join(', ') : '';
-  let tierText = result.tier_up ? ` 🎉 Upgraded to ${result.new_tier.icon} ${result.new_tier.name}!` : '';
-
-  msgEl.innerHTML = `<div class="msg msg-success animate-in">✅ +${formatNumber(result.points_earned)} points${bonusText}${tierText}</div>`;
-  setTimeout(() => {
-    msgEl.innerHTML = '';
-    doLookup();
-  }, 2000);
-}
-
-// ── Redeem ──
-async function doRedeemLookup() {
-  let phone = cleanPhone(document.getElementById('redeemPhone').value);
-  if (!phone) return;
-  currentPhone = phone;
-  let el = document.getElementById('redeemDetail');
-  el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div>';
-  await loadData();
-  let c = findCustomer(phone);
-  if (!c) { el.innerHTML = '<div class="msg msg-error">Customer not found</div>'; return; }
-
-  let ec = enrichCustomer(c);
-  if (!ec.points) { el.innerHTML = '<div class="glass p-4 text-center text-muted">No points to redeem</div>'; return; }
-
-  let opts = [100,300,500,750,1000].filter(p => p <= ec.points)
-    .map(p => `<button class="amount-btn" onclick="doRedeem(${p})">${formatNumber(p)} pts<br><span style="font-size:0.6875rem;">${formatCurrency(redemptionValue(p))}</span></button>`).join('');
-
-  el.innerHTML = `<div class="glass animate-in p-4">
-    <div class="flex items-center gap-4 mb-4">
-      <div class="pts-ring" style="background:${ec._tier.bg};border:2px solid ${ec._tier.color};">
-        <div class="num">${formatNumber(ec.points)}</div><div class="lbl">pts</div>
-      </div>
-      <div>
-        <div style="font-weight:700;">${c.name||'Customer'}</div>
-        <div class="text-muted">${ec._tier.icon} ${ec._tier.name} · 1pt/$1 spent</div>
-        <div class="text-accent mt-1" style="font-weight:600;">= ${formatCurrency(ec._value)} off</div>
-      </div>
-    </div>
-    <div style="font-weight:700;margin-bottom:0.5rem;">Quick Redeem</div>
-    <div class="amount-btns">${opts}</div>
-    <div class="flex gap-2 mt-3">
-      <input type="number" id="customRedeem" placeholder="Custom pts" min="100" step="100" max="${ec.points}" style="flex:1">
-      <button class="btn btn-gold" onclick="doRedeem(parseInt(document.getElementById('customRedeem').value)||0)">Redeem</button>
-    </div>
-    <div id="redeemMsg" class="mt-3"></div>
-  </div>`;
-}
-
-async function doRedeem(pts) {
-  if (!currentPhone || pts <= 0) return;
-  let msgEl = document.getElementById('redeemMsg');
-  msgEl.innerHTML = '<div style="color:var(--text-muted);">Processing...</div>';
-  await loadData();
-  let result = redeemPoints(currentPhone, pts);
-  if (!result) { msgEl.innerHTML = '<div class="msg msg-error">Insufficient points</div>'; return; }
-  msgEl.innerHTML = `<div class="msg msg-success animate-in">💸 ${formatCurrency(result.value)} applied!</div>`;
-  setTimeout(() => doRedeemLookup(), 1500);
-}
-
-// ── History ──
-async function doHistory() {
-  let phone = cleanPhone(document.getElementById('histPhone').value);
-  if (!phone) return;
-  let el = document.getElementById('histDetail');
-  el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div>';
-  await loadData();
-  let c = findCustomer(phone);
-  if (!c) { el.innerHTML = '<div class="msg msg-error">Customer not found</div>'; return; }
-  let ec = enrichCustomer(c);
-  let txns = (c.transactions||[]).slice().reverse();
-
-  let html = `<div class="glass animate-in p-4">
-    <div style="font-weight:700;margin-bottom:0.75rem;">${c.name||'Customer'} · ${formatPhone(phone)}</div>
-    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:1rem;">${txns.length} transactions</div>`;
-
-  if (!txns.length) html += '<div class="empty"><div class="empty-icon">📭</div><div class="empty-desc">No transactions yet</div></div>';
-
-  txns.forEach(tx => {
-    let icon = tx.type === 'purchase' ? '🛒' : tx.type === 'redeem' ? '💸' : '🎁';
-    let label = tx.type === 'purchase' ? 'Purchase' : tx.type === 'redeem' ? 'Redeemed' : (tx.note || tx.type.replace(/_/g,' '));
-    let amt = tx.amount ? formatCurrency(tx.amount) : '';
-    let val = tx.value ? formatCurrency(tx.value) + ' off' : '';
-    html += `<div class="txn-item">
-      <div class="txn-dot ${tx.type}">${icon}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:0.875rem;">${label}</div><div class="text-muted" style="font-size:0.75rem;">${formatDate(tx.timestamp)}</div></div>
-      <div style="text-align:right"><div style="font-weight:700;color:${tx.points>0?'var(--accent)':'var(--danger)'}">${tx.points>0?'+':''}${tx.points} pts</div><div class="text-muted" style="font-size:0.75rem;">${amt} ${val}</div></div>
-    </div>`;
-  });
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-// ── Stats ──
-async function renderStats() {
-  let el = document.getElementById('statsContent');
-  await loadData();
-  let s = getStats();
-
-  let tierBars = '';
-  let max = Math.max(1, ...Object.values(s.tiers));
-  TIERS.forEach(t => {
-    let count = s.tiers[t.name] || 0;
-    tierBars += `<div class="flex items-center gap-3 mb-2">
-      <span style="width:60px;font-size:0.75rem;font-weight:600;">${t.icon} ${t.name}</span>
-      <div style="flex:1;height:20px;background:var(--bg-input);border-radius:4px;overflow:hidden;">
-        <div style="height:100%;width:${Math.round(count/max*100)}%;background:${t.color};border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:0.625rem;font-weight:700;">${count||''}</div>
-      </div><span style="font-size:0.875rem;font-weight:700;min-width:24px;text-align:right;">${count}</span>
-    </div>`;
-  });
-
-  el.innerHTML = `<div class="animate-in">
-    <div class="glass p-4 mb-3 text-center"><div class="display" style="font-size:3rem;">${s.total}</div><div class="text-muted">Total Customers</div></div>
-    <div class="glass p-4 mb-3 text-center"><div class="display" style="font-size:3rem;">${formatNumber(s.points)}</div><div class="text-muted">Points Outstanding (${formatCurrency(s.points/100)})</div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
-      <div class="glass p-3 text-center"><div style="font-size:1.5rem;font-weight:800;">${s.birthdays}</div><div class="text-muted" style="font-size:0.6875rem;">🎂 This Month</div></div>
-      <div class="glass p-3 text-center"><div style="font-size:1.5rem;font-weight:800;">${s.referrals}</div><div class="text-muted" style="font-size:0.6875rem;">👥 Referrals</div></div>
-    </div>
-    <div class="glass p-4"><div style="font-weight:700;margin-bottom:0.75rem;">Tier Breakdown</div>${tierBars}</div>
-  </div>`;
-}
-
-// ── Config ──
-async function renderConfig() {
-  let el = document.getElementById('configContent');
-  await loadData();
-  let c = _data?.config || {};
-
-  el.innerHTML = `<div class="animate-in glass p-4">
-    <div class="config-row"><label>Shop Name</label><input type="text" id="cfgName" value="${c.shop_name||''}"></div>
-    <div class="config-row"><label>🎂 Birthday Bonus</label><input type="number" id="cfgBday" value="${c.birthday_bonus||50}" min="0"></div>
-    <div class="config-row"><label>👥 Referral Bonus</label><input type="number" id="cfgRef" value="${c.referral_bonus||100}" min="0"></div>
-    <div style="padding:1rem 0;border-bottom:1px solid var(--border);">
-      <label style="display:block;margin-bottom:0.5rem;">Double Points Days (comma-separated dates)</label>
-      <input type="text" id="cfgDPD" value="${(c.double_points_days||[]).join(',')}" placeholder="2026-07-04,2026-12-25">
-    </div>
-    <div style="padding:1rem 0;">
-      <div class="msg msg-success">✅ Token configured — data persists to GitHub</div>
-    </div>
-    <button class="btn btn-primary btn-block mt-4" onclick="saveCfg()">💾 Save Config</button>
-    <div id="cfgMsg" class="mt-3"></div>
-  </div>`;
-}
-
-async function saveCfg() {
-  await loadData();
-  _data.config = {
-    shop_name: document.getElementById('cfgName').value,
-    birthday_bonus: parseInt(document.getElementById('cfgBday').value)||50,
-    referral_bonus: parseInt(document.getElementById('cfgRef').value)||100,
-    double_points_days: document.getElementById('cfgDPD').value.split(',').map(s=>s.trim()).filter(s=>s)
-  };
-  await saveData();
-  document.getElementById('shopName').textContent = _data.config.shop_name || 'Staff Panel';
-  document.getElementById('cfgMsg').innerHTML = '<div class="msg msg-success">✅ Saved</div>';
-  setTimeout(() => renderConfig(), 1500);
-}
-
-// Stats tab auto-load
-document.querySelectorAll('.nav-btn').forEach(b => {
-  b.addEventListener('click', function() { if (this.textContent.includes('Stats')) renderStats(); if (this.textContent.includes('Config')) renderConfig(); });
-});
-
-// ── PIN Gate ──
-let pinAttempts = 0;
-function verifyPin() {
-  let pin = document.getElementById('pinInput').value;
-  if (checkPin(pin)) {
+<script src="app.js?v=6"></script>
+<script>
+// ========== PIN ==========
+function tryUnlock(){
+  var p=document.getElementById('pinInput').value;
+  var ok=false;
+  if(typeof checkPin==='function'){try{ok=checkPin(p)}catch(e){ok=(p==='0000')}}
+  else{ok=(p==='0000')}
+  if(ok){
     document.getElementById('pinGate').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
-    document.getElementById('phoneInput').focus();
-    renderRecent();
-  } else {
-    pinAttempts++;
-    let el = document.getElementById('pinError');
-    el.innerHTML = pinAttempts >= 3
-      ? '<div class="msg msg-error">Too many attempts. Default PIN is 0000</div>'
-      : '<div class="msg msg-error">Wrong PIN</div>';
-    document.getElementById('pinInput').value = '';
+    document.getElementById('shopName').textContent=(_data&&_data.config&&_data.config.shop_name)||'Staff Panel';
+  }else{
+    document.getElementById('pinError').innerHTML='<div class="msg msg-error">Wrong PIN</div>';
+    document.getElementById('pinInput').value='';
+  }
+}
+document.getElementById('pinInput').addEventListener('keydown',function(e){if(e.key==='Enter')tryUnlock()});
+
+// ========== TABS ==========
+function showTab(name,btn){
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});
+  document.getElementById('sec-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(name==='stats')doStats();
+  if(name==='config')doConfig();
+}
+
+// ========== LOOKUP ==========
+var curPhone=null;
+
+async function doSearch(){
+  var ph=document.getElementById('phoneInput').value.replace(/\D/g,'');
+  var el=document.getElementById('custDetail');
+  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
+  curPhone=ph;
+  el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-muted);">Searching...</div>';
+  try{
+    await loadData();
+    var c=findCustomer(ph);
+    if(c){
+      showCustomer(c,el);
+    }else{
+      el.innerHTML='<div class="glass p-4" style="text-align:center">'+
+        '<div style="font-size:2rem;margin-bottom:0.5rem;">📱</div>'+
+        '<div style="font-weight:700;font-size:1.1rem;margin-bottom:0.25rem;">Account Not Found</div>'+
+        '<div class="text-muted mb-4">'+formatPhone(ph)+'</div>'+
+        '<button class="btn btn-primary btn-block" onclick="doCreate()">➕ Create Account</button>'+
+        '</div>';
+    }
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
   }
 }
 
-// ── Recent Customers ──
-function renderRecent() {
-  let recent = getRecent();
-  let el = document.getElementById('recentCustomers');
-  if (!el || !recent.length) return;
-  el.innerHTML = '<div style="font-weight:700;font-size:0.8125rem;margin-bottom:0.5rem;color:var(--text-secondary);">Recent</div>' +
-    recent.slice(0, 6).map(r => {
-      let badge = 'badge-' + r.tier.toLowerCase();
-      return '<div class="glass-sm flex items-center gap-3 p-2 mb-1" onclick="document.getElementById('phoneInput').value='' + r.phone + '';doLookup()" style="cursor:pointer;">' +
-        '<span class="badge ' + badge + '" style="font-size:0.625rem;padding:2px 6px;">' + (TIERS.find(t=>t.name===r.tier)?.icon||'') + '</span>' +
-        '<span style="flex:1;font-weight:500;font-size:0.875rem;">' + (r.name || formatPhone(r.phone)) + '</span>' +
-        '<span style="font-size:0.75rem;color:var(--accent);">' + formatNumber(r.points) + ' pts</span>' +
-        '</div>';
-    }).join('');
+async function doCreate(){
+  var el=document.getElementById('custDetail');
+  try{
+    await loadData();
+    var c=createCustomer(curPhone);
+    await saveData();
+    showCustomer(c,el);
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
 }
 
-// ── Live Search ──
-function liveSearch() {
-  let q = cleanPhone(document.getElementById('phoneInput').value);
-  let el = document.getElementById('searchResults');
-  if (q.length < 2) { el.innerHTML = ''; return; }
-  let results = searchCustomers(q);
-  if (!results.length) { el.innerHTML = ''; return; }
-  el.innerHTML = results.map(c => {
-    let t = getTier(c);
-    return '<div class="glass-sm flex items-center gap-3 p-2 mb-1" onclick="document.getElementById('phoneInput').value='' + c.phone + '';doLookup()" style="cursor:pointer;">' +
-      '<span class="badge badge-' + t.name.toLowerCase() + '">' + t.icon + '</span>' +
-      '<span style="flex:1;font-weight:500;">' + (c.name || formatPhone(c.phone)) + '</span>' +
-      '<span style="font-size:0.75rem;color:var(--text-muted);">' + formatPhone(c.phone) + '</span>' +
+function showCustomer(c,el){
+  var t=getTier(c);
+  var ec=enrichCustomer(c);
+  var pts=c.points||0;
+  var phone=formatPhone(c.phone);
+  var val=ec._value; // dollar value of all points
+  el.innerHTML=
+    '<div class="glass animate-in" style="padding:1.5rem;">'+
+    // ── HEADER: Points + Name ──
+    '<div class="flex items-center gap-4 mb-4">'+
+    '<div class="pts-ring" style="background:'+t.bg+';border:2px solid '+t.color+';">'+
+    '<div class="num">'+pts+'</div><div class="lbl">pts</div></div>'+
+    '<div style="flex:1">'+
+    '<div style="font-size:1.25rem;font-weight:700;">'+(c.name||'Customer')+'</div>'+
+    '<div class="text-muted">'+phone+'</div>'+
+    '<div class="mt-2"><span class="badge badge-'+t.name.toLowerCase()+'">'+t.icon+' '+t.name+'</span></div>'+
+    '</div></div>'+
+    // ── NAME EDIT ──
+    '<div class="flex gap-2 mb-4">'+
+    '<input type="text" id="editName" placeholder="'+(c.name||'Add name...')+'" value="'+(c.name||'')+'" style="flex:1">'+
+    '<button class="btn btn-outline btn-sm" onclick="doSaveName()">💾 Save</button>'+
+    '</div><div id="nameMsg" class="mb-3"></div>'+
+    // ── PURCHASE ──
+    '<div style="font-weight:600;font-size:0.8125rem;color:var(--text-secondary);margin-bottom:0.5rem;">💰 Add Purchase</div>'+
+    '<div class="flex gap-2 mb-2">'+
+    '<input type="number" id="amtIn" placeholder="$ amount" style="flex:1;text-align:center;font-size:1.1rem;">'+
+    '<button class="btn btn-primary" onclick="doBuy()" style="min-width:120px;">Add Purchase</button>'+
+    '</div>'+
+    '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">'+
+    [5,10,20,50].map(function(a){return '<button class="btn btn-outline btn-sm" onclick="quickBuy('+a+')" style="flex:1;min-width:60px;">$'+a+'</button>'}).join('')+
+    '</div>'+
+    '<div id="buyMsg" style="margin-bottom:1rem;"></div>'+
+    // ── REDEEM ──
+    '<div style="border-top:1px solid var(--border);padding-top:1rem;margin-bottom:0.5rem;">'+
+    '<div style="font-weight:600;font-size:0.8125rem;color:var(--text-secondary);margin-bottom:0.25rem;">💸 Redeem Points</div>'+
+    '<div class="text-muted" style="font-size:0.75rem;margin-bottom:0.75rem;">'+
+    (pts>0?'Current value: <span style="color:var(--accent);font-weight:600;">'+val+'</span> at 1pt per $1':'No points to redeem')+
+    '</div>'+
+    (pts>0?
+    '<div class="flex gap-2">'+
+    '<input type="number" id="redeemAmt" placeholder="Points" min="100" max="'+pts+'" step="100" style="flex:1;text-align:center;font-size:1.1rem;">'+
+    '<button class="btn btn-gold" onclick="doRedeemFromProfile()" style="min-width:100px;">Redeem</button>'+
+    '</div>':'')+
+    '<div id="redeemProfMsg" class="mt-2"></div>'+
+    '</div>'+
+    '</div>';
+}
+
+async function doSaveName(){
+  var nm=document.getElementById('editName').value.trim();
+  var el=document.getElementById('nameMsg');
+  if(!nm){el.innerHTML='<div class="msg msg-error">Enter a name</div>';return}
+  try{
+    await loadData();
+    var c=findCustomer(curPhone);
+    if(!c){el.innerHTML='<div class="msg msg-error">Customer not found</div>';return}
+    c.name=nm;
+    await saveData();
+    el.innerHTML='<div class="msg msg-success">✅ Name saved</div>';
+    setTimeout(function(){doSearch()},800);
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+async function doBuy(){
+  var amt=parseFloat(document.getElementById('amtIn').value)||0;
+  var el=document.getElementById('buyMsg');
+  if(amt<=0){el.innerHTML='<div class="msg msg-error">Enter amount</div>';return}
+  el.innerHTML='<div style="color:var(--text-muted);">Processing...</div>';
+  try{
+    await loadData();
+    var r=addPurchase(curPhone,amt);
+    if(!r||r.error){el.innerHTML='<div class="msg msg-error">'+(r?r.error:'Failed')+'</div>';return}
+    var bonusText=r.bonuses&&r.bonuses.length?' + '+r.bonuses.map(function(b){return b.label+' (+'+b.pts+')'}).join(', '):'';
+    var tierText=r.tier_up?' 🎉 '+r.new_tier.icon+' '+r.new_tier.name+'!':'';
+    el.innerHTML='<div class="msg msg-success">✅ +'+r.points_earned+' points'+bonusText+tierText+'</div>';
+    setTimeout(function(){doSearch()},1500);
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+function quickBuy(amt){
+  document.getElementById('amtIn').value=amt;
+  doBuy();
+}
+
+async function doRedeemFromProfile(){
+  var pts=parseInt(document.getElementById('redeemAmt').value)||0;
+  var el=document.getElementById('redeemProfMsg');
+  if(pts<=0){el.innerHTML='<div class="msg msg-error">Enter points to redeem</div>';return}
+  try{
+    await loadData();
+    var r=redeemPoints(curPhone,pts);
+    if(r.error){el.innerHTML='<div class="msg msg-error">'+r.error+'</div>';return}
+    el.innerHTML='<div class="msg msg-success">✅ Redeemed '+pts+' pts = $'+r.value+'</div>';
+    setTimeout(function(){doSearch()},1500);
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+// ========== REDEEM ==========
+async function doRedeemSearch(){
+  var ph=document.getElementById('redeemPhone').value.replace(/\D/g,'');
+  var el=document.getElementById('redeemDetail');
+  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
+  curPhone=ph;
+  el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div>';
+  try{
+    await loadData();
+    var c=findCustomer(ph);
+    if(!c){el.innerHTML='<div class="msg msg-error">Customer not found</div>';return}
+    var ec=enrichCustomer(c);
+    if(!ec.points){el.innerHTML='<div class="glass p-4 text-center text-muted">No points to redeem</div>';return}
+    var pts=ec.points;
+    el.innerHTML='<div class="glass animate-in p-4">'+
+      '<div class="flex items-center gap-4 mb-4">'+
+      '<div class="pts-ring" style="background:'+ec._tier.bg+';border:2px solid '+ec._tier.color+';">'+
+      '<div class="num">'+pts+'</div><div class="lbl">pts</div></div>'+
+      '<div><div style="font-weight:700;">'+(c.name||'Customer')+'</div>'+
+      '<div class="text-muted">'+ec._tier.icon+' '+ec._tier.name+' · 1pt/$1 spent</div>'+
+      '<div class="text-accent mt-1" style="font-weight:600;">= '+ec._value+' off</div></div>'+
+      '</div>'+
+      '<div class="flex gap-2">'+
+      '<input type="number" id="redeemAmt" placeholder="Points (max '+pts+')" min="100" max="'+pts+'" style="flex:1;text-align:center">'+
+      '<button class="btn btn-gold" onclick="doRedeemGo()">Redeem</button>'+
+      '</div>'+
+      '<div id="redeemMsg" class="mt-3"></div>'+
       '</div>';
-  }).join('');
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
 }
 
-// ── Config: add export button ──
-let origRenderConfig = renderConfig;
-renderConfig = function() {
-  let result = origRenderConfig();
-  // Add export button after config renders
-  setTimeout(() => {
-    let cfgDiv = document.getElementById('configContent');
-    if (cfgDiv && !cfgDiv.querySelector('.btn-outline')) {
-      let btn = document.createElement('button');
-      btn.className = 'btn btn-outline btn-block mt-2';
-      btn.textContent = '📥 Export Data (JSON)';
-      btn.onclick = downloadJSON;
-      cfgDiv.appendChild(btn);
-    }
-  }, 100);
-  return result;
-};
+async function doRedeemGo(){
+  var pts=parseInt(document.getElementById('redeemAmt').value)||0;
+  var el=document.getElementById('redeemMsg');
+  if(pts<=0){el.innerHTML='<div class="msg msg-error">Enter points to redeem</div>';return}
+  try{
+    await loadData();
+    var r=redeemPoints(curPhone,pts);
+    if(r.error){el.innerHTML='<div class="msg msg-error">'+r.error+'</div>';return}
+    el.innerHTML='<div class="msg msg-success">✅ Redeemed '+pts+' pts = '+r.value+'</div>';
+    setTimeout(function(){doRedeemSearch()},1500);
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
 
+// ========== HISTORY ==========
+async function doHist(){
+  var ph=document.getElementById('histPhone').value.replace(/\D/g,'');
+  var el=document.getElementById('histDetail');
+  if(!ph){el.innerHTML='<div class="msg msg-error">Enter a phone number</div>';return}
+  try{
+    await loadData();
+    var c=findCustomer(ph);
+    if(!c){el.innerHTML='<div class="msg msg-error">Not found</div>';return}
+    var txs=(c.transactions||[]).slice().reverse();
+    var html='<div class="glass p-4"><div style="font-weight:700;margin-bottom:0.75rem;">'+(c.name||formatPhone(ph))+'</div>';
+    if(!txs.length){html+='<div class="text-muted">No transactions</div>'}
+    else{txs.forEach(function(tx){
+      var icon=tx.type==='purchase'?'💰':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
+      html+='<div class="txn-item"><span style="font-size:1.25rem;">'+icon+'</span><span style="flex:1">'+(tx.note||tx.type)+'</span><span style="font-weight:600">'+(tx.points>0?'+':'')+tx.points+' pts</span></div>';
+    })}
+    html+='</div>';
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+// ========== STATS ==========
+async function doStats(){
+  var el=document.getElementById('statsContent');
+  try{
+    await loadData();
+    var s=getStats();
+    if(!s||!s.total){el.innerHTML='<div class="glass p-4 text-muted text-center">No data yet</div>';return}
+    var html='<div class="glass p-4"><div style="font-weight:700;margin-bottom:0.75rem;">Overview</div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Customers</span><span style="font-weight:700">'+s.total+'</span></div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Active Points</span><span style="font-weight:700">'+s.points+'</span></div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>Lifetime Points</span><span style="font-weight:700">'+s.lifetime+'</span></div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>🎂 Birthdays</span><span>'+s.birthdays+'</span></div>'+
+      '<div class="flex justify-between" style="padding:0.5rem 0"><span>👥 Referrals</span><span>'+s.referrals+'</span></div>'+
+      '</div>'+
+      '<div class="glass p-4 mt-3"><div style="font-weight:700;margin-bottom:0.75rem;">Tiers</div>';
+    var tiers=s.tiers||{};
+    for(var name in tiers){
+      html+='<div class="flex justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--border)"><span>'+name+'</span><span>'+tiers[name]+'</span></div>';
+    }
+    html+='</div>';
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+// ========== CONFIG ==========
+async function doConfig(){
+  var el=document.getElementById('configContent');
+  try{
+    await loadData();
+    var c=_data&&_data.config?_data.config:{};
+    el.innerHTML='<div class="glass p-4">'+
+      '<div class="config-row"><label>Shop Name</label><input type="text" id="cfgName" value="'+(c.shop_name||'')+'"></div>'+
+      '<div class="config-row"><label>🔐 Staff PIN</label><input type="password" id="cfgPin" value="'+(c.staff_pin||'0000')+'" maxlength="4" style="text-align:center;max-width:100px;"></div>'+
+      '<div class="config-row"><label>🎂 Birthday Bonus</label><input type="number" id="cfgBday" value="'+(c.birthday_bonus||50)+'" min="0"></div>'+
+      '<div class="config-row"><label>👥 Referral Bonus</label><input type="number" id="cfgRef" value="'+(c.referral_bonus||100)+'" min="0"></div>'+
+      '<div style="padding:1rem 0;border-bottom:1px solid var(--border);"><label style="display:block;margin-bottom:0.5rem;">Double Points Days (comma-separated)</label>'+
+      '<input type="text" id="cfgDPD" value="'+(c.double_points_days||[]).join(',')+'" placeholder="2026-07-04,2026-12-25"></div>'+
+      '<button class="btn btn-primary btn-block mt-4" onclick="doSaveCfg()">💾 Save Config</button>'+
+      '<div id="cfgMsg" class="mt-3"></div>'+
+      '</div>';
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+async function doSaveCfg(){
+  var el=document.getElementById('cfgMsg');
+  try{
+    await loadData();
+    _data.config={
+      shop_name:document.getElementById('cfgName').value,
+      staff_pin:document.getElementById('cfgPin').value||'0000',
+      staff_pin_hash:hashPin(document.getElementById('cfgPin').value||'0000'),
+      birthday_bonus:parseInt(document.getElementById('cfgBday').value)||50,
+      referral_bonus:parseInt(document.getElementById('cfgRef').value)||100,
+      double_points_days:document.getElementById('cfgDPD').value.split(',').map(function(s){return s.trim()}).filter(function(s){return s})
+    };
+    await saveData();
+    document.getElementById('shopName').textContent=_data.config.shop_name||'Staff Panel';
+    el.innerHTML='<div class="msg msg-success">✅ Saved</div>';
+    setTimeout(function(){doConfig()},1500);
+  }catch(e){
+    el.innerHTML='<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
 </script>
 </body>
 </html>

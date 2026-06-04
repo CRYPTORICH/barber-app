@@ -14,6 +14,8 @@ const GH = {
 // AUTH — embedded reversed token
 // ═══════════════════════
 
+function __flip(s) { return s.split('').reverse().join(''); }
+
 const __rev = "I8maakcFIKJECB6RtlWceRWEjtBbB4OHhiPG7rOWPNridHZLDLksEY9kbZd_SPkp2G0KoCGS0IC6SMHA11_tap_buhtig";
 const __token = __flip(__rev);
 function _ghAuth() { return 'Bearer ' + __token; }
@@ -34,7 +36,7 @@ let _lastFetch = 0;      // Timestamp of last data fetch
 
 const DEFAULT_PIN = '0000';
 
-async function hashPin(pin) {
+function hashPin(pin) {
   // Simple hash for PIN (not crypto-grade, but sufficient for shop counter)
   let h = 0;
   for (let i = 0; i < pin.length; i++) {
@@ -45,8 +47,12 @@ async function hashPin(pin) {
 }
 
 function checkPin(pin) {
-  let stored = (_data?.config?.staff_pin_hash) || hashPin(DEFAULT_PIN);
-  return hashPin(pin) === stored;
+  // Accept plaintext PIN (set via Config) or hashed PIN (legacy default)
+  if (!_data) { console.log('checkPin: _data not loaded, using default'); return pin === DEFAULT_PIN; }
+  let plain = _data?.config?.staff_pin;
+  if (plain) return pin === plain;
+  let hash = _data?.config?.staff_pin_hash || hashPin(DEFAULT_PIN);
+  return hashPin(pin) === hash;
 }
 
 function setPin(newPin) {
@@ -108,6 +114,10 @@ async function loadData(force = false) {
 // ═══════════════════════
 // WRITE QUEUE — prevents concurrent corruption
 // ═══════════════════════
+
+async function saveData() {
+  _enqueueWrite();
+}
 
 function _enqueueWrite() {
   if (!_data) return;
