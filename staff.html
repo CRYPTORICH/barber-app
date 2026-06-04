@@ -168,6 +168,33 @@
 
   /* ── CANVAS FOR CONFETTI ── */
   #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 300; }
+
+  /* ── CUSTOMER DATABASE TABLE ── */
+  .cust-table { width:100%; border-collapse:collapse; font-size:0.8125rem; }
+  .cust-table th {
+    text-align:left; padding:10px 10px;
+    font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--accent); border-bottom:2px solid var(--border);
+    font-weight:600; position:sticky; top:0; background:var(--bg-card);
+  }
+  .cust-table td { padding:10px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+  .cust-table tr { cursor:pointer; transition:background 0.15s; }
+  .cust-table tr:active { background:rgba(5,150,105,0.06); }
+  .cust-table .c-name { font-weight:700; color:var(--text); }
+  .cust-table .c-phone { color:var(--text-muted); font-size:0.75rem; }
+  .cust-table .c-tier { font-size:0.6875rem; font-weight:700; padding:3px 8px; border-radius:100px; display:inline-block; }
+  .cust-table .c-pts { font-weight:700; color:var(--accent); }
+  .db-count { font-size:0.8125rem; color:var(--text-muted); margin-bottom:0.75rem; }
+  .db-count strong { color:var(--accent); font-size:1.125rem; }
+  .db-actions { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+  .db-actions .btn-sm {
+    font-size:0.6875rem; padding:6px 12px; background:var(--bg);
+    border:1px solid var(--border); color:var(--text-muted);
+    border-radius:8px; cursor:pointer; font-weight:600;
+  }
+  .db-search { width:100%; padding:10px 12px; background:var(--bg); border:1px solid var(--border);
+    border-radius:10px; color:var(--text); font-size:0.875rem; margin-bottom:10px; outline:none; }
+  .db-search:focus { border-color:var(--accent); }
 </style>
 </head>
 <body>
@@ -188,8 +215,9 @@
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
     <h1 id="shopName" style="font-size:1.25rem;margin:0;">Staff Panel</h1>
     <div style="display:flex;gap:0.5rem;">
-      <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:var(--radius-sm);" onclick="doConfig()">⚙️</button>
+      <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:var(--radius-sm);" onclick="doAllCustomers()">📋</button>
       <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:var(--radius-sm);" onclick="doStats()">📊</button>
+      <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:var(--radius-sm);" onclick="doConfig()">⚙️</button>
     </div>
   </div>
 
@@ -592,6 +620,87 @@ async function doStats(){
     showToast('Error: '+e.message, 'error');
   }
 }
+
+// ========== ALL CUSTOMERS DATABASE ==========
+async function doAllCustomers(sortBy){
+  try {
+    await loadData();
+    var custs = Object.values(_data.customers||{});
+    var el = document.getElementById('mainContent');
+    if(!custs.length){
+      el.innerHTML = '<div class="card" style="text-align:center;padding:3rem;">'+
+        '<div style="font-size:3rem;margin-bottom:0.75rem;">📭</div>'+
+        '<div style="font-weight:800;font-size:1.1rem;">No customers yet</div>'+
+        '<div style="color:var(--text-muted);margin-top:0.25rem;">Sign up your first customer!</div></div>';
+      return;
+    }
+
+    // Sort
+    if(sortBy==='name') custs.sort(function(a,b){ return (a.name||'').localeCompare(b.name||'') });
+    else if(sortBy==='tier') custs.sort(function(a,b){ return (b.lifetime_points||0)-(a.lifetime_points||0) });
+    else if(sortBy==='visits') custs.sort(function(a,b){ return (b.visit_count||0)-(a.visit_count||0) });
+    else custs.sort(function(a,b){ return (b.lifetime_points||0)-(a.lifetime_points||0) }); // default: points
+
+    var searchVal = (document.getElementById('dbSearch')||{}).value||'';
+    if(searchVal){
+      searchVal = searchVal.toLowerCase();
+      custs = custs.filter(function(c){
+        return (c.phone||'').includes(searchVal) || (c.name||'').toLowerCase().includes(searchVal);
+      });
+    }
+
+    var rows = '';
+    custs.forEach(function(c,i){
+      var t = getTier(c);
+      var name = c.name||'—';
+      var phone = c.phone||'';
+      var pts = c.points||0;
+      var visits = c.visit_count||0;
+      var lastVisit = '';
+      var txs = c.transactions||[];
+      if(txs.length){
+        var lv = txs[txs.length-1].timestamp;
+        try { lastVisit = new Date(lv).toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch(e){}
+      }
+      rows += '<tr onclick="viewCustomer(\''+phone+'\')">'+
+        '<td style="color:var(--text-muted);font-size:0.6875rem;">'+(i+1)+'</td>'+
+        '<td><div class="c-name">'+(name==='—'?phone.replace(/(\\d{3})(\\d{3})(\\d{4})/,'($1) $2-$3'):escHtml(name))+'</div>'+
+        (name!=='—'?'<div class="c-phone">'+phone.replace(/(\\d{3})(\\d{3})(\\d{4})/,'($1) $2-$3')+'</div>':'')+'</td>'+
+        '<td><span class="c-tier" style="background:'+t.bg+';color:'+t.color+';">'+t.icon+' '+t.name+'</span></td>'+
+        '<td class="c-pts">'+(pts||0).toLocaleString()+'</td>'+
+        '<td style="color:var(--text-muted);">'+(visits||0)+'</td>'+
+        '<td style="color:var(--text-muted);font-size:0.6875rem;">'+(lastVisit||'—')+'</td>'+
+        '</tr>';
+    });
+
+    el.innerHTML =
+      '<div class="card" style="padding:1.25rem;">'+
+      '<div class="db-count"><strong>'+custs.length+'</strong> customer'+(custs.length!==1?'s':'')+'</div>'+
+      '<input type="text" class="db-search" id="dbSearch" placeholder="Search by name or phone..." oninput="doAllCustomers()" autocomplete="off">'+
+      '<div class="db-actions">'+
+      '<button class="btn-sm" onclick="doAllCustomers(\'points\')" style="'+(sortBy!=='name'&&sortBy!=='tier'&&sortBy!=='visits'?'background:var(--accent);color:#fff;border-color:var(--accent);':'')+'">💰 By Points</button>'+
+      '<button class="btn-sm" onclick="doAllCustomers(\'name\')" style="'+(sortBy==='name'?'background:var(--accent);color:#fff;border-color:var(--accent);':'')+'">🔤 By Name</button>'+
+      '<button class="btn-sm" onclick="doAllCustomers(\'visits\')" style="'+(sortBy==='visits'?'background:var(--accent);color:#fff;border-color:var(--accent);':'')+'">🔄 By Visits</button>'+
+      '</div>'+
+      '<div style="overflow-x:auto;">'+
+      '<table class="cust-table"><thead><tr>'+
+      '<th>#</th><th>Customer</th><th>Tier</th><th>Points</th><th>Visits</th><th>Last</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table>'+
+      '</div>'+
+      '</div>'+
+      '<button class="btn btn-block" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);margin-top:0.5rem;" onclick="document.getElementById(\'phoneInput\').value=\'\';doSearch()">← Back to Search</button>';
+  } catch(e) {
+    document.getElementById('mainContent').innerHTML = '<div class="msg msg-error">Error: '+e.message+'</div>';
+  }
+}
+
+function viewCustomer(phone){
+  document.getElementById('phoneInput').value = phone;
+  curPhone = phone;
+  doSearch();
+}
+
+function escHtml(s){ var d=document.createElement('div');d.textContent=s;return d.innerHTML; }
 
 // ========== CONFIG (inline) ==========
 async function doConfig(){
