@@ -428,7 +428,7 @@ function tryUnlock(){
   if(ok){
     document.getElementById('pinGate').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
-    document.getElementById('shopName').textContent = (_data&&_data.config&&_data.config.shop_name)||'Rewards';
+    applyShopBranding();
     var now = new Date();
     document.getElementById('dbDate').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
     loadDashboard();

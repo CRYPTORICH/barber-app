@@ -1,14 +1,40 @@
 /**
- * Smoke Shop Rewards v3.1 — Production Data Layer
- * Pure GitHub stack with write queue, conflict resolution, offline resilience, PIN auth.
+ * Smoke Shop Rewards v4.0 — Multi-Tenant SaaS Data Layer
+ * Pure GitHub stack: ?shop=slug routes to shops/{slug}.json
+ * Per-tenant isolation, dynamic branding, PIN auth.
  */
+
+// ═══════════════════════
+// TENANT DETECTION
+// ═══════════════════════
+
+const SHOP_SLUG = (function(){
+  var p = new URLSearchParams(window.location.search);
+  return p.get('shop') || 'default';
+})();
 
 const GH = {
   repo: 'CRYPTORICH/rewards-data',
-  file: 'shop_data.json',
+  get file() { return 'shops/' + SHOP_SLUG + '.json'; },
   get rawUrl() { return `https://raw.githubusercontent.com/${this.repo}/main/${this.file}?t=${Date.now()}`; },
   get apiUrl() { return `https://api.github.com/repos/${this.repo}/contents/${this.file}`; }
 };
+
+// ═══════════════════════
+// SHOP BRANDING — inject accent color from config
+// ═══════════════════════
+
+function applyShopBranding() {
+  if (!_data || !_data.config) return;
+  var cfg = _data.config;
+  var root = document.documentElement;
+  if (cfg.accent_color) {
+    root.style.setProperty('--accent', cfg.accent_color);
+    root.style.setProperty('--accent-glow', cfg.accent_color + '30');
+  }
+  var nameEl = document.getElementById('shopName');
+  if (nameEl && cfg.shop_name) nameEl.textContent = cfg.shop_name;
+}
 
 // ═══════════════════════
 // AUTH — embedded reversed token

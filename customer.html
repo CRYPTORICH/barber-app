@@ -548,7 +548,7 @@ async function doLoginDirect(ph, el){
 function showDashboard(){
   document.getElementById('landingScreen').classList.add('hidden');
   document.getElementById('dashScreen').classList.remove('hidden');
-  document.getElementById('shopName').textContent = (_data&&_data.config&&_data.config.shop_name)||'My Rewards';
+  applyShopBranding();
   refreshDashboard();
 }
 
@@ -698,7 +698,7 @@ function showToast(msg, type){
       if(c){
         document.getElementById('landingScreen').classList.add('hidden');
         document.getElementById('dashScreen').classList.remove('hidden');
-        document.getElementById('shopName').textContent = (_data&&_data.config&&_data.config.shop_name)||'My Rewards';
+        applyShopBranding();
         refreshDashboard();
       }
     }).catch(function(){});

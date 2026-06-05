@@ -2,105 +2,123 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#060906">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Smoke Shop Rewards</title>
-<link rel="stylesheet" href="styles.css">
+<title>Rewards — Loyalty Program for Smoke Shops</title>
 <style>
-  .landing {
-    min-height: 100dvh;
-    background: radial-gradient(ellipse at 50% 0%, rgba(5,150,105,0.06) 0%, transparent 60%),
-                var(--bg);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 2rem 1.5rem; gap: 2.5rem;
-  }
-  .logo {
-    font-size: 4rem; margin-bottom: 0.5rem;
-    animation: scaleIn 0.6s var(--ease-spring) both;
-  }
-  .title {
-    font-size: 2rem; font-weight: 900; letter-spacing: -0.03em;
-    text-align: center; line-height: 1.15;
-    animation: fadeInUp 0.5s var(--ease-out) 0.15s both;
-  }
-  .title span { color: var(--accent); }
-  .subtitle {
-    font-size: 1rem; color: var(--text-secondary);
-    text-align: center; max-width: 320px;
-    animation: fadeInUp 0.5s var(--ease-out) 0.25s both;
-  }
-  .cards {
-    display: flex; flex-direction: column; gap: 1rem;
-    width: 100%; max-width: 380px;
-  }
-  .mode-card {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 1.25rem 1.5rem; border-radius: var(--radius);
-    background: var(--bg-card); border: 1px solid var(--border);
-    cursor: pointer; transition: all 0.2s var(--ease-out);
-    text-decoration: none; color: var(--text);
-    animation: fadeInUp 0.5s var(--ease-out) both;
-  }
-  .mode-card:hover { border-color: var(--accent); background: rgba(5,150,105,0.04); }
-  .mode-card:active { transform: scale(0.98); }
-  .mode-card .icon {
-    width: 3rem; height: 3rem; border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; flex-shrink: 0;
-  }
-  .staff-icon { background: rgba(5,150,105,0.12); }
-  .customer-icon { background: rgba(212,168,67,0.12); }
-  .mode-card .info { flex: 1; }
-  .mode-card .label { font-weight: 700; font-size: 1.0625rem; }
-  .mode-card .desc { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.125rem; }
-  .mode-card .arrow { color: var(--text-muted); font-size: 1.25rem; }
-  .version {
-    font-size: 0.75rem; color: var(--text-muted);
-    animation: fadeInUp 0.5s var(--ease-out) 0.8s both;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060906;--bg-card:#0d110d;--border:#1a241a;--text:#e8ede8;--text-muted:#6b7a6b;--accent:#059669;--accent-glow:rgba(5,150,105,0.18);--gold:#d4a843;--radius:16px;--radius-lg:24px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100dvh;-webkit-font-smoothing:antialiased}
+
+/* Hero */
+.hero{padding:3rem 1.5rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.hero h1{font-size:2rem;font-weight:900;line-height:1.15;margin-bottom:1rem}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--text-muted);font-size:1.0625rem;line-height:1.6;max-width:440px;margin:0 auto 2rem}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.875rem 2rem;border:none;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.15s;text-decoration:none}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 24px var(--accent-glow)}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text-muted)}
+.btn-lg{padding:1rem 2.5rem;font-size:1.125rem;border-radius:20px}
+
+/* Pricing */
+.pricing{padding:2rem 1rem 3rem;max-width:900px;margin:0 auto}
+.pricing h2{text-align:center;font-size:1.5rem;font-weight:800;margin-bottom:0.5rem}
+.pricing .sub{text-align:center;color:var(--text-muted);margin-bottom:2rem}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;max-width:700px;margin:0 auto}
+.plan{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem 1.5rem;position:relative;transition:transform 0.2s,border-color 0.2s}
+.plan:hover{transform:translateY(-4px)}
+.plan.popular{border-color:var(--accent);box-shadow:0 0 32px var(--accent-glow)}
+.plan h3{font-size:1.25rem;font-weight:800;margin-bottom:0.25rem}
+.plan .price{font-size:2.5rem;font-weight:900;margin:0.75rem 0 0.25rem}
+.plan .price span{font-size:1rem;font-weight:400;color:var(--text-muted)}
+.plan .desc{color:var(--text-muted);font-size:0.875rem;line-height:1.5;margin-bottom:1.25rem}
+.plan ul{list-style:none;margin-bottom:1.5rem}
+.plan ul li{padding:0.375rem 0;font-size:0.875rem;color:var(--text);display:flex;align-items:center;gap:0.5rem}
+.plan ul li::before{content:'✅';flex-shrink:0}
+.popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:0.25rem 1rem;border-radius:100px;font-size:0.75rem;font-weight:700}
+
+/* Demo */
+.demo{padding:3rem 1.5rem;text-align:center;max-width:600px;margin:0 auto}
+.demo h2{font-size:1.5rem;font-weight:800;margin-bottom:1rem}
+.demo .demo-links{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem}
+.demo-link{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.5rem;text-decoration:none;color:var(--text);transition:all 0.15s;text-align:left}
+.demo-link:hover{border-color:var(--accent)}
+.demo-link .label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em}
+.demo-link .title{font-weight:700;margin:0.25rem 0}
+.demo-link .url{font-size:0.75rem;color:var(--accent);font-family:monospace}
+
+/* Footer */
+footer{text-align:center;padding:2rem 1.5rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.75rem}
+footer a{color:var(--accent);text-decoration:none}
 </style>
 </head>
 <body>
-<div class="landing">
-  <div class="logo">💨</div>
-  <div>
-    <div class="title" id="shopTitle"><span>Smoke Shop</span> Rewards</div>
-    <div class="subtitle">Earn points on every purchase. Unlock tiers. Get rewarded.</div>
-  </div>
 
-  <div class="cards">
-    <a href="staff.html" class="mode-card delay-3">
-      <div class="icon staff-icon">🔧</div>
-      <div class="info">
-        <div class="label">Staff Panel</div>
-        <div class="desc">Lookup customers, add purchases, redeem points</div>
-      </div>
-      <div class="arrow">→</div>
-    </a>
-
-    <a href="customer.html" class="mode-card delay-4">
-      <div class="icon customer-icon">👤</div>
-      <div class="info">
-        <div class="label">Customer View</div>
-        <div class="desc">Check your points, tier status, and referral code</div>
-      </div>
-      <div class="arrow">→</div>
-    </a>
-  </div>
-
-  <div class="version">Pure GitHub · Zero servers · v2</div>
+<div class="hero">
+  <h1>Turn every customer into a <span>regular</span></h1>
+  <p>Points, tiers, achievements, referrals — the loyalty program your smoke shop deserves. Customers earn, you keep them coming back.</p>
+  <a href="admin.html" class="btn btn-primary btn-lg">Start Your Free Trial →</a>
 </div>
 
-<script src="app.js?v=3"></script>
-<script>
-(async function() {
-  await loadData();
-  let name = _data?.config?.shop_name || 'Smoke Shop Rewards';
-  document.getElementById('shopTitle').innerHTML = '<span>' + name.split(' ').slice(0,-1).join(' ') + '</span> ' + name.split(' ').pop();
-})();
-</script>
+<div class="pricing">
+  <h2>Simple pricing</h2>
+  <p class="sub">14-day free trial. No credit card needed.</p>
+  <div class="plans">
+    <div class="plan">
+      <h3>Starter</h3>
+      <div class="price">$29<span>/mo</span></div>
+      <p class="desc">For shops getting started with loyalty</p>
+      <ul>
+        <li>Unlimited customers</li>
+        <li>6-tier rewards system</li>
+        <li>18 achievement badges</li>
+        <li>Referral program</li>
+        <li>Staff panel with PIN</li>
+        <li>Customer self-signup</li>
+      </ul>
+      <a href="admin.html" class="btn btn-outline" style="width:100%">Start Trial</a>
+    </div>
+    <div class="plan popular">
+      <span class="popular-tag">Most Popular</span>
+      <h3>Growth</h3>
+      <div class="price">$49<span>/mo</span></div>
+      <p class="desc">For shops that want the full experience</p>
+      <ul>
+        <li>Everything in Starter</li>
+        <li>Custom branding &amp; colors</li>
+        <li>SMS verification</li>
+        <li>Email notifications</li>
+        <li>Birthday auto-bonus</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="admin.html" class="btn btn-primary" style="width:100%">Start Trial</a>
+    </div>
+  </div>
+</div>
+
+<div class="demo">
+  <h2>See it in action</h2>
+  <p style="color:var(--text-muted);">Try the live demo — no signup needed</p>
+  <div class="demo-links">
+    <a href="staff.html" class="demo-link">
+      <div class="label">Staff Panel</div>
+      <div class="title">🔐 Staff Dashboard</div>
+      <div class="url">PIN: 0000</div>
+    </a>
+    <a href="customer.html" class="demo-link">
+      <div class="label">Customer Portal</div>
+      <div class="title">💳 Rewards Card</div>
+      <div class="url">Sign up free</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <p>Built by <a href="https://github.com/CRYPTORICH">SiteLaunch</a> — professional tools for local businesses.</p>
+  <p style="margin-top:0.5rem"><a href="#">Privacy Policy</a> · <a href="#">Terms</a></p>
+</footer>
+
 </body>
 </html>
