@@ -266,6 +266,13 @@ body {
 }
 .cfg-row input:focus { border-color: var(--accent); }
 
+/* ── DB SEARCH INPUT ── */
+.db-search {
+  width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 0; color: var(--text); font-size: 0.875rem; outline: none;
+}
+.db-search:focus { border-color: var(--accent); }
+
 /* ── MSG ── */
 .msg { padding: 0.75rem 1rem; border-radius: var(--radius-xs); font-size: 0.8125rem; font-weight: 600; }
 .msg-success { background: rgba(5,150,105,0.12); color: var(--accent); }
@@ -410,6 +417,7 @@ body {
 // ========== STATE ==========
 var curPhone = null;
 var pendingRedeem = null;
+var currentSort = null;
 
 // ========== PIN ==========
 function tryUnlock(){
@@ -459,12 +467,10 @@ function getStreak(storageKey){
     var data = JSON.parse(localStorage.getItem(storageKey)||'{}');
     var today = new Date().toISOString().split('T')[0];
     var yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
-    // If we recorded a hit yesterday, streak continues from yesterday's streak+1
-    // Otherwise reset to 0 (today hasn't been evaluated yet)
-    if(data.lastHitDate === yesterday){
-      return (data.streak||0) + 1;
-    } else if(data.lastHitDate === today){
+    if(data.lastHitDate === today){
       return data.streak||0;
+    } else if(data.lastHitDate === yesterday){
+      return data.streak||0;  // yesterday's streak, today not evaluated yet
     }
     return 0;
   } catch(e){ return 0; }
@@ -544,6 +550,7 @@ function focusPhoneSearch(){
 }
 
 function renderCustomerTable(sortBy){
+  currentSort = sortBy;
   var custs = Object.values(_data.customers||{});
   var el = document.getElementById('mainContent');
   if(!custs.length){
@@ -553,6 +560,15 @@ function renderCustomerTable(sortBy){
   if(sortBy==='name') custs.sort(function(a,b){ return (a.name||'').localeCompare(b.name||'') });
   else if(sortBy==='visits') custs.sort(function(a,b){ return (b.visit_count||0)-(a.visit_count||0) });
   else custs.sort(function(a,b){ return (b.lifetime_points||0)-(a.lifetime_points||0) });
+
+  // Apply search filter
+  var searchVal = (document.getElementById('custSearch')||{}).value||'';
+  if(searchVal){
+    searchVal = searchVal.toLowerCase();
+    custs = custs.filter(function(c){
+      return (c.phone||'').includes(searchVal) || (c.name||'').toLowerCase().includes(searchVal);
+    });
+  }
 
   var rows = '';
   custs.forEach(function(c,i){
@@ -586,6 +602,7 @@ function renderCustomerTable(sortBy){
     '<button class="'+(sortBy==='name'?'active':'')+'" onclick="renderCustomerTable(\'name\')">Name</button>'+
     '<button class="'+(sortBy==='visits'?'active':'')+'" onclick="renderCustomerTable(\'visits\')">Visits</button>'+
     '</div></div>'+
+    '<input type="text" id="custSearch" class="db-search" placeholder="Search by name or phone..." oninput="renderCustomerTable(currentSort)" autocomplete="off" style="margin:0;border-radius:0;border-top:none;border-left:none;border-right:none;">'+
     '<div style="overflow-x:auto;"><table class="cust-table"><thead><tr>'+
     '<th style="width:28px;text-align:center;">#</th><th>Customer</th><th>Tier</th><th>Points</th><th style="text-align:center;width:44px;">Visits</th><th style="width:52px;">Last</th>'+
     '</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
@@ -618,8 +635,10 @@ async function doCreate(){
   try {
     await loadData();
     var result = createCustomer(curPhone);
+    await saveData();
     if(result.referral){ showToast('👥 Referral bonus: +'+result.referral.bonus+' pts!','success'); }
     renderCustomer(result.customer);
+    renderGoalCard();
   } catch(e) { el.innerHTML = '<div class="msg msg-error">Error: '+e.message+'</div>'; }
 }
 
@@ -703,8 +722,9 @@ async function doSaveName(){
     var c = findCustomer(curPhone);
     if(!c){ el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">Customer not found</div>'; return; }
     c.name = nm;
-    el.innerHTML='<div class="msg msg-success" style="font-size:0.75rem;">✅ Saved</div>';
-    setTimeout(function(){ doSearch(); }, 600);
+      _enqueueWrite();
+      el.innerHTML='<div class="msg msg-success" style="font-size:0.75rem;">✅ Saved</div>';
+      setTimeout(function(){ doSearch(); }, 600);
   } catch(e) { el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">'+e.message+'</div>'; }
 }
 
@@ -765,6 +785,9 @@ async function execDelete(){
 
 // ========== TOAST ==========
 function showToast(msg, type){
+  // Remove any existing toasts to prevent stacking
+  var existing = document.querySelectorAll('.toast');
+  existing.forEach(function(t){ t.remove(); });
   var t = document.createElement('div');
   t.className = 'toast toast-'+type;
   t.textContent = msg;
@@ -812,7 +835,7 @@ async function doConfig(){
       '<button class="btn-back" onclick="loadDashboard()">← Dashboard</button>'+
       '<div class="card"><div style="font-weight:800;font-size:1.1rem;margin-bottom:1rem;">⚙️ Settings</div>'+
       '<div class="cfg-row"><label>Shop Name</label><input type="text" id="cfgName" value="'+(c.shop_name||'')+'"></div>'+
-      '<div class="cfg-row"><label>🔐 Staff PIN</label><input type="password" id="cfgPin" value="0000" maxlength="4"></div>'+
+      '<div class="cfg-row"><label>🔐 Staff PIN</label><input type="password" id="cfgPin" placeholder="Enter new PIN" maxlength="4"></div>'+
       '<div class="cfg-row"><label>🎂 Birthday Bonus</label><input type="number" id="cfgBday" value="'+(c.birthday_bonus||50)+'"></div>'+
       '<div class="cfg-row"><label>👥 Referral Bonus</label><input type="number" id="cfgRef" value="'+(c.referral_bonus||100)+'"></div>'+
       '<div class="cfg-row"><label>🎯 Daily Goal</label><input type="number" id="cfgGoal" value="'+(c.daily_goal||10)+'" min="1" max="999"></div>'+

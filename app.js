@@ -354,6 +354,13 @@ function tierProgress(c) {
   return Math.min(100, Math.round((progress / total) * 100));
 }
 
+function _parseBdayMonth(bday) {
+  // Accepts MM/DD, MM-DD, or ISO date formats
+  if (!bday) return 0;
+  var m = parseInt(bday.split(/[\/\-]/)[0]);
+  return (m >= 1 && m <= 12) ? m : 0;
+}
+
 function calcPoints(amount) {
   return Math.floor(amount);  // 1 point per $1
 }
@@ -505,7 +512,7 @@ function addPurchase(phone, amount) {
   // Birthday
   if (c.birthday) {
     let now = new Date();
-    let bm = parseInt(c.birthday.split('-')[0]) || parseInt(c.birthday.split('-')[1]);
+    let bm = _parseBdayMonth(c.birthday);
     if (bm === now.getMonth() + 1) {
       let got = (c.transactions||[]).some(tx => tx.type === 'birthday_bonus' && new Date(tx.timestamp).getFullYear() === now.getFullYear());
       if (!got) {
@@ -591,7 +598,7 @@ function getStats() {
     tiers,
     birthdays: custs.filter(c => {
       if (!c.birthday) return false;
-      let m = parseInt(c.birthday.split('-')[0]) || parseInt(c.birthday.split('-')[1]);
+      let m = _parseBdayMonth(c.birthday);
       return m === now.getMonth() + 1;
     }).length,
     referrals: custs.filter(c => c.referred_by).length

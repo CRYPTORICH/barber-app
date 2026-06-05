@@ -259,7 +259,7 @@
     </div>
     <div class="form-group">
       <label>Birthday (optional)</label>
-      <input type="text" id="signupBday" placeholder="MM/DD" autocomplete="off" inputmode="numeric" maxlength="5">
+      <input type="text" id="signupBday" placeholder="MM/DD" autocomplete="off" inputmode="numeric" maxlength="5" oninput="formatBday(this)">
       <div class="hint">Birthday month = bonus points! 🎂</div>
     </div>
     <div class="form-group">
@@ -282,7 +282,7 @@
     <div style="font-size:3rem;margin-bottom:0.5rem;">📱</div>
     <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem;">Verify Your Number</div>
     <div style="color:var(--text-muted);font-size:0.8125rem;margin-bottom:1rem;">We sent a 4-digit code to<br><strong id="verifyPhoneDisplay"></strong></div>
-    <div style="background:rgba(5,150,105,0.08);border:1px dashed var(--accent);border-radius:var(--radius-sm);padding:0.5rem;margin-bottom:1rem;font-size:0.6875rem;color:var(--text-muted);">
+    <div style="background:rgba(5,150,105,0.08);border:1px dashed var(--accent);border-radius:var(--radius-sm);padding:0.5rem;margin-bottom:1rem;font-size:0.6875rem;color:var(--text-muted);display:none;" id="simBanner">
       📟 SIMULATION MODE — Code: <strong id="simCode" style="color:var(--accent);font-size:1rem;">----</strong><br>
       <span style="font-size:0.625rem;">(Replace with Twilio/Textbelt for real SMS)</span>
     </div>
@@ -375,6 +375,17 @@
       <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);" onclick="copyRef()">Copy</button>
     </div>
     <div style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.375rem;">Friend uses your code → you both get bonus points</div>
+    <div style="font-size:0.8125rem;color:var(--accent);margin-top:0.5rem;" id="refStats"></div>
+  </div>
+
+  <!-- Edit Profile -->
+  <div class="section animate-up" style="animation-delay:0.28s">
+    <div class="section-label">👤 My Profile</div>
+    <div style="display:flex;gap:0.5rem;">
+      <input type="text" id="custEditName" placeholder="Your name" style="flex:1;padding:0.625rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:0.9375rem;outline:none;">
+      <button class="btn" style="padding:0.625rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:0.8125rem;font-weight:700;flex-shrink:0;" onclick="doSaveCustName()">💾 Save</button>
+    </div>
+    <div id="custNameMsg" style="margin-top:0.375rem;"></div>
   </div>
 </div>
 
@@ -385,6 +396,12 @@ var pendingVerify = null;
 var verifyCode = null;
 
 // ========== LANDING TOGGLE ==========
+function formatBday(el){
+  var v = el.value.replace(/\D/g,'');
+  if(v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2,2);
+  if(v.length > 5) v = v.slice(0,5);
+  el.value = v;
+}
 function showActionCards(){
   document.getElementById('signupForm').classList.add('hidden');
   document.getElementById('loginForm').classList.add('hidden');
@@ -471,9 +488,10 @@ async function doSignup(){
     } catch(e) { /* proxy not deployed yet — use simulation */ }
 
     if(smsSent){
-      document.getElementById('simCode').parentElement.style.display = 'none';
+      // SMS sent — banner stays hidden
     } else {
       document.getElementById('simCode').textContent = verifyCode;
+      document.getElementById('simBanner').style.display = 'block';
     }
   } catch(e) {
     el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Error: '+e.message+'</div>';
@@ -486,9 +504,11 @@ function doVerify(){
   var el = document.getElementById('verifyMsg');
   if(!code||code.length<4){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Enter the 4-digit code</div>'; return; }
   if(code !== verifyCode){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Wrong code. Try again.</div>'; return; }
-  // Mark as verified
-  var c = findCustomer(pendingVerify);
-  if(c){ c.verified = true; }
+  // Mark verified and persist
+  loadData().then(function(){
+    var c = findCustomer(pendingVerify);
+    if(c){ c.verified = true; _enqueueWrite(); }
+  }).catch(function(){});
   document.getElementById('verifyStep').classList.add('hidden');
   showToast('✅ Number verified!', 'success');
   showDashboard();
@@ -545,7 +565,7 @@ async function refreshDashboard(){
     document.getElementById('cardName').textContent = c.name||'Valued Member';
     document.getElementById('cardTier').innerHTML = '<span class="tier-badge" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.375rem 0.75rem;border-radius:100px;font-size:0.75rem;font-weight:700;background:'+t.bg+';color:'+t.color+';">'+t.icon+' '+t.name+'</span>';
     document.getElementById('cardPts').innerHTML = pts.toLocaleString()+' <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">pts</span>';
-    document.getElementById('cardValue').textContent = '$'+ec._value+' redemption value';
+    document.getElementById('cardValue').textContent = pts > 0 ? '$'+ec._value+' redemption value' : 'Start earning to unlock rewards ✨';
 
     // Tier progress
     var progress = tierProgress(c);
@@ -595,7 +615,7 @@ async function refreshDashboard(){
     var txs = (c.transactions||[]).slice(-5).reverse();
     var txnsHtml = '';
     if(!txs.length){
-      txnsHtml = '<div style="text-align:center;padding:2rem 0;color:var(--text-muted);">No purchases yet. Visit the shop to start earning!</div>';
+      txnsHtml = '<div style="text-align:center;padding:2rem 0;color:var(--text-muted);">✨ Your journey starts here! Visit the shop to earn points.</div>';
     } else {
       txs.forEach(function(tx){
         var icon = tx.type==='purchase'?'🛒':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
@@ -613,6 +633,11 @@ async function refreshDashboard(){
 
     // Referral
     document.getElementById('refCode').textContent = c.referral_code||'--------';
+    // Referral stats
+    var refCount = c.referral_count||0;
+    var refName = document.getElementById('custEditName');
+    if(refName) refName.value = c.name||'';
+    document.getElementById('refStats').innerHTML = refCount > 0 ? '👥 '+refCount+' friend'+(refCount!==1?'s':'')+' joined with your code' : 'Share your code to earn bonus points when friends join';
   } catch(e) {
     showToast('Error loading: '+e.message, 'error');
   }
@@ -635,8 +660,27 @@ function copyRef(){
   }
 }
 
+// ========== SELF-EDIT NAME ==========
+async function doSaveCustName(){
+  var nm = document.getElementById('custEditName').value.trim();
+  var el = document.getElementById('custNameMsg');
+  if(!nm){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Enter your name</div>'; return; }
+  try {
+    await loadData();
+    var c = findCustomer(curPhone);
+    if(!c){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Account not found</div>'; return; }
+    c.name = nm;
+    _enqueueWrite();
+    el.innerHTML='<div style=\"color:var(--accent);font-size:0.75rem;\">✅ Name updated</div>';
+    setTimeout(function(){ el.innerHTML=''; }, 2000);
+    refreshDashboard();
+  } catch(e){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Error: '+e.message+'</div>'; }
+}
+
 // ========== TOAST ==========
 function showToast(msg, type){
+  var existing = document.querySelectorAll('.toast');
+  existing.forEach(function(t){ t.remove(); });
   var t = document.createElement('div');
   t.className = 'toast toast-'+type;
   t.textContent = msg;
