@@ -45,9 +45,11 @@ SMTP_PASS = os.environ.get("SMTP_PASS", "")
 FROM_EMAIL = os.environ.get("FROM_EMAIL", SMTP_USER)
 
 # GitHub config for creating shop files in rewards-data repo
-GH_TOKEN = os.environ.get("GH_TOKEN", "")
+# Local dev token — replace with env var for production
+# GitHub config for creating shop files in rewards-data repo
+GH_TOKEN=os.env...EN", "")
 GH_DATA_REPO = "CRYPTORICH/rewards-data"
-GH_AUTH_REPO = os.environ.get("GH_AUTH_REPO", "CRYPTORICH/rewards-auth")  # PRIVATE repo
+GH_AUTH_REPO=os.env...O", "CRYPTORICH/rewards-auth")  # PRIVATE repo
 
 # If no SMTP creds, we're in dev mode — log codes instead
 DEV_MODE = not (SMTP_USER and SMTP_PASS)
