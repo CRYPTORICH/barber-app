@@ -668,8 +668,8 @@ function renderCustomer(c){
   var txs = (c.transactions||[]).slice(-5).reverse();
   var hist = '';
   txs.forEach(function(tx){
-    var icon = tx.type==='purchase'?'🛒':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
-    var label = tx.type==='purchase'?'Purchase $'+formatCurrency(tx.amount||0):tx.type==='redeem'?'Redeemed $'+tx.value+' off':(tx.note||tx.type.replace(/_/g,' '));
+    var icon = tx.type==='haircut'?'🛒':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
+    var label = tx.type==='haircut'?'Haircut $'+formatCurrency(tx.amount||0):tx.type==='redeem'?'Redeemed $'+tx.value+' off':(tx.note||tx.type.replace(/_/g,' '));
     var ptsStr = tx.points>0?'+'+tx.points:''+tx.points;
     hist += '<div class="txn-row"><div class="txn-icon">'+icon+'</div>'+
       '<div style="flex:1;"><div style="font-weight:600;">'+label+'</div><div style="font-size:0.6875rem;color:var(--text-muted);">'+formatDate(tx.timestamp)+'</div></div>'+
@@ -694,7 +694,7 @@ function renderCustomer(c){
     '<input type="text" id="editName" placeholder="'+(c.name||'Add name...')+'" value="'+(c.name||'')+'" style="flex:1;padding:0.625rem 0.75rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-size:0.875rem;outline:none;">'+
     '<button class="btn btn-sm" style="background:var(--accent);color:#fff;flex-shrink:0;" onclick="doSaveName()">💾 Save</button></div><div id="nameMsg"></div>'+
 
-    '<div class="section-label">💰 Add Purchase</div>'+
+    '<div class="section-label">💰 Add Haircut</div>'+
     '<div class="quick-buy-row"><button class="quick-buy" onclick="quickBuy(5)">$5</button><button class="quick-buy" onclick="quickBuy(10)">$10</button><button class="quick-buy" onclick="quickBuy(20)">$20</button><button class="quick-buy" onclick="quickBuy(50)">$50</button></div>'+
     '<div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;"><input type="number" id="amtIn" placeholder="Custom $" style="flex:1;padding:0.625rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-size:0.9375rem;text-align:center;outline:none;" inputmode="decimal"><button class="btn btn-primary btn-sm" onclick="doBuy()">Add</button></div>'+
     '<div id="buyMsg" style="margin-bottom:1.25rem;"></div>'+
@@ -737,7 +737,7 @@ async function doBuy(){
   el.innerHTML='<div style="color:var(--text-muted);font-size:0.75rem;">Processing...</div>';
   try {
     await loadData();
-    var r = addPurchase(curPhone, amt);
+    var r = addHaircut(curPhone, amt);
     if(!r||r.error){ el.innerHTML='<div class="msg msg-error" style="font-size:0.75rem;">'+(r?r.error:'Failed')+'</div>'; return; }
     var bonusText = r.bonuses&&r.bonuses.length?' + '+r.bonuses.map(function(b){return b.label+' (+'+b.pts+')'}).join(', '):'';
     var tierText = r.tier_up?' 🎉 '+r.new_tier.icon+' '+r.new_tier.name+'!':'';

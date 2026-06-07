@@ -1,5 +1,5 @@
 /**
- * Smoke Shop Rewards v4.0 — Multi-Tenant SaaS Data Layer
+ * Barbershop Rewards v4.0 — Multi-Tenant SaaS Data Layer
  * Pure GitHub stack: ?shop=slug routes to shops/{slug}.json
  * Per-tenant isolation, dynamic branding, PIN auth.
  */
@@ -96,7 +96,7 @@ function _defaultData() {
   return {
     customers: {},
     config: {
-      shop_name: 'Smoke Shop Rewards',
+      shop_name: 'Barbershop Rewards',
       birthday_bonus: 50,
       referral_bonus: 100,
       double_points_days: [],
@@ -264,11 +264,11 @@ const REDEEM_TIERS = [
 // ═══════════════════════
 
 const ACHIEVEMENTS = {
-  first_visit:     { id:'first_visit',     icon:'🆕', name:'First Visit',        desc:'Made your first purchase',                    pts:10 },
+  first_visit:     { id:'first_visit',     icon:'🆕', name:'First Visit',        desc:'Made your first haircut',                    pts:10 },
   streak_3:        { id:'streak_3',        icon:'🔥', name:'3-Visit Streak',     desc:'Visited 3 times in a row',                   pts:25 },
   streak_5:        { id:'streak_5',        icon:'🔥🔥', name:'5-Visit Streak',   desc:'Visited 5 times without breaking streak',     pts:50 },
   streak_10:       { id:'streak_10',       icon:'💀', name:'Loyal Regular',      desc:'10 visits — you basically live here',         pts:100 },
-  big_spender:     { id:'big_spender',     icon:'💸', name:'Big Spender',        desc:'Single purchase of $75 or more',              pts:25 },
+  big_spender:     { id:'big_spender',     icon:'💸', name:'Big Spender',        desc:'Single haircut of $75 or more',              pts:25 },
   weekend_warrior: { id:'weekend_warrior', icon:'🎉', name:'Weekend Warrior',    desc:'Visited on both Saturday and Sunday',         pts:15 },
   night_owl:       { id:'night_owl',       icon:'🦉', name:'Night Owl',          desc:'Visited after 8 PM',                         pts:10 },
   points_100:      { id:'points_100',      icon:'💯', name:'Century Club',       desc:'Earned 100 lifetime points',                  pts:0 },
@@ -299,7 +299,7 @@ function checkAchievements(c, trigger) {
     if (a.pts) bonusPts += a.pts;
   }
 
-  if (trigger === 'purchase') {
+  if (trigger === 'haircut') {
     award('first_visit');
     if (c.visit_count >= 3) award('streak_3');
     if (c.visit_count >= 5) award('streak_5');
@@ -507,7 +507,7 @@ function _genCode() {
 // TRANSACTIONS (with error handling)
 // ═══════════════════════
 
-function addPurchase(phone, amount) {
+function addHaircut(phone, amount) {
   if (!_data) return { error: 'Data not loaded' };
   let c = findCustomer(phone);
   if (!c) return { error: 'Customer not found' };
@@ -552,13 +552,13 @@ function addPurchase(phone, amount) {
   // Record
   let nowISO = new Date().toISOString();
   if (!c.transactions) c.transactions = [];
-  c.transactions.push({ id: _genId(), type: 'purchase', amount, points: pts, tier: newTier.name, timestamp: nowISO });
+  c.transactions.push({ id: _genId(), type: 'haircut', amount, points: pts, tier: newTier.name, timestamp: nowISO });
   bonuses.forEach(b => c.transactions.push({ id: _genId(), type: b.type, points: b.pts, note: b.label, timestamp: nowISO }));
 
   addRecent(phone);
 
   // Check achievements
-  let achResult = checkAchievements(c, 'purchase');
+  let achResult = checkAchievements(c, 'haircut');
   if (amount >= 75) {
     let bigSpenderResult = checkAchievements(c, 'big_spender');
     if (bigSpenderResult.achievements.length) {

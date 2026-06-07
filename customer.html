@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#060906">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>Rewards · Smoke Shop Rewards</title>
+<title>Rewards · Barbershop Rewards</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; }
@@ -482,7 +482,7 @@ async function doSignup(){
     try {
       var resp = await fetch('https://sms-proxy-xxxx.onrender.com/send', {
         method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ phone: ph, message: 'Your Smoke Shop Rewards code: '+verifyCode })
+        body: JSON.stringify({ phone: ph, message: 'Your Barbershop Rewards code: '+verifyCode })
       });
       if(resp.ok){ smsSent = true; }
     } catch(e) { /* proxy not deployed yet — use simulation */ }
@@ -588,7 +588,7 @@ async function refreshDashboard(){
       var can = pts >= needed;
       rewardsHtml += '<div class="reward-card '+(can?'affordable':'locked')+'">'+
         '<div class="reward-icon" style="background:'+(can?'var(--accent-glow)':'rgba(255,255,255,0.05)')+'">'+(can?'✅':'🔒')+'</div>'+
-        '<div style="flex:1;"><div style="font-weight:600;font-size:0.9375rem;">$'+dollars+' off purchase</div><div style="font-size:0.75rem;color:var(--text-muted);">Redeem at counter with staff</div></div>'+
+        '<div style="flex:1;"><div style="font-weight:600;font-size:0.9375rem;">$'+dollars+' off haircut</div><div style="font-size:0.75rem;color:var(--text-muted);">Redeem at counter with staff</div></div>'+
         '<div class="reward-pts">'+needed.toLocaleString()+' pts</div>'+
         '</div>';
     });
@@ -618,8 +618,8 @@ async function refreshDashboard(){
       txnsHtml = '<div style="text-align:center;padding:2rem 0;color:var(--text-muted);">✨ Your journey starts here! Visit the shop to earn points.</div>';
     } else {
       txs.forEach(function(tx){
-        var icon = tx.type==='purchase'?'🛒':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
-        var label = tx.type==='purchase'?'Purchase $'+(tx.amount||0).toFixed(2):
+        var icon = tx.type==='haircut'?'🛒':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
+        var label = tx.type==='haircut'?'Haircut $'+(tx.amount||0).toFixed(2):
                     tx.type==='redeem'?'Redeemed $'+tx.value+' off':
                     (tx.note||tx.type.replace(/_/g,' '));
         txnsHtml += '<div class="mini-txn">'+

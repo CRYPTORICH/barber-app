@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#060906">
-<title>Rewards — Loyalty Program for Smoke Shops</title>
+<title>Cuts & Rewards — Loyalty for Barbershops</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060906;--bg-card:#0d110d;--border:#1a241a;--text:#e8ede8;--text-muted:#6b7a6b;--accent:#059669;--accent-glow:rgba(5,150,105,0.18);--gold:#d4a843;--radius:16px;--radius-lg:24px}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100dvh;-webkit-font-smoothing:antialiased}
 
-/* Hero */
 .hero{padding:3rem 1.5rem 2rem;text-align:center;max-width:600px;margin:0 auto}
 .hero h1{font-size:2rem;font-weight:900;line-height:1.15;margin-bottom:1rem}
 .hero h1 span{color:var(--accent)}
 .hero p{color:var(--text-muted);font-size:1.0625rem;line-height:1.6;max-width:440px;margin:0 auto 2rem}
+.hero .emoji{font-size:2.5rem;margin-bottom:1rem}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.875rem 2rem;border:none;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.15s;text-decoration:none}
 .btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 24px var(--accent-glow)}
@@ -22,103 +22,113 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .btn-outline{background:transparent;border:2px solid var(--border);color:var(--text-muted)}
 .btn-lg{padding:1rem 2.5rem;font-size:1.125rem;border-radius:20px}
 
-/* Pricing */
-.pricing{padding:2rem 1rem 3rem;max-width:900px;margin:0 auto}
-.pricing h2{text-align:center;font-size:1.5rem;font-weight:800;margin-bottom:0.5rem}
-.pricing .sub{text-align:center;color:var(--text-muted);margin-bottom:2rem}
-.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;max-width:700px;margin:0 auto}
-.plan{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem 1.5rem;position:relative;transition:transform 0.2s,border-color 0.2s}
-.plan:hover{transform:translateY(-4px)}
-.plan.popular{border-color:var(--accent);box-shadow:0 0 32px var(--accent-glow)}
-.plan h3{font-size:1.25rem;font-weight:800;margin-bottom:0.25rem}
-.plan .price{font-size:2.5rem;font-weight:900;margin:0.75rem 0 0.25rem}
-.plan .price span{font-size:1rem;font-weight:400;color:var(--text-muted)}
-.plan .desc{color:var(--text-muted);font-size:0.875rem;line-height:1.5;margin-bottom:1.25rem}
-.plan ul{list-style:none;margin-bottom:1.5rem}
-.plan ul li{padding:0.375rem 0;font-size:0.875rem;color:var(--text);display:flex;align-items:center;gap:0.5rem}
-.plan ul li::before{content:'✅';flex-shrink:0}
-.popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:0.25rem 1rem;border-radius:100px;font-size:0.75rem;font-weight:700}
+.pricing{padding:2rem 1.5rem 4rem;max-width:900px;margin:0 auto}
+.pricing h2{text-align:center;font-size:1.5rem;margin-bottom:2rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;text-align:center}
+.card h3{font-size:1.25rem;margin-bottom:0.5rem}
+.card .price{font-size:2.5rem;font-weight:900;color:var(--accent);margin:1rem 0}
+.card .price span{font-size:0.9375rem;color:var(--text-muted);font-weight:400}
+.card ul{list-style:none;text-align:left;margin:1.5rem 0;color:var(--text-muted);font-size:0.9375rem}
+.card ul li{padding:0.375rem 0}
+.card ul li::before{content:"✓";color:var(--accent);margin-right:0.5rem;font-weight:700}
 
-/* Demo */
-.demo{padding:3rem 1.5rem;text-align:center;max-width:600px;margin:0 auto}
-.demo h2{font-size:1.5rem;font-weight:800;margin-bottom:1rem}
-.demo .demo-links{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem}
-.demo-link{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.5rem;text-decoration:none;color:var(--text);transition:all 0.15s;text-align:left}
-.demo-link:hover{border-color:var(--accent)}
-.demo-link .label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em}
-.demo-link .title{font-weight:700;margin:0.25rem 0}
-.demo-link .url{font-size:0.75rem;color:var(--accent);font-family:monospace}
+.features{padding:2rem 1.5rem 4rem;max-width:900px;margin:0 auto}
+.features h2{text-align:center;font-size:1.5rem;margin-bottom:2rem}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem}
+.feature{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center}
+.feature .icon{font-size:2rem;margin-bottom:0.75rem}
+.feature h4{font-size:1rem;margin-bottom:0.375rem}
+.feature p{font-size:0.875rem;color:var(--text-muted);line-height:1.5}
 
-/* Footer */
-footer{text-align:center;padding:2rem 1.5rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.75rem}
-footer a{color:var(--accent);text-decoration:none}
+.cta{text-align:center;padding:0 1.5rem 4rem}
+.cta p{color:var(--text-muted);margin-top:1rem;font-size:0.875rem}
+
+@media(max-width:480px){
+  .hero h1{font-size:1.625rem}
+  .card .price{font-size:2rem}
+}
 </style>
 </head>
 <body>
 
 <div class="hero">
-  <h1>Turn every customer into a <span>regular</span></h1>
-  <p>Points, tiers, achievements, referrals — the loyalty program your smoke shop deserves. Customers earn, you keep them coming back.</p>
-  <a href="admin.html" class="btn btn-primary btn-lg">Start Your Free Trial →</a>
+  <div class="emoji">💈</div>
+  <h1>Turn Every <span>Haircut</span> Into a Comeback</h1>
+  <p>Digital loyalty cards your clients tap at checkout. No app download. No plastic cards. Just a phone number and they're earning free cuts.</p>
+  <a href="admin.html" class="btn btn-primary btn-lg">Set Up Your Shop →</a>
 </div>
 
 <div class="pricing">
-  <h2>Simple pricing</h2>
-  <p class="sub">14-day free trial. No credit card needed.</p>
-  <div class="plans">
-    <div class="plan">
+  <h2>One Price. Everything Included.</h2>
+  <div class="cards">
+    <div class="card">
       <h3>Starter</h3>
-      <div class="price">$29<span>/mo</span></div>
-      <p class="desc">For shops getting started with loyalty</p>
+      <div class="price">$97<span>/mo</span></div>
       <ul>
-        <li>Unlimited customers</li>
-        <li>6-tier rewards system</li>
-        <li>18 achievement badges</li>
-        <li>Referral program</li>
-        <li>Staff panel with PIN</li>
-        <li>Customer self-signup</li>
+        <li>Unlimited loyalty cards</li>
+        <li>SMS reminders</li>
+        <li>Customer portal</li>
+        <li>Staff PIN access</li>
+        <li>Basic analytics</li>
       </ul>
-      <a href="admin.html" class="btn btn-outline" style="width:100%">Start Trial</a>
+      <a href="admin.html" class="btn btn-primary">Get Started</a>
     </div>
-    <div class="plan popular">
-      <span class="popular-tag">Most Popular</span>
-      <h3>Growth</h3>
-      <div class="price">$49<span>/mo</span></div>
-      <p class="desc">For shops that want the full experience</p>
+    <div class="card" style="border-color:var(--accent)">
+      <h3>Pro</h3>
+      <div class="price">$200<span>/mo</span></div>
       <ul>
         <li>Everything in Starter</li>
-        <li>Custom branding &amp; colors</li>
-        <li>SMS verification</li>
-        <li>Email notifications</li>
-        <li>Birthday auto-bonus</li>
+        <li>Referral rewards</li>
+        <li>Birthday bonuses</li>
+        <li>Custom branding</li>
         <li>Priority support</li>
       </ul>
-      <a href="admin.html" class="btn btn-primary" style="width:100%">Start Trial</a>
+      <a href="admin.html" class="btn btn-primary">Go Pro</a>
     </div>
   </div>
 </div>
 
-<div class="demo">
-  <h2>See it in action</h2>
-  <p style="color:var(--text-muted);">Try the live demo — no signup needed</p>
-  <div class="demo-links">
-    <a href="staff.html" class="demo-link">
-      <div class="label">Staff Panel</div>
-      <div class="title">🔐 Staff Dashboard</div>
-      <div class="url">PIN: 0000</div>
-    </a>
-    <a href="customer.html" class="demo-link">
-      <div class="label">Customer Portal</div>
-      <div class="title">💳 Rewards Card</div>
-      <div class="url">Sign up free</div>
-    </a>
+<div class="features">
+  <h2>How It Works</h2>
+  <div class="feature-grid">
+    <div class="feature">
+      <div class="icon">📱</div>
+      <h4>Customer Taps</h4>
+      <p>Client enters phone number at checkout. No app needed.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">✂️</div>
+      <h4>Staff Stamps</h4>
+      <p>Your barber taps to add a visit. One tap = one point.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🎁</div>
+      <h4>Auto Rewards</h4>
+      <p>10th cut free. System tracks everything automatically.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">💬</div>
+      <h4>SMS Alerts</h4>
+      <p>"You're 2 cuts away from a free haircut!" — auto texts.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">👥</div>
+      <h4>Referrals</h4>
+      <p>Client brings a friend, both get bonus points.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">📊</div>
+      <h4>Shop Dashboard</h4>
+      <p>See who's due back, top clients, and monthly revenue.</p>
+    </div>
   </div>
 </div>
 
-<footer>
-  <p>Built by <a href="https://github.com/CRYPTORICH">SiteLaunch</a> — professional tools for local businesses.</p>
-  <p style="margin-top:0.5rem"><a href="#">Privacy Policy</a> · <a href="#">Terms</a></p>
-</footer>
+<div class="cta">
+  <a href="admin.html" class="btn btn-primary btn-lg">Launch Your Shop — Free Setup</a>
+  <p>No contract. Cancel anytime. 5-minute setup.</p>
+</div>
 
 </body>
 </html>
