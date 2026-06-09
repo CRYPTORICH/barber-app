@@ -64,9 +64,9 @@ h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
       <div class="hint">Your clients will see this name</div>
     </div>
     <div class="form-group">
-      <label>URL Slug</label>
+      <label>Your Subdomain</label>
       <input type="text" id="regSlug" placeholder="classiccuts" autocomplete="off" style="text-transform:lowercase">
-      <div class="hint">One word, lowercase. Your link: <span id="slugPreview" style="color:var(--accent);">staff.html?shop=classiccuts</span></div>
+      <div class="hint">Permanent. Your shop lives at <span id="slugPreview" style="color:var(--gold);font-weight:700;">classiccuts.racksrewards.com</span></div>
     </div>
     <button class="btn btn-primary" onclick="doRegister()">Send Verification Code</button>
     <div id="regMsg"></div>
@@ -116,14 +116,16 @@ h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
 <!-- STEP 4: Done — Show URLs -->
 <div id="step4" class="hidden">
   <h1>You're Live</h1>
-  <p class="sub">Your client book is ready. Share these links:</p>
+  <p class="sub">Your shop is ready. Share your domain:</p>
   <div class="card">
-    <div class="step-label"><span class="step-num" style="background:var(--gold)">OK</span> Your Shop Links</div>
+    <div class="step-label"><span class="step-num" style="background:var(--gold)">OK</span> Your Domain</div>
     <div class="urls">
-      <div class="url-label">Staff Panel (for your barbers)</div>
-      <div class="url-line" id="staffUrl">staff.html?shop=...</div>
-      <div class="url-label" style="margin-top:0.75rem">Client Portal (for your clients)</div>
-      <div class="url-line" id="custUrl">customer.html?shop=...</div>
+      <div class="url-label">Your Shop Home</div>
+      <div class="url-line" id="staffUrl" style="font-size:1rem;font-weight:700;color:var(--gold);">classiccuts.racksrewards.com</div>
+      <div class="url-label" style="margin-top:0.75rem">Direct Staff Access</div>
+      <div class="url-line" id="custUrl">classiccuts.racksrewards.com/staff</div>
+      <div class="url-label" style="margin-top:0.75rem">Client Access</div>
+      <div class="url-line" id="clientUrl">classiccuts.racksrewards.com</div>
     </div>
     <div style="display:flex;gap:0.5rem;margin-top:1rem">
       <button class="btn btn-primary" onclick="openStaff()">Open Staff Panel</button>
@@ -155,7 +157,7 @@ var pendingToken = null;
 document.getElementById('regSlug').addEventListener('input', function(){
   var v = this.value.replace(/[^a-z0-9-]/g,'').toLowerCase();
   this.value = v;
-  document.getElementById('slugPreview').textContent = v ? 'staff.html?shop='+v : 'staff.html?shop=...';
+  document.getElementById('slugPreview').textContent = v ? v+'.racksrewards.com' : 'classiccuts.racksrewards.com';
 });
 
 // ═══════════════════════
@@ -265,9 +267,9 @@ async function doSetup(){
     if(!resp.ok){ el.innerHTML='<div class="msg msg-error">'+data.error+'</div>'; return; }
 
     document.getElementById('step3').classList.add('hidden');
-    var base = window.location.href.replace('admin.html','');
-    document.getElementById('staffUrl').textContent = base+'staff.html?shop='+pendingSlug;
-    document.getElementById('custUrl').textContent = base+'customer.html?shop='+pendingSlug;
+    document.getElementById('staffUrl').textContent = pendingSlug+'.racksrewards.com';
+    document.getElementById('custUrl').textContent = pendingSlug+'.racksrewards.com/staff';
+    document.getElementById('clientUrl').textContent = pendingSlug+'.racksrewards.com';
     document.getElementById('step4').classList.remove('hidden');
 
   } catch(e){

@@ -1,17 +1,24 @@
-     1|/**
-     2| * Barbershop Rewards v4.0 — Multi-Tenant SaaS Data Layer
-     3| * Pure GitHub stack: ?shop=slug routes to shops/{slug}.json
-     4| * Per-tenant isolation, dynamic branding, PIN auth.
-     5| */
-     6|
-     7|// ═══════════════════════
-     8|// TENANT DETECTION
-     9|// ═══════════════════════
-    10|
-    11|const SHOP_SLUG = (function(){
-    12|  var p = new URLSearchParams(window.location.search);
-    13|  return p.get('shop') || 'default';
-    14|})();
+     /**
+      * ChairBook v1.0 — Multi-Tenant Barber Client Book
+      * Subdomain routing: classiccuts.racksrewards.com → shop slug
+      * Falls back to ?shop=slug for GitHub Pages preview.
+      * Per-tenant isolation, dynamic branding, PIN auth.
+      */
+
+     // ═══════════════════════
+     // TENANT DETECTION
+     // ═══════════════════════
+
+     const SHOP_SLUG = (function(){
+       // 1. Subdomain: classiccuts.racksrewards.com → 'classiccuts'
+       var host = window.location.hostname;
+       if (host.endsWith('.racksrewards.com') && host !== 'racksrewards.com' && host !== 'barber.racksrewards.com') {
+         return host.replace('.racksrewards.com', '');
+       }
+       // 2. Query param fallback: ?shop=classiccuts
+       var p = new URLSearchParams(window.location.search);
+       return p.get('shop') || 'default';
+     })();
     15|
     16|const GH = {
     17|  repo: 'CRYPTORICH/rewards-data',
