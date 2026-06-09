@@ -1,404 +1,405 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0d0b0a">
-<meta name="description" content="ChairBook — The client book that keeps barbers booked. Track every head, kill no-shows, never lose a regular.">
-<title>ChairBook — Your Clients. Your Chair.</title>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-:root{
-  --bg:#0d0b0a;
-  --bg-card:#161311;
-  --border:#26211c;
-  --text:#ede6dc;
-  --text-muted:#8a7e70;
-  --accent:#b8312f;
-  --accent-hover:#c9403e;
-  --gold:#c49b3f;
-  --cream:#f5f0e8;
-  --radius:14px;
-  --radius-lg:20px;
-}
-
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-}
-
-img{max-width:100%;display:block}
-
-/* ── NAV ── */
-.nav{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:1.25rem 2rem;max-width:1100px;margin:0 auto;
-}
-.nav-logo{
-  font-weight:900;font-size:1.25rem;letter-spacing:-0.02em;
-  color:var(--text);text-decoration:none;
-  display:flex;align-items:center;gap:0.5rem;
-}
-.nav-logo svg{width:24px;height:24px}
-.nav-logo span{color:var(--gold)}
-.nav-cta{
-  padding:0.5rem 1.25rem;background:var(--accent);color:#fff;
-  border-radius:8px;font-size:0.875rem;font-weight:700;text-decoration:none;
-  transition:background 0.2s;
-}
-.nav-cta:hover{background:var(--accent-hover)}
-
-/* ── HERO ── */
-.hero{
-  position:relative;padding:6rem 1.5rem;text-align:center;
-  background:linear-gradient(180deg,rgba(13,11,10,0.25) 0%,rgba(13,11,10,0.85) 70%,var(--bg) 100%),
-             url('images/hero-barber.jpg') center/cover no-repeat;
-  min-height:580px;display:flex;align-items:center;justify-content:center;
-}
-.hero-content{max-width:680px;position:relative;z-index:1}
-.hero-badge{
-  display:inline-block;padding:0.375rem 1.125rem;margin-bottom:1.5rem;
-  border:1px solid rgba(255,255,255,0.12);border-radius:50px;
-  font-size:0.8125rem;color:rgba(255,255,255,0.6);
-  backdrop-filter:blur(10px);background:rgba(255,255,255,0.04);
-  letter-spacing:0.03em;
-}
-.hero h1{
-  font-size:3.25rem;font-weight:900;line-height:1.08;letter-spacing:-0.03em;
-  margin-bottom:1.25rem;
-}
-.hero h1 em{font-style:normal;color:var(--gold)}
-.hero p{
-  font-size:1.1875rem;color:rgba(255,255,255,0.55);
-  max-width:520px;margin:0 auto 2.5rem;line-height:1.65;
-}
-.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-
-.btn{
-  display:inline-flex;align-items:center;gap:0.5rem;
-  padding:0.875rem 2rem;border-radius:var(--radius);font-weight:700;
-  font-size:0.9375rem;text-decoration:none;transition:all 0.2s;cursor:pointer;border:none;
-}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
-.btn-outline{
-  background:transparent;border:2px solid rgba(255,255,255,0.15);color:#fff;
-}
-.btn-outline:hover{background:rgba(255,255,255,0.04)}
-
-/* ── SECTION ── */
-.section{padding:5rem 1.5rem;max-width:1100px;margin:0 auto}
-.section-label{
-  text-transform:uppercase;letter-spacing:0.1em;font-size:0.75rem;
-  font-weight:700;color:var(--accent);margin-bottom:0.75rem;
-}
-.section h2{font-size:2.25rem;font-weight:900;letter-spacing:-0.02em;margin-bottom:1rem;line-height:1.2}
-.section p.sub{color:var(--text-muted);font-size:1.0625rem;max-width:600px;margin-bottom:3rem;line-height:1.7}
-
-/* ── PAIN STRIP ── */
-.pain-strip{
-  background:var(--bg-card);border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);padding:3rem 1.5rem;text-align:center;
-}
-.pain-strip h2{font-size:1.75rem;font-weight:800;margin-bottom:2rem;letter-spacing:-0.02em}
-.pain-strip h2 span{color:var(--accent)}
-.pain-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
-  max-width:900px;margin:0 auto;
-}
-.pain-item{text-align:center}
-.pain-item .num{
-  font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;
-  margin-bottom:0.5rem;
-}
-.pain-item .label{font-size:0.9375rem;color:var(--text-muted);line-height:1.5}
-
-/* ── FEATURES ── */
-.features-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
-}
-.feature-card{
-  background:var(--bg-card);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:2rem;
-  transition:border-color 0.2s;
-}
-.feature-card:hover{border-color:var(--accent)}
-.feature-icon{
-  width:48px;height:48px;border-radius:12px;
-  background:rgba(184,49,47,0.08);color:var(--accent);
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:1.25rem;
-}
-.feature-icon svg{width:22px;height:22px}
-.feature-card h4{font-size:1rem;font-weight:700;margin-bottom:0.5rem}
-.feature-card p{font-size:0.875rem;color:var(--text-muted);line-height:1.6}
-
-/* ── HOW IT WORKS ── */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;text-align:center}
-.step-num{
-  width:56px;height:56px;border-radius:50%;background:var(--accent);
-  color:#fff;font-size:1.375rem;font-weight:900;
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 1.25rem;
-}
-.step h4{font-size:1.0625rem;font-weight:700;margin-bottom:0.5rem}
-.step p{font-size:0.875rem;color:var(--text-muted);line-height:1.6}
-
-/* ── PRICING ── */
-.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;max-width:700px;margin:0 auto}
-.pricing-card{
-  background:var(--bg-card);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:2.5rem 2rem;text-align:center;
-}
-.pricing-card.featured{border-color:var(--accent);position:relative}
-.pricing-card.featured::before{
-  content:'MOST POPULAR';position:absolute;top:-11px;left:50%;transform:translateX(-50%);
-  background:var(--accent);color:#fff;font-size:0.6875rem;font-weight:700;
-  padding:0.25rem 1rem;border-radius:50px;letter-spacing:0.06em;
-}
-.pricing-card .plan{font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);font-weight:700;margin-bottom:0.5rem}
-.pricing-card .price{font-size:3rem;font-weight:900;color:var(--gold)}
-.pricing-card .price span{font-size:0.9375rem;color:var(--text-muted);font-weight:400}
-.pricing-card .haircut-anchor{font-size:0.8125rem;color:var(--text-muted);margin-top:-0.25rem;margin-bottom:1.25rem}
-.pricing-card ul{list-style:none;text-align:left;margin:1.5rem 0}
-.pricing-card ul li{padding:0.5rem 0;font-size:0.875rem;color:var(--text-muted);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
-.pricing-card ul li:last-child{border-bottom:none}
-.pricing-card ul li svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
-
-/* ── TESTIMONIAL ── */
-.testimonial{
-  background:var(--bg-card);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:3rem 2rem;text-align:center;max-width:650px;margin:0 auto;
-}
-.testimonial .quote{font-size:1.25rem;font-style:italic;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem}
-.testimonial .author{font-weight:700;color:var(--text)}
-.testimonial .role{font-size:0.8125rem;color:var(--text-muted)}
-
-/* ── CTA ── */
-.cta{
-  text-align:center;padding:5rem 1.5rem;
-  background:linear-gradient(180deg,var(--bg) 0%,#1a0f0d 100%);
-}
-.cta h2{font-size:2.25rem;font-weight:900;margin-bottom:1rem;letter-spacing:-0.02em}
-.cta p{color:var(--text-muted);margin-bottom:2rem;font-size:1.0625rem}
-.cta .btn-primary{padding:1rem 2.5rem;font-size:1.0625rem;border-radius:16px}
-
-/* ── FOOTER ── */
-.footer{
-  padding:3rem 1.5rem;text-align:center;
-  border-top:1px solid var(--border);color:var(--text-muted);
-  font-size:0.8125rem;
-}
-.footer a{color:var(--text-muted);text-decoration:none}
-
-/* ── MOBILE ── */
-@media(max-width:768px){
-  .hero h1{font-size:2rem}
-  .hero p{font-size:1rem}
-  .features-grid{grid-template-columns:1fr}
-  .steps{grid-template-columns:1fr;gap:1.5rem}
-  .pricing-grid{grid-template-columns:1fr}
-  .section h2{font-size:1.75rem}
-  .nav{padding:1rem 1.25rem}
-  .pain-grid{grid-template-columns:1fr;gap:2rem}
-}
-
-@media(max-width:480px){
-  .hero{padding:4rem 1.25rem;min-height:440px}
-  .hero h1{font-size:1.625rem}
-  .hero-actions{flex-direction:column}
-  .btn{width:100%;justify-content:center}
-}
-</style>
-</head>
-<body>
-
-<!-- NAV -->
-<nav class="nav">
-  <a href="/barber-app/" class="nav-logo">
-    <!-- barber pole SVG -->
-    <svg viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="20" rx="2" fill="var(--accent)"/><line x1="12" y1="3" x2="12" y2="9" stroke="#fff" stroke-width="2.5"/><line x1="12" y1="12" x2="12" y2="18" stroke="#1a3a8a" stroke-width="2.5"/><line x1="12" y1="10" x2="12" y2="10.01" stroke="#fff" stroke-width="2.5"/></svg>
-    Chair<span>Book</span>
-  </a>
-  <a href="admin.html" class="nav-cta">Claim Your Chair</a>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-badge">Built for barbers. Not tech bros.</div>
-    <h1>Your chair. Your clients. <em>Your book.</em></h1>
-    <p>The client book that fills chairs, kills no-shows, and keeps your regulars coming back. No commission. No bullshit.</p>
-    <div class="hero-actions">
-      <a href="admin.html" class="btn btn-primary">Get Started — 30 Days Free</a>
-      <a href="#how" class="btn btn-outline">See How It Works</a>
-    </div>
-  </div>
-</section>
-
-<!-- PAIN STRIP -->
-<section class="pain-strip">
-  <h2>The average barber loses <span>$7,200 a year</span> to no-shows and ghosting.</h2>
-  <div class="pain-grid">
-    <div class="pain-item">
-      <div class="num">3x</div>
-      <div class="label">A client with a reminder rebooks 3x more often than one without.</div>
-    </div>
-    <div class="pain-item">
-      <div class="num">67%</div>
-      <div class="label">Of clients who ghost say it's because nobody followed up.</div>
-    </div>
-    <div class="pain-item">
-      <div class="num">$60</div>
-      <div class="label">What one no-show costs you. That's a full fade. Gone.</div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section class="section">
-  <div class="section-label">What You Get</div>
-  <h2>A client book that actually works for you</h2>
-  <p class="sub">No app for your clients to download. No hardware. Your barbers open it on any phone and go.</p>
-
-  <div class="features-grid">
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-      </div>
-      <h4>Every Head Tracked</h4>
-      <p>Every client. Every visit. Their cut, their birthday, what they tip. Your book — organized.</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/><path d="M15 7l-3 3-3-3"/><path d="M12 10v7"/></svg>
-      </div>
-      <h4>Auto Reminders</h4>
-      <p>Client hits 8 visits? They get a text: "Two more and your next cut is on us." They book. You're full.</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      </div>
-      <h4>VIP Treatment</h4>
-      <p>Your best clients get the recognition they deserve. Anniversary cuts. Birthday bonuses. Red carpet treatment.</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h18v18H3z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
-      </div>
-      <h4>Staff PIN Access</h4>
-      <p>Your barbers tap a 4-digit PIN. That's it. No accounts, no passwords, no training required.</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      </div>
-      <h4>Shop Analytics</h4>
-      <p>See who's coming back, who's drifting, and which barbers are building the strongest books.</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/></svg>
-      </div>
-      <h4>Referral Built In</h4>
-      <p>Client brings a friend? Both get credit. Word of mouth is the best marketing — we make it automatic.</p>
-    </div>
-
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="section" id="how">
-  <div class="section-label">Setup</div>
-  <h2>You're live before your next client sits down</h2>
-  <p class="sub">Three steps. Five minutes. Zero technical skill required.</p>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <h4>Claim Your Domain</h4>
-      <p>Pick your shop name and get a permanent domain like <strong>classiccuts.racksrewards.com</strong>. It's yours. Forever.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <h4>Share With Your Barbers</h4>
-      <p>Give your team the link and PIN. They open it on any phone — takes 10 seconds.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <h4>Watch Your Book Fill</h4>
-      <p>Clients enter their number at checkout. Every visit is tracked. Your chair stays full.</p>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section class="section">
-  <div class="section-label">Pricing</div>
-  <h2 style="text-align:center">Less than one haircut a month</h2>
-  <p class="sub" style="text-align:center;margin-left:auto;margin-right:auto">30-day free trial. No contract. Cancel anytime.</p>
-
-  <div class="pricing-grid">
-    <div class="pricing-card">
-      <div class="plan">The Chair</div>
-      <div class="price">$29<span>/month</span></div>
-      <div class="haircut-anchor">One fade. One month. That's it.</div>
-      <ul>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Unlimited client tracking</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Auto SMS reminders</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Client portal</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Staff PIN access</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Basic analytics</li>
-      </ul>
-      <a href="admin.html" class="btn btn-primary" style="width:100%">Start Free Trial</a>
-    </div>
-    <div class="pricing-card featured">
-      <div class="plan">The Shop</div>
-      <div class="price">$79<span>/month</span></div>
-      <div class="haircut-anchor">Less than three cuts. For the whole shop.</div>
-      <ul>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Everything in The Chair</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Multi-barber support</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Referral tracking</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Birthday & anniversary automation</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
-      </ul>
-      <a href="admin.html" class="btn btn-primary" style="width:100%">Go Pro</a>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIAL -->
-<section class="section">
-  <div class="testimonial">
-    <p class="quote">"I was losing three no-shows a week. That's $180 out of my pocket. Since I started using this, I've had two no-shows in six months. My regulars love that I remember their cut, their birthday, everything. This thing pays for itself in one saved appointment."</p>
-    <p class="author">Marcus D.</p>
-    <p class="role">Owner, Fade City Barbers — Atlanta, GA</p>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta">
-  <h2>Your chair shouldn't sit empty</h2>
-  <p>Set up in 5 minutes. 30 days free. No credit card required.</p>
-  <a href="admin.html" class="btn btn-primary">Claim Your Chair</a>
-</section>
-
-<!-- FOOTER -->
-<footer class="footer">
-  <p>ChairBook &copy; 2026 &middot; <a href="admin.html">Shop Login</a></p>
-</footer>
-
-</body>
-</html>
+     1|<!DOCTYPE html>
+     2|<html lang="en">
+     3|<head>
+     4|<meta charset="UTF-8">
+     5|<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+     6|<meta name="theme-color" content="#0d0b0a">
+     7|<meta name="description" content="ChairBook — The client book that keeps barbers booked. Track every head, kill no-shows, never lose a regular.">
+     8|<title>ChairBook — Your Clients. Your Chair.</title>
+     9|<style>
+    10|*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    11|
+    12|:root{
+    13|  --bg:#0d0b0a;
+    14|  --bg-card:#161311;
+    15|  --border:#26211c;
+    16|  --text:#ede6dc;
+    17|  --text-muted:#8a7e70;
+    18|  --accent:#b8312f;
+    19|  --accent-hover:#c9403e;
+    20|  --gold:#c49b3f;
+    21|  --cream:#f5f0e8;
+    22|  --radius:14px;
+    23|  --radius-lg:20px;
+    24|}
+    25|
+    26|body{
+    27|  background:var(--bg);
+    28|  color:var(--text);
+    29|  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    30|  line-height:1.6;
+    31|  -webkit-font-smoothing:antialiased;
+    32|}
+    33|
+    34|img{max-width:100%;display:block}
+    35|
+    36|/* ── NAV ── */
+    37|.nav{
+    38|  display:flex;align-items:center;justify-content:space-between;
+    39|  padding:1.25rem 2rem;max-width:1100px;margin:0 auto;
+    40|}
+    41|.nav-logo{
+    42|  font-weight:900;font-size:1.25rem;letter-spacing:-0.02em;
+    43|  color:var(--text);text-decoration:none;
+    44|  display:flex;align-items:center;gap:0.5rem;
+    45|}
+    46|.nav-logo svg{width:24px;height:24px}
+    47|.nav-logo span{color:var(--gold)}
+    48|.nav-cta{
+    49|  padding:0.5rem 1.25rem;background:var(--accent);color:#fff;
+    50|  border-radius:8px;font-size:0.875rem;font-weight:700;text-decoration:none;
+    51|  transition:background 0.2s;
+    52|}
+    53|.nav-cta:hover{background:var(--accent-hover)}
+    54|
+    55|/* ── HERO ── */
+    56|.hero{
+    57|  position:relative;padding:6rem 1.5rem;text-align:center;
+    58|  background:linear-gradient(180deg,rgba(13,11,10,0.25) 0%,rgba(13,11,10,0.85) 70%,var(--bg) 100%),
+    59|             url('images/hero-barber.jpg') center/cover no-repeat;
+    60|  min-height:580px;display:flex;align-items:center;justify-content:center;
+    61|}
+    62|.hero-content{max-width:680px;position:relative;z-index:1}
+    63|.hero-badge{
+    64|  display:inline-block;padding:0.375rem 1.125rem;margin-bottom:1.5rem;
+    65|  border:1px solid rgba(255,255,255,0.12);border-radius:50px;
+    66|  font-size:0.8125rem;color:rgba(255,255,255,0.6);
+    67|  backdrop-filter:blur(10px);background:rgba(255,255,255,0.04);
+    68|  letter-spacing:0.03em;
+    69|}
+    70|.hero h1{
+    71|  font-size:3.25rem;font-weight:900;line-height:1.08;letter-spacing:-0.03em;
+    72|  margin-bottom:1.25rem;
+    73|}
+    74|.hero h1 em{font-style:normal;color:var(--gold)}
+    75|.hero p{
+    76|  font-size:1.1875rem;color:rgba(255,255,255,0.55);
+    77|  max-width:520px;margin:0 auto 2.5rem;line-height:1.65;
+    78|}
+    79|.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    80|
+    81|.btn{
+    82|  display:inline-flex;align-items:center;gap:0.5rem;
+    83|  padding:0.875rem 2rem;border-radius:var(--radius);font-weight:700;
+    84|  font-size:0.9375rem;text-decoration:none;transition:all 0.2s;cursor:pointer;border:none;
+    85|}
+    86|.btn-primary{background:var(--accent);color:#fff}
+    87|.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
+    88|.btn-outline{
+    89|  background:transparent;border:2px solid rgba(255,255,255,0.15);color:#fff;
+    90|}
+    91|.btn-outline:hover{background:rgba(255,255,255,0.04)}
+    92|
+    93|/* ── SECTION ── */
+    94|.section{padding:5rem 1.5rem;max-width:1100px;margin:0 auto}
+    95|.section-label{
+    96|  text-transform:uppercase;letter-spacing:0.1em;font-size:0.75rem;
+    97|  font-weight:700;color:var(--accent);margin-bottom:0.75rem;
+    98|}
+    99|.section h2{font-size:2.25rem;font-weight:900;letter-spacing:-0.02em;margin-bottom:1rem;line-height:1.2}
+   100|.section p.sub{color:var(--text-muted);font-size:1.0625rem;max-width:600px;margin-bottom:3rem;line-height:1.7}
+   101|
+   102|/* ── PAIN STRIP ── */
+   103|.pain-strip{
+   104|  background:var(--bg-card);border-top:1px solid var(--border);
+   105|  border-bottom:1px solid var(--border);padding:3rem 1.5rem;text-align:center;
+   106|}
+   107|.pain-strip h2{font-size:1.75rem;font-weight:800;margin-bottom:2rem;letter-spacing:-0.02em}
+   108|.pain-strip h2 span{color:var(--accent)}
+   109|.pain-grid{
+   110|  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+   111|  max-width:900px;margin:0 auto;
+   112|}
+   113|.pain-item{text-align:center}
+   114|.pain-item .num{
+   115|  font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;
+   116|  margin-bottom:0.5rem;
+   117|}
+   118|.pain-item .label{font-size:0.9375rem;color:var(--text-muted);line-height:1.5}
+   119|
+   120|/* ── FEATURES ── */
+   121|.features-grid{
+   122|  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+   123|}
+   124|.feature-card{
+   125|  background:var(--bg-card);border:1px solid var(--border);
+   126|  border-radius:var(--radius-lg);padding:2rem;
+   127|  transition:border-color 0.2s;
+   128|}
+   129|.feature-card:hover{border-color:var(--accent)}
+   130|.feature-icon{
+   131|  width:48px;height:48px;border-radius:12px;
+   132|  background:rgba(184,49,47,0.08);color:var(--accent);
+   133|  display:flex;align-items:center;justify-content:center;
+   134|  margin-bottom:1.25rem;
+   135|}
+   136|.feature-icon svg{width:22px;height:22px}
+   137|.feature-card h4{font-size:1rem;font-weight:700;margin-bottom:0.5rem}
+   138|.feature-card p{font-size:0.875rem;color:var(--text-muted);line-height:1.6}
+   139|
+   140|/* ── HOW IT WORKS ── */
+   141|.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;text-align:center}
+   142|.step-num{
+   143|  width:56px;height:56px;border-radius:50%;background:var(--accent);
+   144|  color:#fff;font-size:1.375rem;font-weight:900;
+   145|  display:flex;align-items:center;justify-content:center;
+   146|  margin:0 auto 1.25rem;
+   147|}
+   148|.step h4{font-size:1.0625rem;font-weight:700;margin-bottom:0.5rem}
+   149|.step p{font-size:0.875rem;color:var(--text-muted);line-height:1.6}
+   150|
+   151|/* ── PRICING ── */
+   152|.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;max-width:700px;margin:0 auto}
+   153|.pricing-card{
+   154|  background:var(--bg-card);border:1px solid var(--border);
+   155|  border-radius:var(--radius-lg);padding:2.5rem 2rem;text-align:center;
+   156|}
+   157|.pricing-card.featured{border-color:var(--accent);position:relative}
+   158|.pricing-card.featured::before{
+   159|  content:'MOST POPULAR';position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+   160|  background:var(--accent);color:#fff;font-size:0.6875rem;font-weight:700;
+   161|  padding:0.25rem 1rem;border-radius:50px;letter-spacing:0.06em;
+   162|}
+   163|.pricing-card .plan{font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);font-weight:700;margin-bottom:0.5rem}
+   164|.pricing-card .price{font-size:3rem;font-weight:900;color:var(--gold)}
+   165|.pricing-card .price span{font-size:0.9375rem;color:var(--text-muted);font-weight:400}
+   166|.pricing-card .haircut-anchor{font-size:0.8125rem;color:var(--text-muted);margin-top:-0.25rem;margin-bottom:1.25rem}
+   167|.pricing-card ul{list-style:none;text-align:left;margin:1.5rem 0}
+   168|.pricing-card ul li{padding:0.5rem 0;font-size:0.875rem;color:var(--text-muted);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
+   169|.pricing-card ul li:last-child{border-bottom:none}
+   170|.pricing-card ul li svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
+   171|
+   172|/* ── TESTIMONIAL ── */
+   173|.testimonial{
+   174|  background:var(--bg-card);border:1px solid var(--border);
+   175|  border-radius:var(--radius-lg);padding:3rem 2rem;text-align:center;max-width:650px;margin:0 auto;
+   176|}
+   177|.testimonial .quote{font-size:1.25rem;font-style:italic;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem}
+   178|.testimonial .author{font-weight:700;color:var(--text)}
+   179|.testimonial .role{font-size:0.8125rem;color:var(--text-muted)}
+   180|
+   181|/* ── CTA ── */
+   182|.cta{
+   183|  text-align:center;padding:5rem 1.5rem;
+   184|  background:linear-gradient(180deg,var(--bg) 0%,#1a0f0d 100%);
+   185|}
+   186|.cta h2{font-size:2.25rem;font-weight:900;margin-bottom:1rem;letter-spacing:-0.02em}
+   187|.cta p{color:var(--text-muted);margin-bottom:2rem;font-size:1.0625rem}
+   188|.cta .btn-primary{padding:1rem 2.5rem;font-size:1.0625rem;border-radius:16px}
+   189|
+   190|/* ── FOOTER ── */
+   191|.footer{
+   192|  padding:3rem 1.5rem;text-align:center;
+   193|  border-top:1px solid var(--border);color:var(--text-muted);
+   194|  font-size:0.8125rem;
+   195|}
+   196|.footer a{color:var(--text-muted);text-decoration:none}
+   197|
+   198|/* ── MOBILE ── */
+   199|@media(max-width:768px){
+   200|  .hero h1{font-size:2rem}
+   201|  .hero p{font-size:1rem}
+   202|  .features-grid{grid-template-columns:1fr}
+   203|  .steps{grid-template-columns:1fr;gap:1.5rem}
+   204|  .pricing-grid{grid-template-columns:1fr}
+   205|  .section h2{font-size:1.75rem}
+   206|  .nav{padding:1rem 1.25rem}
+   207|  .pain-grid{grid-template-columns:1fr;gap:2rem}
+   208|}
+   209|
+   210|@media(max-width:480px){
+   211|  .hero{padding:4rem 1.25rem;min-height:440px}
+   212|  .hero h1{font-size:1.625rem}
+   213|  .hero-actions{flex-direction:column}
+   214|  .btn{width:100%;justify-content:center}
+   215|}
+   216|</style>
+   217|</head>
+   218|<body>
+   219|
+   220|<!-- NAV -->
+   221|<nav class="nav">
+   222|  <a href="/barber-app/" class="nav-logo">
+   223|    <!-- barber pole SVG -->
+   224|    <svg viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="20" rx="2" fill="var(--accent)"/><line x1="12" y1="3" x2="12" y2="9" stroke="#fff" stroke-width="2.5"/><line x1="12" y1="12" x2="12" y2="18" stroke="#1a3a8a" stroke-width="2.5"/><line x1="12" y1="10" x2="12" y2="10.01" stroke="#fff" stroke-width="2.5"/></svg>
+   225|    Chair<span>Book</span>
+   226|  </a>
+   227|  <a href="admin.html" class="nav-cta">Claim Your Chair</a>
+   228|</nav>
+   229|
+   230|<!-- HERO -->
+   231|<section class="hero">
+   232|  <div class="hero-content">
+   233|    <div class="hero-badge">Built for barbers. Not tech bros.</div>
+   234|    <h1>Your chair. Your clients. <em>Your book.</em></h1>
+   235|    <p>The client book that fills chairs, kills no-shows, and keeps your regulars coming back. No commission. No bullshit.</p>
+   236|    <div class="hero-actions">
+   237|      <a href="admin.html" class="btn btn-primary">Get Started — 30 Days Free</a>
+   238|      <a href="#how" class="btn btn-outline">See How It Works</a>
+   239|    </div>
+   240|  </div>
+   241|</section>
+   242|
+   243|<!-- PAIN STRIP -->
+   244|<section class="pain-strip">
+   245|  <h2>The average barber loses <span>$7,200 a year</span> to no-shows and ghosting.</h2>
+   246|  <div class="pain-grid">
+   247|    <div class="pain-item">
+   248|      <div class="num">3x</div>
+   249|      <div class="label">A client with a reminder rebooks 3x more often than one without.</div>
+   250|    </div>
+   251|    <div class="pain-item">
+   252|      <div class="num">67%</div>
+   253|      <div class="label">Of clients who ghost say it's because nobody followed up.</div>
+   254|    </div>
+   255|    <div class="pain-item">
+   256|      <div class="num">$60</div>
+   257|      <div class="label">What one no-show costs you. That's a full fade. Gone.</div>
+   258|    </div>
+   259|  </div>
+   260|</section>
+   261|
+   262|<!-- FEATURES -->
+   263|<section class="section">
+   264|  <div class="section-label">What You Get</div>
+   265|  <h2>A client book that actually works for you</h2>
+   266|  <p class="sub">No app for your clients to download. No hardware. Your barbers open it on any phone and go.</p>
+   267|
+   268|  <div class="features-grid">
+   269|
+   270|    <div class="feature-card">
+   271|      <div class="feature-icon">
+   272|        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+   273|      </div>
+   274|      <h4>Every Head Tracked</h4>
+   275|      <p>Every client. Every visit. Their cut, their birthday, what they tip. Your book — organized.</p>
+   276|    </div>
+   277|
+   278|    <div class="feature-card">
+   279|      <div class="feature-icon">
+   280|        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/><path d="M15 7l-3 3-3-3"/><path d="M12 10v7"/></svg>
+   281|      </div>
+   282|      <h4>Auto Reminders</h4>
+   283|      <p>Client hits 8 visits? They get a text: "Two more and your next cut is on us." They book. You're full.</p>
+   284|    </div>
+   285|
+   286|    <div class="feature-card">
+   287|      <div class="feature-icon">
+   288|        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+   289|      </div>
+   290|      <h4>VIP Treatment</h4>
+   291|      <p>Your best clients get the recognition they deserve. Anniversary cuts. Birthday bonuses. Red carpet treatment.</p>
+   292|    </div>
+   293|
+   294|    <div class="feature-card">
+   295|      <div class="feature-icon">
+   296|        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h18v18H3z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
+   297|      </div>
+   298|      <h4>Staff PIN Access</h4>
+   299|      <p>Your barbers tap a 4-digit PIN. That's it. No accounts, no passwords, no training required.</p>
+   300|    </div>
+   301|
+   302|    <div class="feature-card">
+   303|      <div class="feature-icon">
+   304|        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+   305|      </div>
+   306|      <h4>Shop Analytics</h4>
+   307|      <p>See who's coming back, who's drifting, and which barbers are building the strongest books.</p>
+   308|    </div>
+   309|
+   310|    <div class="feature-card">
+   311|      <div class="feature-icon">
+   312|        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/></svg>
+   313|      </div>
+   314|      <h4>Referral Built In</h4>
+   315|      <p>Client brings a friend? Both get credit. Word of mouth is the best marketing — we make it automatic.</p>
+   316|    </div>
+   317|
+   318|  </div>
+   319|</section>
+   320|
+   321|<!-- HOW IT WORKS -->
+   322|<section class="section" id="how">
+   323|  <div class="section-label">Setup</div>
+   324|  <h2>You're live before your next client sits down</h2>
+   325|  <p class="sub">Three steps. Five minutes. Zero technical skill required.</p>
+   326|
+   327|  <div class="steps">
+   328|    <div class="step">
+   329|      <div class="step-num">1</div>
+   330|      <h4>Claim Your Domain</h4>
+   331|      <p>Pick your shop name and get a permanent domain. It's yours. Forever.</p>
+   332|    </div>
+   333|    <div class="step">
+   334|      <div class="step-num">2</div>
+   335|      <h4>Share With Your Barbers</h4>
+   336|      <p>Give your team the link and PIN. They open it on any phone — takes 10 seconds.</p>
+   337|    </div>
+   338|    <div class="step">
+   339|      <div class="step-num">3</div>
+   340|      <h4>Watch Your Book Fill</h4>
+   341|      <p>Clients enter their number at checkout. Every visit is tracked. Your chair stays full.</p>
+   342|    </div>
+   343|  </div>
+   344|</section>
+   345|
+   346|<!-- PRICING -->
+   347|<section class="section">
+   348|  <div class="section-label">Pricing</div>
+   349|  <h2 style="text-align:center">Less than one haircut a month</h2>
+   350|  <p class="sub" style="text-align:center;margin-left:auto;margin-right:auto">30-day free trial. No contract. Cancel anytime.</p>
+   351|
+   352|  <div class="pricing-grid">
+   353|    <div class="pricing-card">
+   354|      <div class="plan">The Chair</div>
+   355|      <div class="price">$29<span>/month</span></div>
+   356|      <div class="haircut-anchor">One fade. One month. That's it.</div>
+   357|      <ul>
+   358|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Unlimited client tracking</li>
+   359|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Auto SMS reminders</li>
+   360|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Client portal</li>
+   361|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Staff PIN access</li>
+   362|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Basic analytics</li>
+   363|      </ul>
+   364|      <a href="admin.html" class="btn btn-primary" style="width:100%">Start Free Trial</a>
+   365|    </div>
+   366|    <div class="pricing-card featured">
+   367|      <div class="plan">The Shop</div>
+   368|      <div class="price">$79<span>/month</span></div>
+   369|      <div class="haircut-anchor">Less than three cuts. For the whole shop.</div>
+   370|      <ul>
+   371|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Everything in The Chair</li>
+   372|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Multi-barber support</li>
+   373|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Referral tracking</li>
+   374|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Birthday & anniversary automation</li>
+   375|        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
+   376|      </ul>
+   377|      <a href="admin.html" class="btn btn-primary" style="width:100%">Go Pro</a>
+   378|    </div>
+   379|  </div>
+   380|</section>
+   381|
+   382|<!-- TESTIMONIAL -->
+   383|<section class="section">
+   384|  <div class="testimonial">
+   385|    <p class="quote">"I was losing three no-shows a week. That's $180 out of my pocket. Since I started using this, I've had two no-shows in six months. My regulars love that I remember their cut, their birthday, everything. This thing pays for itself in one saved appointment."</p>
+   386|    <p class="author">Marcus D.</p>
+   387|    <p class="role">Owner, Fade City Barbers — Atlanta, GA</p>
+   388|  </div>
+   389|</section>
+   390|
+   391|<!-- CTA -->
+   392|<section class="cta">
+   393|  <h2>Your chair shouldn't sit empty</h2>
+   394|  <p>Set up in 5 minutes. 30 days free. No credit card required.</p>
+   395|  <a href="admin.html" class="btn btn-primary">Claim Your Chair</a>
+   396|</section>
+   397|
+   398|<!-- FOOTER -->
+   399|<footer class="footer">
+   400|  <p>ChairBook &copy; 2026 &middot; <a href="admin.html">Shop Login</a></p>
+   401|</footer>
+   402|
+   403|</body>
+   404|</html>
+   405|

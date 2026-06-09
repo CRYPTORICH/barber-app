@@ -1,301 +1,305 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0d0b0a">
-<title>Claim Your Shop — ChairBook</title>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0d0b0a;--bg-card:#161311;--border:#26211c;--text:#ede6dc;--text-muted:#8a7e70;--accent:#b8312f;--accent-glow:rgba(184,49,47,0.15);--danger:#ef4444;--gold:#c49b3f;--radius:16px;--radius-sm:10px}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100dvh;-webkit-font-smoothing:antialiased}
-.page{max-width:420px;margin:0 auto;padding:2rem 1.5rem;min-height:100dvh;display:flex;flex-direction:column;justify-content:center}
-h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
-.sub{color:var(--text-muted);text-align:center;font-size:0.875rem;margin-bottom:2rem}
+     1|<!DOCTYPE html>
+     2|<html lang="en">
+     3|<head>
+     4|<meta charset="UTF-8">
+     5|<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+     6|<meta name="theme-color" content="#0d0b0a">
+     7|<title>Claim Your Shop — ChairBook</title>
+     8|<style>
+     9|*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    10|:root{--bg:#0d0b0a;--bg-card:#161311;--border:#26211c;--text:#ede6dc;--text-muted:#8a7e70;--accent:#b8312f;--accent-glow:rgba(184,49,47,0.15);--danger:#ef4444;--gold:#c49b3f;--radius:16px;--radius-sm:10px}
+    11|body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100dvh;-webkit-font-smoothing:antialiased}
+    12|.page{max-width:420px;margin:0 auto;padding:2rem 1.5rem;min-height:100dvh;display:flex;flex-direction:column;justify-content:center}
+    13|h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
+    14|.sub{color:var(--text-muted);text-align:center;font-size:0.875rem;margin-bottom:2rem}
+    15|
+    16|.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem}
+    17|.form-group{margin-bottom:1rem}
+    18|.form-group label{display:block;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:0.375rem}
+    19|.form-group input{width:100%;padding:0.75rem;font-size:1rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text);outline:none;transition:border 0.2s}
+    20|.form-group input:focus{border-color:var(--accent)}
+    21|.form-group .hint{font-size:0.6875rem;color:var(--text-muted);margin-top:0.25rem}
+    22|
+    23|.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:0.875rem;border:none;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.15s}
+    24|.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 20px var(--accent-glow)}
+    25|.btn-primary:active{transform:scale(0.97)}
+    26|.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text-muted)}
+    27|
+    28|.msg{padding:0.75rem;border-radius:8px;font-size:0.8125rem;font-weight:600;margin-top:0.75rem;text-align:center}
+    29|.msg-success{background:rgba(184,49,47,0.1);color:var(--accent)}
+    30|.msg-error{background:rgba(239,68,68,0.1);color:var(--danger)}
+    31|.msg-info{background:rgba(255,255,255,0.04);color:var(--text-muted)}
+    32|
+    33|.urls{margin-top:1.5rem;padding:1rem;background:rgba(196,155,63,0.06);border:1px dashed var(--gold);border-radius:var(--radius-sm);text-align:left}
+    34|.urls h3{font-size:0.8125rem;color:var(--gold);margin-bottom:0.5rem}
+    35|.urls .url-line{font-size:0.75rem;color:var(--text);font-family:monospace;word-break:break-all;margin-bottom:0.25rem}
+    36|.urls .url-label{font-size:0.625rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em}
+    37|.copy-btn{font-size:0.6875rem;padding:0.25rem 0.5rem;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-left:0.5rem}
+    38|
+    39|.back-link{text-align:center;margin-top:1rem;font-size:0.8125rem;color:var(--text-muted)}
+    40|.back-link a{color:var(--accent);text-decoration:none}
+    41|
+    42|.hidden{display:none!important}
+    43|.step-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:0.8125rem;font-weight:700;margin-right:0.5rem}
+    44|.step-label{font-size:0.75rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em}
+    45|</style>
+    46|</head>
+    47|<body>
+    48|<div class="page">
+    49|
+    50|<!-- STEP 1: Email + Shop Name -->
+    51|<div id="step1">
+    52|  <h1>Claim Your Shop</h1>
+    53|  <p class="sub">Set up in 3 minutes. 30-day free trial.</p>
+    54|  <div class="card">
+    55|    <div class="step-label"><span class="step-num">1</span> Shop Details</div>
+    56|    <div class="form-group" style="margin-top:1rem">
+    57|      <label>Email Address</label>
+    58|      <input type="email" id="regEmail" placeholder="owner@shop.com" autocomplete="email">
+    59|      <div class="hint">We'll send a verification code here</div>
+    60|    </div>
+    61|    <div class="form-group">
+    62|      <label>Shop Name</label>
+    63|      <input type="text" id="regShop" placeholder="Classic Cuts Barbershop" autocomplete="off">
+    64|      <div class="hint">Your clients will see this name</div>
+    65|    </div>
+    66|    <div class="form-group">
+    67|      <label>Your Subdomain</label>
+    68|      <input type="text" id="regSlug" placeholder="classiccuts" autocomplete="off" style="text-transform:lowercase">
+    <div class="hint">Permanent. Your shop lives at <span id="slugPreview" style="color:var(--gold);font-weight:700;">yourname.domain.com</span></div>
+    70|    </div>
+    71|    <button class="btn btn-primary" onclick="doRegister()">Send Verification Code</button>
+    72|    <div id="regMsg"></div>
+    73|  </div>
+    74|  <div class="back-link"><a href="index.html">Back to home</a></div>
+    75|</div>
+    76|
+    77|<!-- STEP 2: Verify Code -->
+    78|<div id="step2" class="hidden">
+    79|  <h1>Check Your Email</h1>
+    80|  <p class="sub">We sent a 6-digit code to <strong id="verifyEmailDisplay"></strong></p>
+    81|  <div class="card">
+    82|    <div class="step-label"><span class="step-num">2</span> Verify Email</div>
+    83|    <div class="form-group" style="margin-top:1rem">
+    84|      <label>Verification Code</label>
+    85|      <input type="text" id="verifyCode" placeholder="000000" maxlength="6" autocomplete="off" inputmode="numeric" style="text-align:center;font-size:1.5rem;letter-spacing:0.5rem">
+    86|    </div>
+    87|    <button class="btn btn-primary" onclick="doVerify()">Verify Code</button>
+    88|    <div id="verifyMsg"></div>
+    89|  </div>
+    90|</div>
+    91|
+    92|<!-- STEP 3: Set Password + PIN -->
+    93|<div id="step3" class="hidden">
+    94|  <h1>Secure Your Shop</h1>
+    95|  <p class="sub">Set your admin password and staff PIN</p>
+    96|  <div class="card">
+    97|    <div class="step-label"><span class="step-num">3</span> Set Credentials</div>
+    98|    <div class="form-group" style="margin-top:1rem">
+    99|      <label>Admin Password</label>
+   100|      <input type="password" id="setupPass" placeholder="Min 8 characters" autocomplete="new-password">
+   101|    </div>
+   102|    <div class="form-group">
+   103|      <label>Staff PIN</label>
+   104|      <input type="password" id="setupPin" placeholder="4-digit PIN" maxlength="4" autocomplete="off" inputmode="numeric">
+   105|      <div class="hint">Your barbers use this to access the panel</div>
+   106|    </div>
+   107|    <div class="form-group">
+   108|      <label>Accent Color (optional)</label>
+   109|      <input type="color" id="setupColor" value="#b8312f" style="width:100%;height:44px;padding:4px;cursor:pointer">
+   110|    </div>
+   111|    <button class="btn btn-primary" onclick="doSetup()">Launch My Shop</button>
+   112|    <div id="setupMsg"></div>
+   113|  </div>
+   114|</div>
+   115|
+   116|<!-- STEP 4: Done — Show URLs -->
+   117|<div id="step4" class="hidden">
+   118|  <h1>You're Live</h1>
+   119|  <p class="sub">Your shop is ready. Share your domain:</p>
+   120|  <div class="card">
+   121|    <div class="step-label"><span class="step-num" style="background:var(--gold)">OK</span> Your Domain</div>
+   122|    <div class="urls">
+   123|      <div class="url-label">Your Shop Home</div>
+   <div class="url-line" id="staffUrl" style="font-size:1rem;font-weight:700;color:var(--gold);">yourname.domain.com</div>
+   <div class="url-label" style="margin-top:0.75rem">Direct Staff Access</div>
+   <div class="url-line" id="custUrl">yourname.domain.com/staff</div>
+   <div class="url-label" style="margin-top:0.75rem">Client Access</div>
+   <div class="url-line" id="clientUrl">yourname.domain.com</div>
+   129|    </div>
+   130|    <div style="display:flex;gap:0.5rem;margin-top:1rem">
+   131|      <button class="btn btn-primary" onclick="openStaff()">Open Staff Panel</button>
+   132|      <button class="btn btn-outline" onclick="copyUrls()">Copy Links</button>
+   133|    </div>
+   134|    <div id="doneMsg"></div>
+   135|  </div>
+   136|</div>
+   137|
+   138|</div>
+   139|
+   140|<script>
+   141|// ═══════════════════════
+   142|// BACKEND — local dev or Render
+   143|// ═══════════════════════
+   144|
+   var API = 'http://localhost:5000';
+   // When deployed to Render, change to: var API = 'https://rewards-auth.onrender.com';
 
-.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem}
-.form-group{margin-bottom:1rem}
-.form-group label{display:block;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:0.375rem}
-.form-group input{width:100%;padding:0.75rem;font-size:1rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text);outline:none;transition:border 0.2s}
-.form-group input:focus{border-color:var(--accent)}
-.form-group .hint{font-size:0.6875rem;color:var(--text-muted);margin-top:0.25rem}
+   // ── CONFIG: Set your ChairBook domain ──
+   var DOMAIN = 'yourdomain.com';  // ← CHANGE THIS to your ChairBook domain
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:0.875rem;border:none;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.15s}
-.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 20px var(--accent-glow)}
-.btn-primary:active{transform:scale(0.97)}
-.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text-muted)}
-
-.msg{padding:0.75rem;border-radius:8px;font-size:0.8125rem;font-weight:600;margin-top:0.75rem;text-align:center}
-.msg-success{background:rgba(184,49,47,0.1);color:var(--accent)}
-.msg-error{background:rgba(239,68,68,0.1);color:var(--danger)}
-.msg-info{background:rgba(255,255,255,0.04);color:var(--text-muted)}
-
-.urls{margin-top:1.5rem;padding:1rem;background:rgba(196,155,63,0.06);border:1px dashed var(--gold);border-radius:var(--radius-sm);text-align:left}
-.urls h3{font-size:0.8125rem;color:var(--gold);margin-bottom:0.5rem}
-.urls .url-line{font-size:0.75rem;color:var(--text);font-family:monospace;word-break:break-all;margin-bottom:0.25rem}
-.urls .url-label{font-size:0.625rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em}
-.copy-btn{font-size:0.6875rem;padding:0.25rem 0.5rem;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-left:0.5rem}
-
-.back-link{text-align:center;margin-top:1rem;font-size:0.8125rem;color:var(--text-muted)}
-.back-link a{color:var(--accent);text-decoration:none}
-
-.hidden{display:none!important}
-.step-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:0.8125rem;font-weight:700;margin-right:0.5rem}
-.step-label{font-size:0.75rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em}
-</style>
-</head>
-<body>
-<div class="page">
-
-<!-- STEP 1: Email + Shop Name -->
-<div id="step1">
-  <h1>Claim Your Shop</h1>
-  <p class="sub">Set up in 3 minutes. 30-day free trial.</p>
-  <div class="card">
-    <div class="step-label"><span class="step-num">1</span> Shop Details</div>
-    <div class="form-group" style="margin-top:1rem">
-      <label>Email Address</label>
-      <input type="email" id="regEmail" placeholder="owner@shop.com" autocomplete="email">
-      <div class="hint">We'll send a verification code here</div>
-    </div>
-    <div class="form-group">
-      <label>Shop Name</label>
-      <input type="text" id="regShop" placeholder="Classic Cuts Barbershop" autocomplete="off">
-      <div class="hint">Your clients will see this name</div>
-    </div>
-    <div class="form-group">
-      <label>Your Subdomain</label>
-      <input type="text" id="regSlug" placeholder="classiccuts" autocomplete="off" style="text-transform:lowercase">
-      <div class="hint">Permanent. Your shop lives at <span id="slugPreview" style="color:var(--gold);font-weight:700;">classiccuts.racksrewards.com</span></div>
-    </div>
-    <button class="btn btn-primary" onclick="doRegister()">Send Verification Code</button>
-    <div id="regMsg"></div>
-  </div>
-  <div class="back-link"><a href="index.html">Back to home</a></div>
-</div>
-
-<!-- STEP 2: Verify Code -->
-<div id="step2" class="hidden">
-  <h1>Check Your Email</h1>
-  <p class="sub">We sent a 6-digit code to <strong id="verifyEmailDisplay"></strong></p>
-  <div class="card">
-    <div class="step-label"><span class="step-num">2</span> Verify Email</div>
-    <div class="form-group" style="margin-top:1rem">
-      <label>Verification Code</label>
-      <input type="text" id="verifyCode" placeholder="000000" maxlength="6" autocomplete="off" inputmode="numeric" style="text-align:center;font-size:1.5rem;letter-spacing:0.5rem">
-    </div>
-    <button class="btn btn-primary" onclick="doVerify()">Verify Code</button>
-    <div id="verifyMsg"></div>
-  </div>
-</div>
-
-<!-- STEP 3: Set Password + PIN -->
-<div id="step3" class="hidden">
-  <h1>Secure Your Shop</h1>
-  <p class="sub">Set your admin password and staff PIN</p>
-  <div class="card">
-    <div class="step-label"><span class="step-num">3</span> Set Credentials</div>
-    <div class="form-group" style="margin-top:1rem">
-      <label>Admin Password</label>
-      <input type="password" id="setupPass" placeholder="Min 8 characters" autocomplete="new-password">
-    </div>
-    <div class="form-group">
-      <label>Staff PIN</label>
-      <input type="password" id="setupPin" placeholder="4-digit PIN" maxlength="4" autocomplete="off" inputmode="numeric">
-      <div class="hint">Your barbers use this to access the panel</div>
-    </div>
-    <div class="form-group">
-      <label>Accent Color (optional)</label>
-      <input type="color" id="setupColor" value="#b8312f" style="width:100%;height:44px;padding:4px;cursor:pointer">
-    </div>
-    <button class="btn btn-primary" onclick="doSetup()">Launch My Shop</button>
-    <div id="setupMsg"></div>
-  </div>
-</div>
-
-<!-- STEP 4: Done — Show URLs -->
-<div id="step4" class="hidden">
-  <h1>You're Live</h1>
-  <p class="sub">Your shop is ready. Share your domain:</p>
-  <div class="card">
-    <div class="step-label"><span class="step-num" style="background:var(--gold)">OK</span> Your Domain</div>
-    <div class="urls">
-      <div class="url-label">Your Shop Home</div>
-      <div class="url-line" id="staffUrl" style="font-size:1rem;font-weight:700;color:var(--gold);">classiccuts.racksrewards.com</div>
-      <div class="url-label" style="margin-top:0.75rem">Direct Staff Access</div>
-      <div class="url-line" id="custUrl">classiccuts.racksrewards.com/staff</div>
-      <div class="url-label" style="margin-top:0.75rem">Client Access</div>
-      <div class="url-line" id="clientUrl">classiccuts.racksrewards.com</div>
-    </div>
-    <div style="display:flex;gap:0.5rem;margin-top:1rem">
-      <button class="btn btn-primary" onclick="openStaff()">Open Staff Panel</button>
-      <button class="btn btn-outline" onclick="copyUrls()">Copy Links</button>
-    </div>
-    <div id="doneMsg"></div>
-  </div>
-</div>
-
-</div>
-
-<script>
-// ═══════════════════════
-// BACKEND — local dev or Render
-// ═══════════════════════
-
-var API = 'http://localhost:5000';
-// When deployed to Render, change to: var API = 'https://rewards-auth.onrender.com';
-
-var pendingEmail = null;
-var pendingSlug = null;
-var pendingShop = null;
-var pendingToken = null;
-
-// ═══════════════════════
-// SLUG PREVIEW
-// ═══════════════════════
-
-document.getElementById('regSlug').addEventListener('input', function(){
-  var v = this.value.replace(/[^a-z0-9-]/g,'').toLowerCase();
-  this.value = v;
-  document.getElementById('slugPreview').textContent = v ? v+'.racksrewards.com' : 'classiccuts.racksrewards.com';
-});
-
-// ═══════════════════════
-// STEP 1: Register
-// ═══════════════════════
-
-async function doRegister(){
-  var email = document.getElementById('regEmail').value.trim();
-  var shop = document.getElementById('regShop').value.trim();
-  var slug = document.getElementById('regSlug').value.trim();
-  var el = document.getElementById('regMsg');
-
-  if(!email||!email.includes('@')){ el.innerHTML='<div class="msg msg-error">Enter a valid email</div>'; return; }
-  if(!shop){ el.innerHTML='<div class="msg msg-error">Enter your shop name</div>'; return; }
-  if(!slug||slug.length<3){ el.innerHTML='<div class="msg msg-error">URL slug needs at least 3 characters</div>'; return; }
-
-  el.innerHTML='<div class="msg msg-info">Sending verification code...</div>';
-
-  try {
-    var resp = await fetch(API+'/register', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email:email, shop_name:shop, slug:slug})
-    });
-    var data = await resp.json();
-
-    if(!resp.ok){ el.innerHTML='<div class="msg msg-error">'+data.error+'</div>'; return; }
-
-    pendingEmail = email;
-    pendingSlug = slug;
-    pendingShop = shop;
-
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('verifyEmailDisplay').textContent = email;
-    document.getElementById('step2').classList.remove('hidden');
-
-  } catch(e){
-    console.error(e);
-    el.innerHTML='<div class="msg msg-info">Backend not available. Deploy the Render server first.</div>';
-  }
-}
-
-// ═══════════════════════
-// STEP 2: Verify
-// ═══════════════════════
-
-async function doVerify(){
-  var code = document.getElementById('verifyCode').value.trim();
-  var el = document.getElementById('verifyMsg');
-
-  if(!code||code.length<6){ el.innerHTML='<div class="msg msg-error">Enter the 6-digit code from your email</div>'; return; }
-
-  el.innerHTML='<div class="msg msg-info">Verifying...</div>';
-
-  try {
-    var resp = await fetch(API+'/verify', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email:pendingEmail, code:code})
-    });
-    var data = await resp.json();
-
-    if(!resp.ok){ el.innerHTML='<div class="msg msg-error">'+data.error+'</div>'; return; }
-
-    pendingToken = data.token;
-
-    document.getElementById('step2').classList.add('hidden');
-    document.getElementById('step3').classList.remove('hidden');
-
-  } catch(e){
-    el.innerHTML='<div class="msg msg-error">Connection failed. Check your internet.</div>';
-  }
-}
-
-// ═══════════════════════
-// STEP 3: Set Password + PIN — Create Shop
-// ═══════════════════════
-
-async function doSetup(){
-  var pass = document.getElementById('setupPass').value;
-  var pin = document.getElementById('setupPin').value;
-  var color = document.getElementById('setupColor').value;
-  var el = document.getElementById('setupMsg');
-
-  if(!pass||pass.length<8){ el.innerHTML='<div class="msg msg-error">Password must be at least 8 characters</div>'; return; }
-  if(!pin||pin.length<4){ el.innerHTML='<div class="msg msg-error">Enter a 4-digit staff PIN</div>'; return; }
-
-  el.innerHTML='<div class="msg msg-info">Creating your shop...</div>';
-
-  try {
-    var resp = await fetch(API+'/setup', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+pendingToken
-      },
-      body:JSON.stringify({
-        slug:pendingSlug,
-        shop_name:pendingShop,
-        password:pass,
-        pin:pin,
-        accent_color:color
-      })
-    });
-    var data = await resp.json();
-
-    if(!resp.ok){ el.innerHTML='<div class="msg msg-error">'+data.error+'</div>'; return; }
-
-    document.getElementById('step3').classList.add('hidden');
-    document.getElementById('staffUrl').textContent = pendingSlug+'.racksrewards.com';
-    document.getElementById('custUrl').textContent = pendingSlug+'.racksrewards.com/staff';
-    document.getElementById('clientUrl').textContent = pendingSlug+'.racksrewards.com';
-    document.getElementById('step4').classList.remove('hidden');
-
-  } catch(e){
-    el.innerHTML='<div class="msg msg-error">Connection failed. Check your internet.</div>';
-  }
-}
-
-// ═══════════════════════
-// STEP 4: Open / Copy
-// ═══════════════════════
-
-function openStaff(){
-  var url = document.getElementById('staffUrl').textContent;
-  window.open(url, '_blank');
-}
-
-function copyUrls(){
-  var staff = document.getElementById('staffUrl').textContent;
-  var cust = document.getElementById('custUrl').textContent;
-  var text = 'Staff Panel: '+staff+'\nClient Portal: '+cust;
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(text).then(function(){
-      document.getElementById('doneMsg').innerHTML='<div class="msg msg-success">Copied!</div>';
-    });
-  }
-}
-</script>
-</body>
-</html>
+   var pendingEmail = null;
+   149|var pendingSlug = null;
+   150|var pendingShop = null;
+   151|var pendingToken = null;
+   152|
+   153|// ═══════════════════════
+   154|// SLUG PREVIEW
+   155|// ═══════════════════════
+   156|
+   document.getElementById('regSlug').addEventListener('input', function(){
+     var v = this.value.replace(/[^a-z0-9-]/g,'').toLowerCase();
+     this.value = v;
+     document.getElementById('slugPreview').textContent = v ? v+'.'+DOMAIN : 'yourname.'+DOMAIN;
+   });
+   162|
+   163|// ═══════════════════════
+   164|// STEP 1: Register
+   165|// ═══════════════════════
+   166|
+   167|async function doRegister(){
+   168|  var email = document.getElementById('regEmail').value.trim();
+   169|  var shop = document.getElementById('regShop').value.trim();
+   170|  var slug = document.getElementById('regSlug').value.trim();
+   171|  var el = document.getElementById('regMsg');
+   172|
+   173|  if(!email||!email.includes('@')){ el.innerHTML='<div class="msg msg-error">Enter a valid email</div>'; return; }
+   174|  if(!shop){ el.innerHTML='<div class="msg msg-error">Enter your shop name</div>'; return; }
+   175|  if(!slug||slug.length<3){ el.innerHTML='<div class="msg msg-error">URL slug needs at least 3 characters</div>'; return; }
+   176|
+   177|  el.innerHTML='<div class="msg msg-info">Sending verification code...</div>';
+   178|
+   179|  try {
+   180|    var resp = await fetch(API+'/register', {
+   181|      method:'POST',
+   182|      headers:{'Content-Type':'application/json'},
+   183|      body:JSON.stringify({email:email, shop_name:shop, slug:slug})
+   184|    });
+   185|    var data = await resp.json();
+   186|
+   187|    if(!resp.ok){ el.innerHTML='<div class="msg msg-error">'+data.error+'</div>'; return; }
+   188|
+   189|    pendingEmail = email;
+   190|    pendingSlug = slug;
+   191|    pendingShop = shop;
+   192|
+   193|    document.getElementById('step1').classList.add('hidden');
+   194|    document.getElementById('verifyEmailDisplay').textContent = email;
+   195|    document.getElementById('step2').classList.remove('hidden');
+   196|
+   197|  } catch(e){
+   198|    console.error(e);
+   199|    el.innerHTML='<div class="msg msg-info">Backend not available. Deploy the Render server first.</div>';
+   200|  }
+   201|}
+   202|
+   203|// ═══════════════════════
+   204|// STEP 2: Verify
+   205|// ═══════════════════════
+   206|
+   207|async function doVerify(){
+   208|  var code = document.getElementById('verifyCode').value.trim();
+   209|  var el = document.getElementById('verifyMsg');
+   210|
+   211|  if(!code||code.length<6){ el.innerHTML='<div class="msg msg-error">Enter the 6-digit code from your email</div>'; return; }
+   212|
+   213|  el.innerHTML='<div class="msg msg-info">Verifying...</div>';
+   214|
+   215|  try {
+   216|    var resp = await fetch(API+'/verify', {
+   217|      method:'POST',
+   218|      headers:{'Content-Type':'application/json'},
+   219|      body:JSON.stringify({email:pendingEmail, code:code})
+   220|    });
+   221|    var data = await resp.json();
+   222|
+   223|    if(!resp.ok){ el.innerHTML='<div class="msg msg-error">'+data.error+'</div>'; return; }
+   224|
+   225|    pendingToken = data.token;
+   226|
+   227|    document.getElementById('step2').classList.add('hidden');
+   228|    document.getElementById('step3').classList.remove('hidden');
+   229|
+   230|  } catch(e){
+   231|    el.innerHTML='<div class="msg msg-error">Connection failed. Check your internet.</div>';
+   232|  }
+   233|}
+   234|
+   235|// ═══════════════════════
+   236|// STEP 3: Set Password + PIN — Create Shop
+   237|// ═══════════════════════
+   238|
+   239|async function doSetup(){
+   240|  var pass = document.getElementById('setupPass').value;
+   241|  var pin = document.getElementById('setupPin').value;
+   242|  var color = document.getElementById('setupColor').value;
+   243|  var el = document.getElementById('setupMsg');
+   244|
+   245|  if(!pass||pass.length<8){ el.innerHTML='<div class="msg msg-error">Password must be at least 8 characters</div>'; return; }
+   246|  if(!pin||pin.length<4){ el.innerHTML='<div class="msg msg-error">Enter a 4-digit staff PIN</div>'; return; }
+   247|
+   248|  el.innerHTML='<div class="msg msg-info">Creating your shop...</div>';
+   249|
+   250|  try {
+   251|    var resp = await fetch(API+'/setup', {
+   252|      method:'POST',
+   253|      headers:{
+   254|        'Content-Type':'application/json',
+   255|        'Authorization':'Bearer '+pendingToken
+   256|      },
+   257|      body:JSON.stringify({
+   258|        slug:pendingSlug,
+   259|        shop_name:pendingShop,
+   260|        password:pass,
+   261|        pin:pin,
+   262|        accent_color:color
+   263|      })
+   264|    });
+   265|    var data = await resp.json();
+   266|
+   267|    if(!resp.ok){ el.innerHTML='<div class="msg msg-error">'+data.error+'</div>'; return; }
+   268|
+   269|    document.getElementById('step3').classList.add('hidden');
+   270|    document.getElementById('staffUrl').textContent = pendingSlug+'.'+DOMAIN;
+   271|    document.getElementById('custUrl').textContent = pendingSlug+'.'+DOMAIN+'/staff';
+   272|    document.getElementById('clientUrl').textContent = pendingSlug+'.'+DOMAIN;
+   273|    document.getElementById('step4').classList.remove('hidden');
+   274|
+   275|  } catch(e){
+   276|    el.innerHTML='<div class="msg msg-error">Connection failed. Check your internet.</div>';
+   277|  }
+   278|}
+   279|
+   280|// ═══════════════════════
+   281|// STEP 4: Open / Copy
+   282|// ═══════════════════════
+   283|
+   284|function openStaff(){
+   285|  var url = document.getElementById('staffUrl').textContent;
+   286|  window.open(url, '_blank');
+   287|}
+   288|
+   289|function copyUrls(){
+   290|  var staff = document.getElementById('staffUrl').textContent;
+   291|  var cust = document.getElementById('custUrl').textContent;
+   292|  var text = 'Staff Panel: '+staff+'\nClient Portal: '+cust;
+   293|  if(navigator.clipboard){
+   294|    navigator.clipboard.writeText(text).then(function(){
+   295|      document.getElementById('doneMsg').innerHTML='<div class="msg msg-success">Copied!</div>';
+   296|    });
+   297|  }
+   298|}
+   299|</script>
+   300|</body>
+   301|</html>
+   302|
