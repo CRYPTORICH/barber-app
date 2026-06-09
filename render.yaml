@@ -1,11 +1,17 @@
 services:
   - type: web
-    name: rewards-app
+    name: barber-app
     env: python
-    rootDir: backend
+    rootDir: .
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn server:app
     plan: free
     envVars:
-      - key: GITHUB_TOKEN
+      - key: GH_TOKEN
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: FROM_EMAIL
         sync: false
