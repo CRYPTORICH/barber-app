@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b0a">
-<title>Shop Setup — Cuts & Rewards</title>
+<title>Claim Your Shop — ChairBook</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0d0b0a;--bg-card:#161311;--border:#26211c;--text:#ede6dc;--text-muted:#8a7e70;--accent:#b8312f;--accent-glow:rgba(184,49,47,0.15);--danger:#ef4444;--radius:16px;--radius-sm:10px}
+:root{--bg:#0d0b0a;--bg-card:#161311;--border:#26211c;--text:#ede6dc;--text-muted:#8a7e70;--accent:#b8312f;--accent-glow:rgba(184,49,47,0.15);--danger:#ef4444;--gold:#c49b3f;--radius:16px;--radius-sm:10px}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100dvh;-webkit-font-smoothing:antialiased}
 .page{max-width:420px;margin:0 auto;padding:2rem 1.5rem;min-height:100dvh;display:flex;flex-direction:column;justify-content:center}
 h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
@@ -30,8 +30,8 @@ h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
 .msg-error{background:rgba(239,68,68,0.1);color:var(--danger)}
 .msg-info{background:rgba(255,255,255,0.04);color:var(--text-muted)}
 
-.urls{margin-top:1.5rem;padding:1rem;background:rgba(184,49,47,0.06);border:1px dashed var(--accent);border-radius:var(--radius-sm);text-align:left}
-.urls h3{font-size:0.8125rem;color:var(--accent);margin-bottom:0.5rem}
+.urls{margin-top:1.5rem;padding:1rem;background:rgba(196,155,63,0.06);border:1px dashed var(--gold);border-radius:var(--radius-sm);text-align:left}
+.urls h3{font-size:0.8125rem;color:var(--gold);margin-bottom:0.5rem}
 .urls .url-line{font-size:0.75rem;color:var(--text);font-family:monospace;word-break:break-all;margin-bottom:0.25rem}
 .urls .url-label{font-size:0.625rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em}
 .copy-btn{font-size:0.6875rem;padding:0.25rem 0.5rem;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-left:0.5rem}
@@ -49,10 +49,10 @@ h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
 
 <!-- STEP 1: Email + Shop Name -->
 <div id="step1">
-  <h1>Launch Your Rewards Program</h1>
-  <p class="sub">Set up your shop in 3 minutes. 14-day free trial.</p>
+  <h1>Claim Your Shop</h1>
+  <p class="sub">Set up in 3 minutes. 30-day free trial.</p>
   <div class="card">
-    <div class="step-label"><span class="step-num">1</span> Your Details</div>
+    <div class="step-label"><span class="step-num">1</span> Shop Details</div>
     <div class="form-group" style="margin-top:1rem">
       <label>Email Address</label>
       <input type="email" id="regEmail" placeholder="owner@shop.com" autocomplete="email">
@@ -60,23 +60,23 @@ h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
     </div>
     <div class="form-group">
       <label>Shop Name</label>
-      <input type="text" id="regShop" placeholder="Smoke Zone Rewards" autocomplete="off">
-      <div class="hint">Your customers will see this name</div>
+      <input type="text" id="regShop" placeholder="Classic Cuts Barbershop" autocomplete="off">
+      <div class="hint">Your clients will see this name</div>
     </div>
     <div class="form-group">
       <label>URL Slug</label>
-      <input type="text" id="regSlug" placeholder="smokezone" autocomplete="off" style="text-transform:lowercase">
-      <div class="hint">One word, lowercase. Your shop link: <span id="slugPreview" style="color:var(--accent);">staff.html?shop=smokezone</span></div>
+      <input type="text" id="regSlug" placeholder="classiccuts" autocomplete="off" style="text-transform:lowercase">
+      <div class="hint">One word, lowercase. Your link: <span id="slugPreview" style="color:var(--accent);">staff.html?shop=classiccuts</span></div>
     </div>
-    <button class="btn btn-primary" onclick="doRegister()">Send Verification Code →</button>
+    <button class="btn btn-primary" onclick="doRegister()">Send Verification Code</button>
     <div id="regMsg"></div>
   </div>
-  <div class="back-link"><a href="index.html">← Back to home</a></div>
+  <div class="back-link"><a href="index.html">Back to home</a></div>
 </div>
 
 <!-- STEP 2: Verify Code -->
 <div id="step2" class="hidden">
-  <h1>📧 Check Your Email</h1>
+  <h1>Check Your Email</h1>
   <p class="sub">We sent a 6-digit code to <strong id="verifyEmailDisplay"></strong></p>
   <div class="card">
     <div class="step-label"><span class="step-num">2</span> Verify Email</div>
@@ -91,7 +91,7 @@ h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
 
 <!-- STEP 3: Set Password + PIN -->
 <div id="step3" class="hidden">
-  <h1>🔐 Secure Your Shop</h1>
+  <h1>Secure Your Shop</h1>
   <p class="sub">Set your admin password and staff PIN</p>
   <div class="card">
     <div class="step-label"><span class="step-num">3</span> Set Credentials</div>
@@ -102,11 +102,11 @@ h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
     <div class="form-group">
       <label>Staff PIN</label>
       <input type="password" id="setupPin" placeholder="4-digit PIN" maxlength="4" autocomplete="off" inputmode="numeric">
-      <div class="hint">Your staff uses this to access the panel</div>
+      <div class="hint">Your barbers use this to access the panel</div>
     </div>
     <div class="form-group">
       <label>Accent Color (optional)</label>
-      <input type="color" id="setupColor" value="#059669" style="width:100%;height:44px;padding:4px;cursor:pointer">
+      <input type="color" id="setupColor" value="#b8312f" style="width:100%;height:44px;padding:4px;cursor:pointer">
     </div>
     <button class="btn btn-primary" onclick="doSetup()">Launch My Shop</button>
     <div id="setupMsg"></div>
@@ -115,19 +115,19 @@ h1{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.25rem}
 
 <!-- STEP 4: Done — Show URLs -->
 <div id="step4" class="hidden">
-  <h1>You're Live!</h1>
-  <p class="sub">Your rewards program is ready. Share these links:</p>
+  <h1>You're Live</h1>
+  <p class="sub">Your client book is ready. Share these links:</p>
   <div class="card">
-    <div class="step-label"><span class="step-num">✓</span> Your Shop Links</div>
+    <div class="step-label"><span class="step-num" style="background:var(--gold)">OK</span> Your Shop Links</div>
     <div class="urls">
-      <div class="url-label">Staff Panel (for employees)</div>
+      <div class="url-label">Staff Panel (for your barbers)</div>
       <div class="url-line" id="staffUrl">staff.html?shop=...</div>
-      <div class="url-label" style="margin-top:0.75rem">Customer Portal (for customers)</div>
+      <div class="url-label" style="margin-top:0.75rem">Client Portal (for your clients)</div>
       <div class="url-line" id="custUrl">customer.html?shop=...</div>
     </div>
     <div style="display:flex;gap:0.5rem;margin-top:1rem">
-      <button class="btn btn-primary" onclick="openStaff()">🔐 Open Staff Panel</button>
-      <button class="btn btn-outline" onclick="copyUrls()">📋 Copy Links</button>
+      <button class="btn btn-primary" onclick="openStaff()">Open Staff Panel</button>
+      <button class="btn btn-outline" onclick="copyUrls()">Copy Links</button>
     </div>
     <div id="doneMsg"></div>
   </div>
@@ -193,9 +193,8 @@ async function doRegister(){
     document.getElementById('step2').classList.remove('hidden');
 
   } catch(e){
-    // If backend is unreachable, show the plan
     console.error(e);
-    el.innerHTML='<div class="msg msg-info">Backend not available. Ask Rick to deploy the Render server first (@dejes).</div>';
+    el.innerHTML='<div class="msg msg-info">Backend not available. Deploy the Render server first.</div>';
   }
 }
 
@@ -232,7 +231,7 @@ async function doVerify(){
 }
 
 // ═══════════════════════
-// STEP 3: Set Password + PIN → Create Shop
+// STEP 3: Set Password + PIN — Create Shop
 // ═══════════════════════
 
 async function doSetup(){
@@ -265,7 +264,6 @@ async function doSetup(){
 
     if(!resp.ok){ el.innerHTML='<div class="msg msg-error">'+data.error+'</div>'; return; }
 
-    // Show success
     document.getElementById('step3').classList.add('hidden');
     var base = window.location.href.replace('admin.html','');
     document.getElementById('staffUrl').textContent = base+'staff.html?shop='+pendingSlug;
@@ -289,10 +287,10 @@ function openStaff(){
 function copyUrls(){
   var staff = document.getElementById('staffUrl').textContent;
   var cust = document.getElementById('custUrl').textContent;
-  var text = 'Staff Panel: '+staff+'\nCustomer Portal: '+cust;
+  var text = 'Staff Panel: '+staff+'\nClient Portal: '+cust;
   if(navigator.clipboard){
     navigator.clipboard.writeText(text).then(function(){
-      document.getElementById('doneMsg').innerHTML='<div class="msg msg-success">✅ Copied!</div>';
+      document.getElementById('doneMsg').innerHTML='<div class="msg msg-success">Copied!</div>';
     });
   }
 }

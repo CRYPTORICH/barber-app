@@ -1,720 +1,721 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0d0b0a">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>Rewards · Barbershop Rewards</title>
-<link rel="stylesheet" href="styles.css">
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-  button, [onclick], input, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-
-  :root {
-    --bg: #0d0b0a; --bg-card: #161311; --border: #26211c;
-    --text: #ede6dc; --text-muted: #8a7e70; --text-secondary: #6b5f54;
-    --accent: #b8312f; --accent-glow: rgba(184,49,47,0.15);
-    --gold: #c49b3f; --radius: 16px; --radius-sm: 10px; --radius-lg: 20px;
-    --ease-out: cubic-bezier(0.16,1,0.3,1); --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
-  }
-
-  body {
-    background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    margin: 0; padding: 0; min-height: 100dvh; -webkit-font-smoothing: antialiased;
-  }
-  .page { max-width: 500px; margin: 0 auto; padding: 1rem; min-height: 100dvh; }
-  .hidden { display: none !important; }
-
-  /* ── BUTTONS ── */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 0.875rem 1.5rem; border: none; border-radius: var(--radius);
-    font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s var(--ease-out);
-  }
-  .btn:active { transform: scale(0.96); }
-  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 20px var(--accent-glow); }
-  .btn-block { width: 100%; }
-  .btn-lg { padding: 1rem 2rem; font-size: 1.125rem; border-radius: 18px; }
-  .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-muted); }
-
-  /* ── SIGNUP / LOGIN ── */
-  .landing {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100dvh; padding: 2rem 1rem; text-align: center; gap: 2rem;
-  }
-  .landing .hero-icon { font-size: 4rem; animation: pulse 2s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-  .landing h1 { font-size: 1.75rem; font-weight: 900; margin: 0; }
-  .landing .subtitle { color: var(--text-muted); font-size: 0.9375rem; max-width: 280px; line-height: 1.5; }
-
-  /* ── ACTION CARDS ── */
-  .action-cards { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 0.875rem; }
-  .action-card {
-    width: 100%; padding: 1.5rem 1.25rem; background: var(--bg-card);
-    border: 1px solid var(--border); border-radius: var(--radius-lg);
-    cursor: pointer; transition: all 0.2s var(--ease-out);
-    display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem;
-    -webkit-tap-highlight-color: transparent; user-select: none; text-align: left;
-  }
-  .action-card:active { transform: scale(0.97); border-color: var(--accent); background: rgba(5,150,105,0.06); }
-  .action-card-icon { font-size: 2rem; line-height: 1; }
-  .action-card-title { font-size: 1.125rem; font-weight: 800; color: var(--text); }
-  .action-card-sub { font-size: 0.8125rem; color: var(--text-muted); line-height: 1.4; }
-
-  /* ── SLIDE DOWN ANIMATION ── */
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-  .slide-in { animation: slideDown 0.4s var(--ease-out) both; }
-
-  /* ── FORM BACK LINK ── */
-  .form-back { text-align: center; margin-top: 0.75rem; font-size: 0.8125rem; color: var(--text-muted); cursor: pointer; }
-  .form-back:hover { color: var(--accent); }
-
-  .form-card {
-    width: 100%; max-width: 360px; background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.75rem; text-align: left;
-  }
-  .form-card .form-group { margin-bottom: 1rem; }
-  .form-card label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.375rem; }
-  .form-card input {
-    width: 100%; padding: 0.75rem; font-size: 1rem; background: var(--bg);
-    border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text); outline: none;
-    transition: border 0.2s;
-  }
-  .form-card input:focus { border-color: var(--accent); }
-  .form-card .hint { font-size: 0.6875rem; color: var(--text-muted); margin-top: 0.25rem; }
-
-  .toggle-link { color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; }
-
-  /* ── QR SECTION ── */
-  .qr-section {
-    margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
-    text-align: center;
-  }
-  .qr-section .qr-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
-
-  /* ── NUMBER PAD (for returning login) ── */
-  .num-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.75rem; }
-  .num-key {
-    padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
-    background: var(--bg); color: var(--text); font-size: 1.25rem; font-weight: 600;
-    cursor: pointer; transition: all 0.1s; display: flex; align-items: center; justify-content: center;
-  }
-  .num-key:active { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(0.95); }
-  .num-key.del { font-size: 0.875rem; color: var(--text-muted); }
-  .num-key.go { background: var(--accent); border-color: var(--accent); color: #fff; font-size: 0.875rem; font-weight: 700; }
-
-  /* ── DASHBOARD ── */
-  .dash-header { padding: 1rem 0 0.5rem; text-align: center; }
-  .dash-header h1 { font-size: 1.25rem; margin: 0; }
-  .dash-header .phone-display { font-size: 0.8125rem; color: var(--text-muted); }
-  .dash-header .signout { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; margin-top: 0.5rem; display: inline-block; text-decoration: underline; }
-
-  /* ── MEMBERSHIP CARD ── */
-  .mcard {
-    margin-bottom: 1.25rem; border-radius: var(--radius-lg);
-    padding: 1.75rem; position: relative; overflow: hidden;
-    background: linear-gradient(135deg, #1a0f0d 0%, #161311 50%, #0d0b0a 100%);
-    border: 1px solid var(--border); box-shadow: 0 8px 48px rgba(0,0,0,0.4);
-  }
-  .mcard .card-pattern {
-    position: absolute; inset: 0; opacity: 0.03;
-    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.5) 10px, rgba(255,255,255,0.5) 11px);
-  }
-  .mcard .card-logo { font-size: 1.5rem; margin-bottom: 1rem; position: relative; z-index: 1; }
-  .mcard .card-name { font-size: 1.25rem; font-weight: 700; position: relative; z-index: 1; }
-  .mcard .card-tier { margin-top: 0.5rem; position: relative; z-index: 1; }
-  .mcard .card-pts { font-size: 2.5rem; font-weight: 900; margin-top: 0.75rem; position: relative; z-index: 1; }
-  .mcard .card-value {
-    font-size: 0.8125rem; color: var(--text-muted); position: relative; z-index: 1;
-    margin-top: 0.25rem;
-  }
-
-  /* ── SECTIONS ── */
-  .section { margin-bottom: 1.25rem; }
-  .section-label {
-    font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-    color: var(--text-muted); margin-bottom: 0.625rem;
-  }
-
-  /* ── REWARDS CATALOG ── */
-  .reward-card {
-    display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem;
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
-    margin-bottom: 0.5rem; transition: all 0.15s;
-  }
-  .reward-card.affordable { border-color: var(--accent); background: rgba(5,150,105,0.05); }
-  .reward-card .reward-icon {
-    width: 44px; height: 44px; border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;
-  }
-  .reward-card .reward-pts {
-    padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;
-    background: var(--accent-glow); color: var(--accent); flex-shrink: 0;
-  }
-  .reward-card.locked .reward-pts { background: rgba(255,255,255,0.05); color: var(--text-muted); }
-  .reward-card.locked { opacity: 0.5; }
-
-  /* ── TIER TRACK ── */
-  .tier-track {
-    display: flex; justify-content: space-between; position: relative; padding: 0 0.5rem;
-  }
-  .tier-track::before {
-    content: ''; position: absolute; top: 16px; left: 20px; right: 20px;
-    height: 2px; background: var(--border); z-index: 0;
-  }
-  .tier-dot {
-    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
-    justify-content: center; font-size: 0.75rem; z-index: 1; position: relative;
-    border: 2px solid var(--border); background: var(--bg); transition: all 0.3s;
-  }
-  .tier-dot.active { border-color: var(--accent); background: var(--accent-glow); }
-  .tier-dot.current { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
-
-  /* ── PROGRESS BAR ── */
-  .progress-bar {
-    height: 6px; background: var(--border); border-radius: 3px; margin: 0.75rem 0; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; background: var(--accent); border-radius: 3px;
-    transition: width 0.6s var(--ease-out);
-  }
-
-  /* ── TRANSACTIONS ── */
-  .mini-txn {
-    display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .mini-txn:last-child { border-bottom: none; }
-  .mini-txn .txn-icon {
-    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
-    justify-content: center; font-size: 0.875rem; flex-shrink: 0; background: rgba(255,255,255,0.04);
-  }
-
-  /* ── SHARE ── */
-  .share-ref {
-    display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem;
-    background: var(--bg); border-radius: var(--radius-sm); border: 1px dashed var(--border);
-  }
-  .share-ref code {
-    font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
-    font-weight: 700; letter-spacing: 0.1em; flex: 1; text-align: center; color: var(--accent);
-  }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  .animate-up { animation: slideUp 0.4s var(--ease-out) both; }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 100;
-    padding: 0.875rem 2rem; border-radius: 100px; font-weight: 700; font-size: 0.9375rem;
-    animation: toastIn 0.35s var(--ease-out); box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-  }
-  .toast-success { background: var(--accent); color: #fff; }
-  .toast-error { background: #ef4444; color: #fff; }
-  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(-16px) } to { opacity:1; transform:translateX(-50%) translateY(0) } }
-
-  /* hidden class override */
-  .hidden { display: none !important; }
-  .flex { display: flex; }
-  .gap-2 { gap: 0.5rem; }
-  .mt-2 { margin-top: 0.5rem; }
-</style>
-</head>
-<body>
-
-<!-- LANDING — Two Action Cards -->
-<div id="landingScreen" class="landing">
-  <div class="hero-icon">💨</div>
-  <div>
-    <h1 id="landingTitle">Join Rewards</h1>
-    <p class="subtitle">Earn 1 point per $1 spent. Redeem for discounts. It's free.</p>
-  </div>
-
-  <!-- Two prominent action cards -->
-  <div class="action-cards" id="actionCards">
-    <div class="action-card" onclick="showSignup()">
-      <div class="action-card-icon">🆕</div>
-      <div class="action-card-title">I'm New Here</div>
-      <div class="action-card-sub">Create a free account in 10 seconds</div>
-    </div>
-    <div class="action-card" onclick="showLogin()">
-      <div class="action-card-icon">🔍</div>
-      <div class="action-card-title">Look Up My Account</div>
-      <div class="action-card-sub">Check my points &amp; rewards</div>
-    </div>
-  </div>
-
-  <div class="form-card hidden" id="signupForm">
-    <div class="form-group">
-      <label>Phone Number</label>
-      <input type="tel" id="signupPhone" placeholder="3055551234" autocomplete="off" inputmode="numeric">
-      <div class="hint">You'll use this to check your rewards</div>
-    </div>
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" id="signupName" placeholder="Your name" autocomplete="off">
-    </div>
-    <div class="form-group">
-      <label>Birthday (optional)</label>
-      <input type="text" id="signupBday" placeholder="MM/DD" autocomplete="off" inputmode="numeric" maxlength="5" oninput="formatBday(this)">
-      <div class="hint">Birthday month = bonus points! 🎂</div>
-    </div>
-    <div class="form-group">
-      <label>Referral Code (optional)</label>
-      <input type="text" id="signupRef" placeholder="Enter code from a friend" autocomplete="off" style="text-transform:uppercase;letter-spacing:0.1em;">
-      <div class="hint">You both get bonus points! 👥</div>
-    </div>
-    <button class="btn btn-primary btn-block btn-lg" onclick="doSignup()">🎉 Join Now — Free</button>
-    <div id="signupMsg" class="mt-2"></div>
-
-    <div style="text-align:center;margin-top:1.25rem;">
-      <span style="color:var(--text-muted);font-size:0.8125rem;">Already a member?</span>
-      <span class="toggle-link" onclick="showLogin()">Look up my account</span>
-    </div>
-    <div class="form-back" onclick="showActionCards()">← Back</div>
-  </div>
-
-  <!-- VERIFICATION STEP -->
-  <div class="form-card hidden" id="verifyStep" style="text-align:center;">
-    <div style="font-size:3rem;margin-bottom:0.5rem;">📱</div>
-    <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem;">Verify Your Number</div>
-    <div style="color:var(--text-muted);font-size:0.8125rem;margin-bottom:1rem;">We sent a 4-digit code to<br><strong id="verifyPhoneDisplay"></strong></div>
-    <div style="background:rgba(5,150,105,0.08);border:1px dashed var(--accent);border-radius:var(--radius-sm);padding:0.5rem;margin-bottom:1rem;font-size:0.6875rem;color:var(--text-muted);display:none;" id="simBanner">
-      📟 SIMULATION MODE — Code: <strong id="simCode" style="color:var(--accent);font-size:1rem;">----</strong><br>
-      <span style="font-size:0.625rem;">(Replace with Twilio/Textbelt for real SMS)</span>
-    </div>
-    <input type="text" id="verifyCode" placeholder="0000" maxlength="4" autocomplete="off" inputmode="numeric" style="text-align:center;font-size:1.5rem;letter-spacing:0.5rem;width:100%;padding:0.75rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text);outline:none;">
-    <div id="verifyMsg" style="margin-top:0.75rem;"></div>
-    <button class="btn btn-primary btn-block btn-lg" onclick="doVerify()" style="margin-top:0.75rem;">✅ Verify</button>
-    <div style="margin-top:0.75rem;">
-      <span class="toggle-link" onclick="skipVerify()" style="font-size:0.75rem;color:var(--text-muted);">Skip for now</span>
-    </div>
-  </div>
-
-  <div class="form-card hidden" id="loginForm">
-    <div style="font-weight:800;margin-bottom:0.75rem;">Welcome back</div>
-    <input type="tel" id="loginPhone" class="large" placeholder="(555) 123-4567" readonly style="text-align:center;width:100%;padding:0.75rem;font-size:1.25rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text);">
-    <div class="num-pad">
-      <button class="num-key" onclick="pressDigit('1')">1</button>
-      <button class="num-key" onclick="pressDigit('2')">2</button>
-      <button class="num-key" onclick="pressDigit('3')">3</button>
-      <button class="num-key" onclick="pressDigit('4')">4</button>
-      <button class="num-key" onclick="pressDigit('5')">5</button>
-      <button class="num-key" onclick="pressDigit('6')">6</button>
-      <button class="num-key" onclick="pressDigit('7')">7</button>
-      <button class="num-key" onclick="pressDigit('8')">8</button>
-      <button class="num-key" onclick="pressDigit('9')">9</button>
-      <button class="num-key del" onclick="pressDigit('del')">⌫</button>
-      <button class="num-key" onclick="pressDigit('0')">0</button>
-      <button class="num-key go" onclick="doLogin()">Go →</button>
-    </div>
-    <div id="loginMsg" class="mt-2"></div>
-
-    <div style="text-align:center;margin-top:1rem;">
-      <span style="color:var(--text-muted);font-size:0.8125rem;">New here?</span>
-      <span class="toggle-link" onclick="showSignup()">Create an account</span>
-    </div>
-    <div class="form-back" onclick="showActionCards()">← Back</div>
-  </div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashScreen" class="hidden page">
-  <div class="dash-header">
-    <h1 id="shopName">My Rewards</h1>
-    <div class="phone-display" id="dashPhone"></div>
-    <span class="signout" onclick="signOut()">← Sign out</span>
-  </div>
-
-  <!-- Membership Card -->
-  <div class="mcard animate-up" id="mcard">
-    <div class="card-pattern"></div>
-    <div class="card-logo">💳</div>
-    <div class="card-name" id="cardName">Valued Member</div>
-    <div class="card-tier" id="cardTier"></div>
-    <div class="card-pts" id="cardPts">0 <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">pts</span></div>
-    <div class="card-value" id="cardValue"></div>
-  </div>
-
-  <!-- Tier Progress -->
-  <div class="section animate-up" style="animation-delay:0.1s">
-    <div class="section-label">🏅 Tier Progress</div>
-    <div class="tier-track" id="tierTrack"></div>
-    <div class="progress-bar"><div class="progress-fill" id="tierProgressBar" style="width:0%"></div></div>
-    <div style="font-size:0.75rem;color:var(--text-muted);" id="tierNext"></div>
-  </div>
-
-  <!-- Rewards Catalog -->
-  <div class="section animate-up" style="animation-delay:0.15s">
-    <div class="section-label">🎁 Rewards You Can Redeem</div>
-    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.75rem;">Ask staff at the counter to redeem</div>
-    <div id="rewardsList"></div>
-  </div>
-
-  <!-- Achievements -->
-  <div class="section animate-up" style="animation-delay:0.18s">
-    <div class="section-label">🏆 Achievements</div>
-    <div id="achievementsList"></div>
-  </div>
-
-  <!-- Recent Activity -->
-  <div class="section animate-up" style="animation-delay:0.2s">
-    <div class="section-label">📋 Recent Activity</div>
-    <div id="recentTxns"></div>
-  </div>
-
-  <!-- Referral -->
-  <div class="section animate-up" style="animation-delay:0.25s">
-    <div class="section-label">👥 Refer a Friend</div>
-    <div class="share-ref">
-      <span style="font-size:0.875rem;">Your code:</span>
-      <code id="refCode">--------</code>
-      <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);" onclick="copyRef()">Copy</button>
-    </div>
-    <div style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.375rem;">Friend uses your code → you both get bonus points</div>
-    <div style="font-size:0.8125rem;color:var(--accent);margin-top:0.5rem;" id="refStats"></div>
-  </div>
-
-  <!-- Edit Profile -->
-  <div class="section animate-up" style="animation-delay:0.28s">
-    <div class="section-label">👤 My Profile</div>
-    <div style="display:flex;gap:0.5rem;">
-      <input type="text" id="custEditName" placeholder="Your name" style="flex:1;padding:0.625rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:0.9375rem;outline:none;">
-      <button class="btn" style="padding:0.625rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:0.8125rem;font-weight:700;flex-shrink:0;" onclick="doSaveCustName()">💾 Save</button>
-    </div>
-    <div id="custNameMsg" style="margin-top:0.375rem;"></div>
-  </div>
-</div>
-
-<script src="app.js"></script>
-<script>
-var curPhone = null;
-var pendingVerify = null;
-var verifyCode = null;
-
-// ========== LANDING TOGGLE ==========
-function formatBday(el){
-  var v = el.value.replace(/\D/g,'');
-  if(v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2,2);
-  if(v.length > 5) v = v.slice(0,5);
-  el.value = v;
-}
-function showActionCards(){
-  document.getElementById('signupForm').classList.add('hidden');
-  document.getElementById('loginForm').classList.add('hidden');
-  document.getElementById('verifyStep').classList.add('hidden');
-  document.getElementById('actionCards').classList.remove('hidden');
-  document.getElementById('landingTitle').textContent = 'Join Rewards';
-  document.querySelector('.subtitle').textContent = 'Earn 1 point per $1 spent. Redeem for discounts. It\'s free.';
-}
-function showLogin(){
-  document.getElementById('actionCards').classList.add('hidden');
-  document.getElementById('signupForm').classList.add('hidden');
-  document.getElementById('verifyStep').classList.add('hidden');
-  var lf = document.getElementById('loginForm');
-  lf.classList.remove('hidden');
-  lf.classList.remove('slide-in');
-  void lf.offsetWidth; // force reflow
-  lf.classList.add('slide-in');
-  document.getElementById('landingTitle').textContent = 'My Rewards';
-  document.querySelector('.subtitle').textContent = 'Enter your phone number to continue';
-}
-function showSignup(){
-  document.getElementById('actionCards').classList.add('hidden');
-  document.getElementById('loginForm').classList.add('hidden');
-  document.getElementById('verifyStep').classList.add('hidden');
-  var sf = document.getElementById('signupForm');
-  sf.classList.remove('hidden');
-  sf.classList.remove('slide-in');
-  void sf.offsetWidth; // force reflow
-  sf.classList.add('slide-in');
-  document.getElementById('landingTitle').textContent = 'Join Rewards';
-  document.querySelector('.subtitle').textContent = 'Earn 1 point per $1 spent. Redeem for discounts. It\'s free.';
-}
-
-// ========== NUMPAD (login) ==========
-var loginDigits = '';
-function pressDigit(d){
-  if(d==='del'){ loginDigits=loginDigits.slice(0,-1); }
-  else { if(loginDigits.length<10) loginDigits+=d; }
-  document.getElementById('loginPhone').value = loginDigits.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
-}
-
-// ========== SIGNUP ==========
-async function doSignup(){
-  var ph = document.getElementById('signupPhone').value.replace(/\D/g,'');
-  var nm = document.getElementById('signupName').value.trim();
-  var bday = document.getElementById('signupBday').value.trim();
-  var el = document.getElementById('signupMsg');
-
-  if(!ph||ph.length<10){ el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">Enter a valid 10-digit phone number</div>'; return; }
-  if(!nm){ el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">Enter your name</div>'; return; }
-
-  el.innerHTML='<div style="color:var(--text-muted);font-size:0.8125rem;">Creating account...</div>';
-  try {
-    await loadData();
-    var existing = findCustomer(ph);
-    if(existing){
-      el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">⚠️ An account with this phone already exists. <span class="toggle-link" onclick="doLoginDirect(\''+ph+'\')">View your account</span></div>';
-      return;
-    }
-    var result = createCustomer(ph, { name: nm, birthday: bday, referral_code: document.getElementById('signupRef').value.trim().toUpperCase() });
-    var c = result.customer;
-    await saveData();
-    curPhone = ph;
-    var refMsg = result.referral ? ' (+'+result.referral.bonus+' referral pts!)' : '';
-    showToast('✅ Account created!'+refMsg);
-    // Show verification
-    verifyCode = Math.floor(1000 + Math.random() * 9000).toString();
-    pendingVerify = ph;
-    document.getElementById('verifyPhoneDisplay').textContent = formatPhone(ph);
-    document.getElementById('verifyCode').value = '';
-    document.getElementById('verifyMsg').innerHTML = '';
-    document.getElementById('signupForm').classList.add('hidden');
-    document.getElementById('verifyStep').classList.remove('hidden');
-    document.getElementById('landingTitle').textContent = 'Verify Number';
-
-    // Try real SMS via proxy — fall back to simulation if unavailable
-    var smsSent = false;
-    try {
-      var resp = await fetch('https://sms-proxy-xxxx.onrender.com/send', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ phone: ph, message: 'Your Barbershop Rewards code: '+verifyCode })
-      });
-      if(resp.ok){ smsSent = true; }
-    } catch(e) { /* proxy not deployed yet — use simulation */ }
-
-    if(smsSent){
-      // SMS sent — banner stays hidden
-    } else {
-      document.getElementById('simCode').textContent = verifyCode;
-      document.getElementById('simBanner').style.display = 'block';
-    }
-  } catch(e) {
-    el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Error: '+e.message+'</div>';
-  }
-}
-
-// ========== VERIFY ==========
-function doVerify(){
-  var code = document.getElementById('verifyCode').value.trim();
-  var el = document.getElementById('verifyMsg');
-  if(!code||code.length<4){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Enter the 4-digit code</div>'; return; }
-  if(code !== verifyCode){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Wrong code. Try again.</div>'; return; }
-  // Mark verified and persist
-  loadData().then(function(){
-    var c = findCustomer(pendingVerify);
-    if(c){ c.verified = true; _enqueueWrite(); }
-  }).catch(function(){});
-  document.getElementById('verifyStep').classList.add('hidden');
-  showToast('✅ Number verified!', 'success');
-  showDashboard();
-}
-
-function skipVerify(){
-  document.getElementById('verifyStep').classList.add('hidden');
-  showDashboard();
-}
-
-// ========== LOGIN ==========
-async function doLogin(){
-  var ph = loginDigits;
-  var el = document.getElementById('loginMsg');
-  if(ph.length<10){ el.innerHTML='<div style="color:#ef4444;font-size:0.75rem;">Enter 10 digits</div>'; return; }
-  el.innerHTML='<div style="color:var(--text-muted);font-size:0.75rem;">Looking up...</div>';
-  await doLoginDirect(ph, el);
-}
-
-async function doLoginDirect(ph, el){
-  if(!el) el = document.getElementById('loginMsg');
-  try {
-    await loadData();
-    var c = findCustomer(ph);
-    if(!c){
-      el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Account not found. <span class="toggle-link" onclick="showSignup()">Create one?</span></div>';
-      return;
-    }
-    curPhone = ph;
-    showDashboard();
-  } catch(e) {
-    el.innerHTML='<div style="color:#ef4444;font-size:0.75rem;">Error: '+e.message+'</div>';
-  }
-}
-
-// ========== DASHBOARD ==========
-function showDashboard(){
-  document.getElementById('landingScreen').classList.add('hidden');
-  document.getElementById('dashScreen').classList.remove('hidden');
-  applyShopBranding();
-  refreshDashboard();
-}
-
-async function refreshDashboard(){
-  try {
-    await loadData();
-    var c = findCustomer(curPhone);
-    if(!c) return signOut();
-    var t = getTier(c);
-    var ec = enrichCustomer(c);
-    var pts = c.points||0;
-
-    document.getElementById('dashPhone').textContent = formatPhone(curPhone);
-    document.getElementById('cardName').textContent = c.name||'Valued Member';
-    document.getElementById('cardTier').innerHTML = '<span class="tier-badge" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.375rem 0.75rem;border-radius:100px;font-size:0.75rem;font-weight:700;background:'+t.bg+';color:'+t.color+';">'+t.icon+' '+t.name+'</span>';
-    document.getElementById('cardPts').innerHTML = pts.toLocaleString()+' <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">pts</span>';
-    document.getElementById('cardValue').textContent = pts > 0 ? '$'+ec._value+' redemption value' : 'Start earning to unlock rewards ✨';
-
-    // Tier progress
-    var progress = tierProgress(c);
-    var n = ec._next;
-    var tierTrackHtml = '';
-    TIERS.forEach(function(tier){
-      var isActive = pts >= tier.min;
-      var isCurrent = t.name === tier.name;
-      tierTrackHtml += '<div class="tier-dot '+(isCurrent?'current':isActive?'active':'')+'" title="'+tier.name+' ('+tier.min+' pts)">'+tier.icon+'</div>';
-    });
-    document.getElementById('tierTrack').innerHTML = tierTrackHtml;
-    document.getElementById('tierProgressBar').style.width = progress+'%';
-    document.getElementById('tierNext').textContent = n ? 'Next: '+n.icon+' '+n.name+' at '+n.min.toLocaleString()+' pts ('+(n.min-pts).toLocaleString()+' more)' : '🎉 Max tier reached!';
-
-    // Rewards
-    var rewardsHtml = '';
-    REDEEM_TIERS.forEach(function(rt){
-      var needed = rt[0];
-      var dollars = rt[1];
-      var can = pts >= needed;
-      rewardsHtml += '<div class="reward-card '+(can?'affordable':'locked')+'">'+
-        '<div class="reward-icon" style="background:'+(can?'var(--accent-glow)':'rgba(255,255,255,0.05)')+'">'+(can?'✅':'🔒')+'</div>'+
-        '<div style="flex:1;"><div style="font-weight:600;font-size:0.9375rem;">$'+dollars+' off haircut</div><div style="font-size:0.75rem;color:var(--text-muted);">Redeem at counter with staff</div></div>'+
-        '<div class="reward-pts">'+needed.toLocaleString()+' pts</div>'+
-        '</div>';
-    });
-    document.getElementById('rewardsList').innerHTML = rewardsHtml;
-
-    // Achievements
-    var ach = ec._achievements || [];
-    var earned = ach.filter(function(a){ return a.earned; });
-    var locked = ach.filter(function(a){ return !a.earned; });
-    var achHtml = '';
-    earned.forEach(function(a){
-      achHtml += '<div style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.5rem 0.75rem;margin:0 0.375rem 0.375rem 0;background:var(--accent-glow);border:1px solid var(--accent);border-radius:100px;font-size:0.6875rem;font-weight:600;">'+a.icon+' '+a.name+'</div>';
-    });
-    // Show first 3 locked to create desire
-    locked.slice(0,3).forEach(function(a){
-      achHtml += '<div style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.5rem 0.75rem;margin:0 0.375rem 0.375rem 0;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:100px;font-size:0.6875rem;color:var(--text-muted);opacity:0.5;">🔒 '+a.name+'</div>';
-    });
-    if(locked.length > 3){
-      achHtml += '<div style="display:inline-flex;align-items:center;padding:0.5rem 0.75rem;margin:0 0.375rem 0.375rem 0;color:var(--text-muted);font-size:0.6875rem;">+'+ (locked.length-3) +' more</div>';
-    }
-    document.getElementById('achievementsList').innerHTML = achHtml || '<div style="font-size:0.8125rem;color:var(--text-muted);">Start earning to unlock achievements!</div>';
-
-    // Recent transactions
-    var txs = (c.transactions||[]).slice(-5).reverse();
-    var txnsHtml = '';
-    if(!txs.length){
-      txnsHtml = '<div style="text-align:center;padding:2rem 0;color:var(--text-muted);">✨ Your journey starts here! Visit the shop to earn points.</div>';
-    } else {
-      txs.forEach(function(tx){
-        var icon = tx.type==='haircut'?'🛒':tx.type==='redeem'?'💸':tx.type==='birthday_bonus'?'🎂':'⭐';
-        var label = tx.type==='haircut'?'Haircut $'+(tx.amount||0).toFixed(2):
-                    tx.type==='redeem'?'Redeemed $'+tx.value+' off':
-                    (tx.note||tx.type.replace(/_/g,' '));
-        txnsHtml += '<div class="mini-txn">'+
-          '<div class="txn-icon">'+icon+'</div>'+
-          '<div style="flex:1"><div style="font-size:0.8125rem;font-weight:500;">'+label+'</div><div style="font-size:0.6875rem;color:var(--text-muted);">'+formatDate(tx.timestamp)+'</div></div>'+
-          '<div style="font-size:0.875rem;font-weight:700;color:'+(tx.points>0?'var(--accent)':'#ef4444')+'">'+(tx.points>0?'+':'')+tx.points+'</div>'+
-          '</div>';
-      });
-    }
-    document.getElementById('recentTxns').innerHTML = txnsHtml;
-
-    // Referral
-    document.getElementById('refCode').textContent = c.referral_code||'--------';
-    // Referral stats
-    var refCount = c.referral_count||0;
-    var refName = document.getElementById('custEditName');
-    if(refName) refName.value = c.name||'';
-    document.getElementById('refStats').innerHTML = refCount > 0 ? '👥 '+refCount+' friend'+(refCount!==1?'s':'')+' joined with your code' : 'Share your code to earn bonus points when friends join';
-  } catch(e) {
-    showToast('Error loading: '+e.message, 'error');
-  }
-}
-
-function signOut(){
-  curPhone = null;
-  loginDigits = '';
-  document.getElementById('loginPhone').value = '';
-  document.getElementById('dashScreen').classList.add('hidden');
-  document.getElementById('landingScreen').classList.remove('hidden');
-  showActionCards();
-}
-
-function copyRef(){
-  var code = document.getElementById('refCode').textContent;
-  if(code==='--------') return;
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(code).then(function(){ showToast('📋 Code copied!', 'success'); });
-  }
-}
-
-// ========== SELF-EDIT NAME ==========
-async function doSaveCustName(){
-  var nm = document.getElementById('custEditName').value.trim();
-  var el = document.getElementById('custNameMsg');
-  if(!nm){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Enter your name</div>'; return; }
-  try {
-    await loadData();
-    var c = findCustomer(curPhone);
-    if(!c){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Account not found</div>'; return; }
-    c.name = nm;
-    _enqueueWrite();
-    el.innerHTML='<div style=\"color:var(--accent);font-size:0.75rem;\">✅ Name updated</div>';
-    setTimeout(function(){ el.innerHTML=''; }, 2000);
-    refreshDashboard();
-  } catch(e){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Error: '+e.message+'</div>'; }
-}
-
-// ========== TOAST ==========
-function showToast(msg, type){
-  var existing = document.querySelectorAll('.toast');
-  existing.forEach(function(t){ t.remove(); });
-  var t = document.createElement('div');
-  t.className = 'toast toast-'+type;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function(){ t.remove(); }, 2500);
-}
-
-// ========== AUTO-REDIRECT if already logged in ==========
-(function(){
-  var saved = localStorage.getItem('_cust_phone');
-  if(saved){
-    curPhone = saved;
-    loadData().then(function(){
-      var c = findCustomer(saved);
-      if(c){
-        document.getElementById('landingScreen').classList.add('hidden');
-        document.getElementById('dashScreen').classList.remove('hidden');
-        applyShopBranding();
-        refreshDashboard();
-      }
-    }).catch(function(){});
-  }
-  // Save phone on signout/dashboard for return visits
-  var origSignOut = signOut;
-  signOut = function(){
-    localStorage.removeItem('_cust_phone');
-    origSignOut();
-  };
-  var origShowDashboard = showDashboard;
-  showDashboard = function(){
-    localStorage.setItem('_cust_phone', curPhone);
-    origShowDashboard();
-  };
-})();
-</script>
-</body>
-</html>
+     1|     1|<!DOCTYPE html>
+     2|     2|<html lang="en">
+     3|     3|<head>
+     4|     4|<meta charset="UTF-8">
+     5|     5|<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+     6|     6|<meta name="theme-color" content="#0d0b0a">
+     7|     7|<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+     8|     8|<title>My Chair — ChairBook</title>
+     9|     9|<link rel="stylesheet" href="styles.css">
+    10|    10|<style>
+    11|    11|  *, *::before, *::after { box-sizing: border-box; }
+    12|    12|  button, [onclick], input, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    13|    13|
+    14|    14|  :root {
+    15|    15|    --bg: #0d0b0a; --bg-card: #161311; --border: #26211c;
+    16|    16|    --text: #ede6dc; --text-muted: #8a7e70; --text-secondary: #6b5f54;
+    17|    17|    --accent: #b8312f; --accent-glow: rgba(184,49,47,0.15);
+    18|    18|    --gold: #c49b3f; --radius: 16px; --radius-sm: 10px; --radius-lg: 20px;
+    19|    19|    --ease-out: cubic-bezier(0.16,1,0.3,1); --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+    20|    20|  }
+    21|    21|
+    22|    22|  body {
+    23|    23|    background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    24|    24|    margin: 0; padding: 0; min-height: 100dvh; -webkit-font-smoothing: antialiased;
+    25|    25|  }
+    26|    26|  .page { max-width: 500px; margin: 0 auto; padding: 1rem; min-height: 100dvh; }
+    27|    27|  .hidden { display: none !important; }
+    28|    28|
+    29|    29|  /* ── BUTTONS ── */
+    30|    30|  .btn {
+    31|    31|    display: inline-flex; align-items: center; justify-content: center;
+    32|    32|    padding: 0.875rem 1.5rem; border: none; border-radius: var(--radius);
+    33|    33|    font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s var(--ease-out);
+    34|    34|  }
+    35|    35|  .btn:active { transform: scale(0.96); }
+    36|    36|  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 20px var(--accent-glow); }
+    37|    37|  .btn-block { width: 100%; }
+    38|    38|  .btn-lg { padding: 1rem 2rem; font-size: 1.125rem; border-radius: 18px; }
+    39|    39|  .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-muted); }
+    40|    40|
+    41|    41|  /* ── SIGNUP / LOGIN ── */
+    42|    42|  .landing {
+    43|    43|    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    44|    44|    min-height: 100dvh; padding: 2rem 1rem; text-align: center; gap: 2rem;
+    45|    45|  }
+    46|    46|  .landing .hero-icon { font-size: 4rem; animation: pulse 2s ease-in-out infinite; }
+    47|    47|  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+    48|    48|  .landing h1 { font-size: 1.75rem; font-weight: 900; margin: 0; }
+    49|    49|  .landing .subtitle { color: var(--text-muted); font-size: 0.9375rem; max-width: 280px; line-height: 1.5; }
+    50|    50|
+    51|    51|  /* ── ACTION CARDS ── */
+    52|    52|  .action-cards { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 0.875rem; }
+    53|    53|  .action-card {
+    54|    54|    width: 100%; padding: 1.5rem 1.25rem; background: var(--bg-card);
+    55|    55|    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    56|    56|    cursor: pointer; transition: all 0.2s var(--ease-out);
+    57|    57|    display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem;
+    58|    58|    -webkit-tap-highlight-color: transparent; user-select: none; text-align: left;
+    59|    59|  }
+    60|    60|  .action-card:active { transform: scale(0.97); border-color: var(--accent); background: rgba(184,49,47,0.06); }
+    61|    61|  .action-card-icon { font-size: 2rem; line-height: 1; }
+    62|    62|  .action-card-title { font-size: 1.125rem; font-weight: 800; color: var(--text); }
+    63|    63|  .action-card-sub { font-size: 0.8125rem; color: var(--text-muted); line-height: 1.4; }
+    64|    64|
+    65|    65|  /* ── SLIDE DOWN ANIMATION ── */
+    66|    66|  @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    67|    67|  .slide-in { animation: slideDown 0.4s var(--ease-out) both; }
+    68|    68|
+    69|    69|  /* ── FORM BACK LINK ── */
+    70|    70|  .form-back { text-align: center; margin-top: 0.75rem; font-size: 0.8125rem; color: var(--text-muted); cursor: pointer; }
+    71|    71|  .form-back:hover { color: var(--accent); }
+    72|    72|
+    73|    73|  .form-card {
+    74|    74|    width: 100%; max-width: 360px; background: var(--bg-card); border: 1px solid var(--border);
+    75|    75|    border-radius: var(--radius-lg); padding: 1.75rem; text-align: left;
+    76|    76|  }
+    77|    77|  .form-card .form-group { margin-bottom: 1rem; }
+    78|    78|  .form-card label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.375rem; }
+    79|    79|  .form-card input {
+    80|    80|    width: 100%; padding: 0.75rem; font-size: 1rem; background: var(--bg);
+    81|    81|    border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text); outline: none;
+    82|    82|    transition: border 0.2s;
+    83|    83|  }
+    84|    84|  .form-card input:focus { border-color: var(--accent); }
+    85|    85|  .form-card .hint { font-size: 0.6875rem; color: var(--text-muted); margin-top: 0.25rem; }
+    86|    86|
+    87|    87|  .toggle-link { color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; }
+    88|    88|
+    89|    89|  /* ── QR SECTION ── */
+    90|    90|  .qr-section {
+    91|    91|    margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    92|    92|    text-align: center;
+    93|    93|  }
+    94|    94|  .qr-section .qr-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
+    95|    95|
+    96|    96|  /* ── NUMBER PAD (for returning login) ── */
+    97|    97|  .num-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.75rem; }
+    98|    98|  .num-key {
+    99|    99|    padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
+   100|   100|    background: var(--bg); color: var(--text); font-size: 1.25rem; font-weight: 600;
+   101|   101|    cursor: pointer; transition: all 0.1s; display: flex; align-items: center; justify-content: center;
+   102|   102|  }
+   103|   103|  .num-key:active { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(0.95); }
+   104|   104|  .num-key.del { font-size: 0.875rem; color: var(--text-muted); }
+   105|   105|  .num-key.go { background: var(--accent); border-color: var(--accent); color: #fff; font-size: 0.875rem; font-weight: 700; }
+   106|   106|
+   107|   107|  /* ── DASHBOARD ── */
+   108|   108|  .dash-header { padding: 1rem 0 0.5rem; text-align: center; }
+   109|   109|  .dash-header h1 { font-size: 1.25rem; margin: 0; }
+   110|   110|  .dash-header .phone-display { font-size: 0.8125rem; color: var(--text-muted); }
+   111|   111|  .dash-header .signout { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; margin-top: 0.5rem; display: inline-block; text-decoration: underline; }
+   112|   112|
+   113|   113|  /* ── MEMBERSHIP CARD ── */
+   114|   114|  .mcard {
+   115|   115|    margin-bottom: 1.25rem; border-radius: var(--radius-lg);
+   116|   116|    padding: 1.75rem; position: relative; overflow: hidden;
+   117|   117|    background: linear-gradient(135deg, #1a0f0d 0%, #161311 50%, #0d0b0a 100%);
+   118|   118|    border: 1px solid var(--border); box-shadow: 0 8px 48px rgba(0,0,0,0.4);
+   119|   119|  }
+   120|   120|  .mcard .card-pattern {
+   121|   121|    position: absolute; inset: 0; opacity: 0.03;
+   122|   122|    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.5) 10px, rgba(255,255,255,0.5) 11px);
+   123|   123|  }
+   124|   124|  .mcard .card-logo { font-size: 1.5rem; margin-bottom: 1rem; position: relative; z-index: 1; }
+   125|   125|  .mcard .card-name { font-size: 1.25rem; font-weight: 700; position: relative; z-index: 1; }
+   126|   126|  .mcard .card-tier { margin-top: 0.5rem; position: relative; z-index: 1; }
+   127|   127|  .mcard .card-pts { font-size: 2.5rem; font-weight: 900; margin-top: 0.75rem; position: relative; z-index: 1; }
+   128|   128|  .mcard .card-value {
+   129|   129|    font-size: 0.8125rem; color: var(--text-muted); position: relative; z-index: 1;
+   130|   130|    margin-top: 0.25rem;
+   131|   131|  }
+   132|   132|
+   133|   133|  /* ── SECTIONS ── */
+   134|   134|  .section { margin-bottom: 1.25rem; }
+   135|   135|  .section-label {
+   136|   136|    font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+   137|   137|    color: var(--text-muted); margin-bottom: 0.625rem;
+   138|   138|  }
+   139|   139|
+   140|   140|  /* ── REWARDS CATALOG ── */
+   141|   141|  .reward-card {
+   142|   142|    display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem;
+   143|   143|    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+   144|   144|    margin-bottom: 0.5rem; transition: all 0.15s;
+   145|   145|  }
+   146|   146|  .reward-card.affordable { border-color: var(--accent); background: rgba(184,49,47,0.05); }
+   147|   147|  .reward-card .reward-icon {
+   148|   148|    width: 44px; height: 44px; border-radius: var(--radius-sm);
+   149|   149|    display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;
+   150|   150|  }
+   151|   151|  .reward-card .reward-pts {
+   152|   152|    padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;
+   153|   153|    background: var(--accent-glow); color: var(--accent); flex-shrink: 0;
+   154|   154|  }
+   155|   155|  .reward-card.locked .reward-pts { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+   156|   156|  .reward-card.locked { opacity: 0.5; }
+   157|   157|
+   158|   158|  /* ── TIER TRACK ── */
+   159|   159|  .tier-track {
+   160|   160|    display: flex; justify-content: space-between; position: relative; padding: 0 0.5rem;
+   161|   161|  }
+   162|   162|  .tier-track::before {
+   163|   163|    content: ''; position: absolute; top: 16px; left: 20px; right: 20px;
+   164|   164|    height: 2px; background: var(--border); z-index: 0;
+   165|   165|  }
+   166|   166|  .tier-dot {
+   167|   167|    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+   168|   168|    justify-content: center; font-size: 0.75rem; z-index: 1; position: relative;
+   169|   169|    border: 2px solid var(--border); background: var(--bg); transition: all 0.3s;
+   170|   170|  }
+   171|   171|  .tier-dot.active { border-color: var(--accent); background: var(--accent-glow); }
+   172|   172|  .tier-dot.current { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
+   173|   173|
+   174|   174|  /* ── PROGRESS BAR ── */
+   175|   175|  .progress-bar {
+   176|   176|    height: 6px; background: var(--border); border-radius: 3px; margin: 0.75rem 0; overflow: hidden;
+   177|   177|  }
+   178|   178|  .progress-fill {
+   179|   179|    height: 100%; background: var(--accent); border-radius: 3px;
+   180|   180|    transition: width 0.6s var(--ease-out);
+   181|   181|  }
+   182|   182|
+   183|   183|  /* ── TRANSACTIONS ── */
+   184|   184|  .mini-txn {
+   185|   185|    display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0;
+   186|   186|    border-bottom: 1px solid var(--border);
+   187|   187|  }
+   188|   188|  .mini-txn:last-child { border-bottom: none; }
+   189|   189|  .mini-txn .txn-icon {
+   190|   190|    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+   191|   191|    justify-content: center; font-size: 0.875rem; flex-shrink: 0; background: rgba(255,255,255,0.04);
+   192|   192|  }
+   193|   193|
+   194|   194|  /* ── SHARE ── */
+   195|   195|  .share-ref {
+   196|   196|    display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem;
+   197|   197|    background: var(--bg); border-radius: var(--radius-sm); border: 1px dashed var(--border);
+   198|   198|  }
+   199|   199|  .share-ref code {
+   200|   200|    font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
+   201|   201|    font-weight: 700; letter-spacing: 0.1em; flex: 1; text-align: center; color: var(--accent);
+   202|   202|  }
+   203|   203|
+   204|   204|  /* ── ANIMATIONS ── */
+   205|   205|  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+   206|   206|  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+   207|   207|  .animate-up { animation: slideUp 0.4s var(--ease-out) both; }
+   208|   208|
+   209|   209|  /* ── TOAST ── */
+   210|   210|  .toast {
+   211|   211|    position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 100;
+   212|   212|    padding: 0.875rem 2rem; border-radius: 100px; font-weight: 700; font-size: 0.9375rem;
+   213|   213|    animation: toastIn 0.35s var(--ease-out); box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+   214|   214|  }
+   215|   215|  .toast-success { background: var(--accent); color: #fff; }
+   216|   216|  .toast-error { background: #ef4444; color: #fff; }
+   217|   217|  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(-16px) } to { opacity:1; transform:translateX(-50%) translateY(0) } }
+   218|   218|
+   219|   219|  /* hidden class override */
+   220|   220|  .hidden { display: none !important; }
+   221|   221|  .flex { display: flex; }
+   222|   222|  .gap-2 { gap: 0.5rem; }
+   223|   223|  .mt-2 { margin-top: 0.5rem; }
+   224|   224|</style>
+   225|   225|</head>
+   226|   226|<body>
+   227|   227|
+   228|   228|<!-- LANDING — Two Action Cards -->
+   229|   229|<div id="landingScreen" class="landing">
+   230|   230|  <div class="hero-icon"></div>
+   231|   231|  <div>
+   232|   232|    <h1 id="landingTitle">My Chair</h1>
+   233|   233|    <p class="subtitle">Your barber knows your cut. Track visits, earn perks, never miss an appointment.</p>
+   234|   234|  </div>
+   235|   235|
+   236|   236|  <!-- Two prominent action cards -->
+   237|   237|  <div class="action-cards" id="actionCards">
+   238|   238|    <div class="action-card" onclick="showSignup()">
+   239|   239|      <div class="action-card-icon"></div>
+   240|   240|      <div class="action-card-title">I'm New Here</div>
+   241|   241|      <div class="action-card-sub">Set up in 10 seconds. No app needed.</div>
+   242|   242|    </div>
+   243|   243|    <div class="action-card" onclick="showLogin()">
+   244|   244|      <div class="action-card-icon"></div>
+   245|   245|      <div class="action-card-title">Look Up My Account</div>
+   246|   246|      <div class="action-card-sub">Check my points &amp; rewards</div>
+   247|   247|    </div>
+   248|   248|  </div>
+   249|   249|
+   250|   250|  <div class="form-card hidden" id="signupForm">
+   251|   251|    <div class="form-group">
+   252|   252|      <label>Phone Number</label>
+   253|   253|      <input type="tel" id="signupPhone" placeholder="3055551234" autocomplete="off" inputmode="numeric">
+   254|   254|      <div class="hint">You'll use this to check your rewards</div>
+   255|   255|    </div>
+   256|   256|    <div class="form-group">
+   257|   257|      <label>Name</label>
+   258|   258|      <input type="text" id="signupName" placeholder="Your name" autocomplete="off">
+   259|   259|    </div>
+   260|   260|    <div class="form-group">
+   261|   261|      <label>Birthday (optional)</label>
+   262|   262|      <input type="text" id="signupBday" placeholder="MM/DD" autocomplete="off" inputmode="numeric" maxlength="5" oninput="formatBday(this)">
+   263|   263|      <div class="hint">Birthday month = bonus points! </div>
+   264|   264|    </div>
+   265|   265|    <div class="form-group">
+   266|   266|      <label>Referral Code (optional)</label>
+   267|   267|      <input type="text" id="signupRef" placeholder="Enter code from a friend" autocomplete="off" style="text-transform:uppercase;letter-spacing:0.1em;">
+   268|   268|      <div class="hint">You both get bonus points! </div>
+   269|   269|    </div>
+   270|   270|    <button class="btn btn-primary btn-block btn-lg" onclick="doSignup()"> Join Now — Free</button>
+   271|   271|    <div id="signupMsg" class="mt-2"></div>
+   272|   272|
+   273|   273|    <div style="text-align:center;margin-top:1.25rem;">
+   274|   274|      <span style="color:var(--text-muted);font-size:0.8125rem;">Already a member?</span>
+   275|   275|      <span class="toggle-link" onclick="showLogin()">Look up my account</span>
+   276|   276|    </div>
+   277|   277|    <div class="form-back" onclick="showActionCards()">← Back</div>
+   278|   278|  </div>
+   279|   279|
+   280|   280|  <!-- VERIFICATION STEP -->
+   281|   281|  <div class="form-card hidden" id="verifyStep" style="text-align:center;">
+   282|   282|    <div style="font-size:3rem;margin-bottom:0.5rem;"></div>
+   283|   283|    <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem;">Verify Your Number</div>
+   284|   284|    <div style="color:var(--text-muted);font-size:0.8125rem;margin-bottom:1rem;">We sent a 4-digit code to<br><strong id="verifyPhoneDisplay"></strong></div>
+   285|   285|    <div style="background:rgba(184,49,47,0.08);border:1px dashed var(--accent);border-radius:var(--radius-sm);padding:0.5rem;margin-bottom:1rem;font-size:0.6875rem;color:var(--text-muted);display:none;" id="simBanner">
+   286|   286|       TEST MODE — Code: <strong id="simCode" style="color:var(--accent);font-size:1rem;">----</strong><br>
+   287|   287|      <span style="font-size:0.625rem;">(Replace with Twilio/Textbelt for real SMS)</span>
+   288|   288|    </div>
+   289|   289|    <input type="text" id="verifyCode" placeholder="0000" maxlength="4" autocomplete="off" inputmode="numeric" style="text-align:center;font-size:1.5rem;letter-spacing:0.5rem;width:100%;padding:0.75rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text);outline:none;">
+   290|   290|    <div id="verifyMsg" style="margin-top:0.75rem;"></div>
+   291|   291|    <button class="btn btn-primary btn-block btn-lg" onclick="doVerify()" style="margin-top:0.75rem;">OK Verify</button>
+   292|   292|    <div style="margin-top:0.75rem;">
+   293|   293|      <span class="toggle-link" onclick="skipVerify()" style="font-size:0.75rem;color:var(--text-muted);">Skip for now</span>
+   294|   294|    </div>
+   295|   295|  </div>
+   296|   296|
+   297|   297|  <div class="form-card hidden" id="loginForm">
+   298|   298|    <div style="font-weight:800;margin-bottom:0.75rem;">Welcome back</div>
+   299|   299|    <input type="tel" id="loginPhone" class="large" placeholder="(555) 123-4567" readonly style="text-align:center;width:100%;padding:0.75rem;font-size:1.25rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text);">
+   300|   300|    <div class="num-pad">
+   301|   301|      <button class="num-key" onclick="pressDigit('1')">1</button>
+   302|   302|      <button class="num-key" onclick="pressDigit('2')">2</button>
+   303|   303|      <button class="num-key" onclick="pressDigit('3')">3</button>
+   304|   304|      <button class="num-key" onclick="pressDigit('4')">4</button>
+   305|   305|      <button class="num-key" onclick="pressDigit('5')">5</button>
+   306|   306|      <button class="num-key" onclick="pressDigit('6')">6</button>
+   307|   307|      <button class="num-key" onclick="pressDigit('7')">7</button>
+   308|   308|      <button class="num-key" onclick="pressDigit('8')">8</button>
+   309|   309|      <button class="num-key" onclick="pressDigit('9')">9</button>
+   310|   310|      <button class="num-key del" onclick="pressDigit('del')">⌫</button>
+   311|   311|      <button class="num-key" onclick="pressDigit('0')">0</button>
+   312|   312|      <button class="num-key go" onclick="doLogin()">Go →</button>
+   313|   313|    </div>
+   314|   314|    <div id="loginMsg" class="mt-2"></div>
+   315|   315|
+   316|   316|    <div style="text-align:center;margin-top:1rem;">
+   317|   317|      <span style="color:var(--text-muted);font-size:0.8125rem;">New here?</span>
+   318|   318|      <span class="toggle-link" onclick="showSignup()">Create an account</span>
+   319|   319|    </div>
+   320|   320|    <div class="form-back" onclick="showActionCards()">← Back</div>
+   321|   321|  </div>
+   322|   322|</div>
+   323|   323|
+   324|   324|<!-- DASHBOARD -->
+   325|   325|<div id="dashScreen" class="hidden page">
+   326|   326|  <div class="dash-header">
+   327|   327|    <h1 id="shopName">My Rewards</h1>
+   328|   328|    <div class="phone-display" id="dashPhone"></div>
+   329|   329|    <span class="signout" onclick="signOut()">← Sign out</span>
+   330|   330|  </div>
+   331|   331|
+   332|   332|  <!-- Membership Card -->
+   333|   333|  <div class="mcard animate-up" id="mcard">
+   334|   334|    <div class="card-pattern"></div>
+   335|   335|    <div class="card-logo"></div>
+   336|   336|    <div class="card-name" id="cardName">Valued Member</div>
+   337|   337|    <div class="card-tier" id="cardTier"></div>
+   338|   338|    <div class="card-pts" id="cardPts">0 <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">visits</span></div>
+   339|   339|    <div class="card-value" id="cardValue"></div>
+   340|   340|  </div>
+   341|   341|
+   342|   342|  <!-- Tier Progress -->
+   343|   343|  <div class="section animate-up" style="animation-delay:0.1s">
+   344|   344|    <div class="section-label"> Tier Progress</div>
+   345|   345|    <div class="tier-track" id="tierTrack"></div>
+   346|   346|    <div class="progress-bar"><div class="progress-fill" id="tierProgressBar" style="width:0%"></div></div>
+   347|   347|    <div style="font-size:0.75rem;color:var(--text-muted);" id="tierNext"></div>
+   348|   348|  </div>
+   349|   349|
+   350|   350|  <!-- Rewards Catalog -->
+   351|   351|  <div class="section animate-up" style="animation-delay:0.15s">
+   352|   352|    <div class="section-label"> Your Perks</div>
+   353|   353|    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.75rem;">Ask your barber at checkout</div>
+   354|   354|    <div id="rewardsList"></div>
+   355|   355|  </div>
+   356|   356|
+   357|   357|  <!-- Achievements -->
+   358|   358|  <div class="section animate-up" style="animation-delay:0.18s">
+   359|   359|    <div class="section-label"> Achievements</div>
+   360|   360|    <div id="achievementsList"></div>
+   361|   361|  </div>
+   362|   362|
+   363|   363|  <!-- Recent Activity -->
+   364|   364|  <div class="section animate-up" style="animation-delay:0.2s">
+   365|   365|    <div class="section-label"> Recent Activity</div>
+   366|   366|    <div id="recentTxns"></div>
+   367|   367|  </div>
+   368|   368|
+   369|   369|  <!-- Referral -->
+   370|   370|  <div class="section animate-up" style="animation-delay:0.25s">
+   371|   371|    <div class="section-label"> Refer a Friend</div>
+   372|   372|    <div class="share-ref">
+   373|   373|      <span style="font-size:0.875rem;">Your code:</span>
+   374|   374|      <code id="refCode">--------</code>
+   375|   375|      <button class="btn" style="padding:0.5rem 0.75rem;font-size:0.75rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);" onclick="copyRef()">Copy</button>
+   376|   376|    </div>
+   377|   377|    <div style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.375rem;">Friend uses your code — you both get a bonus credit</div>
+   378|   378|    <div style="font-size:0.8125rem;color:var(--accent);margin-top:0.5rem;" id="refStats"></div>
+   379|   379|  </div>
+   380|   380|
+   381|   381|  <!-- Edit Profile -->
+   382|   382|  <div class="section animate-up" style="animation-delay:0.28s">
+   383|   383|    <div class="section-label"> My Profile</div>
+   384|   384|    <div style="display:flex;gap:0.5rem;">
+   385|   385|      <input type="text" id="custEditName" placeholder="Your name" style="flex:1;padding:0.625rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:0.9375rem;outline:none;">
+   386|   386|      <button class="btn" style="padding:0.625rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:0.8125rem;font-weight:700;flex-shrink:0;" onclick="doSaveCustName()"> Save</button>
+   387|   387|    </div>
+   388|   388|    <div id="custNameMsg" style="margin-top:0.375rem;"></div>
+   389|   389|  </div>
+   390|   390|</div>
+   391|   391|
+   392|   392|<script src="app.js"></script>
+   393|   393|<script>
+   394|   394|var curPhone = null;
+   395|   395|var pendingVerify = null;
+   396|   396|var verifyCode = null;
+   397|   397|
+   398|   398|// ========== LANDING TOGGLE ==========
+   399|   399|function formatBday(el){
+   400|   400|  var v = el.value.replace(/\D/g,'');
+   401|   401|  if(v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2,2);
+   402|   402|  if(v.length > 5) v = v.slice(0,5);
+   403|   403|  el.value = v;
+   404|   404|}
+   405|   405|function showActionCards(){
+   406|   406|  document.getElementById('signupForm').classList.add('hidden');
+   407|   407|  document.getElementById('loginForm').classList.add('hidden');
+   408|   408|  document.getElementById('verifyStep').classList.add('hidden');
+   409|   409|  document.getElementById('actionCards').classList.remove('hidden');
+   410|   410|  document.getElementById('landingTitle').textContent = 'My Chair';
+   411|   411|  document.querySelector('.subtitle').textContent = 'Earn 1 point per $1 spent. Redeem for discounts. It\'s free.';
+   412|   412|}
+   413|   413|function showLogin(){
+   414|   414|  document.getElementById('actionCards').classList.add('hidden');
+   415|   415|  document.getElementById('signupForm').classList.add('hidden');
+   416|   416|  document.getElementById('verifyStep').classList.add('hidden');
+   417|   417|  var lf = document.getElementById('loginForm');
+   418|   418|  lf.classList.remove('hidden');
+   419|   419|  lf.classList.remove('slide-in');
+   420|   420|  void lf.offsetWidth; // force reflow
+   421|   421|  lf.classList.add('slide-in');
+   422|   422|  document.getElementById('landingTitle').textContent = 'My Rewards';
+   423|   423|  document.querySelector('.subtitle').textContent = 'Enter your number to see your book';
+   424|   424|}
+   425|   425|function showSignup(){
+   426|   426|  document.getElementById('actionCards').classList.add('hidden');
+   427|   427|  document.getElementById('loginForm').classList.add('hidden');
+   428|   428|  document.getElementById('verifyStep').classList.add('hidden');
+   429|   429|  var sf = document.getElementById('signupForm');
+   430|   430|  sf.classList.remove('hidden');
+   431|   431|  sf.classList.remove('slide-in');
+   432|   432|  void sf.offsetWidth; // force reflow
+   433|   433|  sf.classList.add('slide-in');
+   434|   434|  document.getElementById('landingTitle').textContent = 'My Chair';
+   435|   435|  document.querySelector('.subtitle').textContent = 'Earn 1 point per $1 spent. Redeem for discounts. It\'s free.';
+   436|   436|}
+   437|   437|
+   438|   438|// ========== NUMPAD (login) ==========
+   439|   439|var loginDigits = '';
+   440|   440|function pressDigit(d){
+   441|   441|  if(d==='del'){ loginDigits=loginDigits.slice(0,-1); }
+   442|   442|  else { if(loginDigits.length<10) loginDigits+=d; }
+   443|   443|  document.getElementById('loginPhone').value = loginDigits.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+   444|   444|}
+   445|   445|
+   446|   446|// ========== SIGNUP ==========
+   447|   447|async function doSignup(){
+   448|   448|  var ph = document.getElementById('signupPhone').value.replace(/\D/g,'');
+   449|   449|  var nm = document.getElementById('signupName').value.trim();
+   450|   450|  var bday = document.getElementById('signupBday').value.trim();
+   451|   451|  var el = document.getElementById('signupMsg');
+   452|   452|
+   453|   453|  if(!ph||ph.length<10){ el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">Enter a valid 10-digit phone number</div>'; return; }
+   454|   454|  if(!nm){ el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;">Enter your name</div>'; return; }
+   455|   455|
+   456|   456|  el.innerHTML='<div style="color:var(--text-muted);font-size:0.8125rem;">Creating account...</div>';
+   457|   457|  try {
+   458|   458|    await loadData();
+   459|   459|    var existing = findCustomer(ph);
+   460|   460|    if(existing){
+   461|   461|      el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;font-weight:600;"> An account with this phone already exists. <span class="toggle-link" onclick="doLoginDirect(\''+ph+'\')">View your account</span></div>';
+   462|   462|      return;
+   463|   463|    }
+   464|   464|    var result = createCustomer(ph, { name: nm, birthday: bday, referral_code: document.getElementById('signupRef').value.trim().toUpperCase() });
+   465|   465|    var c = result.customer;
+   466|   466|    await saveData();
+   467|   467|    curPhone = ph;
+   468|   468|    var refMsg = result.referral ? ' (+'+result.referral.bonus+' referral pts!)' : '';
+   469|   469|    showToast('OK Account created!'+refMsg);
+   470|   470|    // Show verification
+   471|   471|    verifyCode = Math.floor(1000 + Math.random() * 9000).toString();
+   472|   472|    pendingVerify = ph;
+   473|   473|    document.getElementById('verifyPhoneDisplay').textContent = formatPhone(ph);
+   474|   474|    document.getElementById('verifyCode').value = '';
+   475|   475|    document.getElementById('verifyMsg').innerHTML = '';
+   476|   476|    document.getElementById('signupForm').classList.add('hidden');
+   477|   477|    document.getElementById('verifyStep').classList.remove('hidden');
+   478|   478|    document.getElementById('landingTitle').textContent = 'Verify Number';
+   479|   479|
+   480|   480|    // Try real SMS via proxy — fall back to simulation if unavailable
+   481|   481|    var smsSent = false;
+   482|   482|    try {
+   483|   483|      var resp = await fetch('https://sms-proxy-xxxx.onrender.com/send', {
+   484|   484|        method: 'POST', headers: {'Content-Type':'application/json'},
+   485|   485|        body: JSON.stringify({ phone: ph, message: 'Your Barbershop Rewards code: '+verifyCode })
+   486|   486|      });
+   487|   487|      if(resp.ok){ smsSent = true; }
+   488|   488|    } catch(e) { /* proxy not deployed yet — use simulation */ }
+   489|   489|
+   490|   490|    if(smsSent){
+   491|   491|      // SMS sent — banner stays hidden
+   492|   492|    } else {
+   493|   493|      document.getElementById('simCode').textContent = verifyCode;
+   494|   494|      document.getElementById('simBanner').style.display = 'block';
+   495|   495|    }
+   496|   496|  } catch(e) {
+   497|   497|    el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Error: '+e.message+'</div>';
+   498|   498|  }
+   499|   499|}
+   500|   500|
+   501|   501|// ========== VERIFY ==========
+   502|   502|function doVerify(){
+   503|   503|  var code = document.getElementById('verifyCode').value.trim();
+   504|   504|  var el = document.getElementById('verifyMsg');
+   505|   505|  if(!code||code.length<4){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Enter the 4-digit code</div>'; return; }
+   506|   506|  if(code !== verifyCode){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Wrong code. Try again.</div>'; return; }
+   507|   507|  // Mark verified and persist
+   508|   508|  loadData().then(function(){
+   509|   509|    var c = findCustomer(pendingVerify);
+   510|   510|    if(c){ c.verified = true; _enqueueWrite(); }
+   511|   511|  }).catch(function(){});
+   512|   512|  document.getElementById('verifyStep').classList.add('hidden');
+   513|   513|  showToast('OK Number verified!', 'success');
+   514|   514|  showDashboard();
+   515|   515|}
+   516|   516|
+   517|   517|function skipVerify(){
+   518|   518|  document.getElementById('verifyStep').classList.add('hidden');
+   519|   519|  showDashboard();
+   520|   520|}
+   521|   521|
+   522|   522|// ========== LOGIN ==========
+   523|   523|async function doLogin(){
+   524|   524|  var ph = loginDigits;
+   525|   525|  var el = document.getElementById('loginMsg');
+   526|   526|  if(ph.length<10){ el.innerHTML='<div style="color:#ef4444;font-size:0.75rem;">Enter 10 digits</div>'; return; }
+   527|   527|  el.innerHTML='<div style="color:var(--text-muted);font-size:0.75rem;">Looking up...</div>';
+   528|   528|  await doLoginDirect(ph, el);
+   529|   529|}
+   530|   530|
+   531|   531|async function doLoginDirect(ph, el){
+   532|   532|  if(!el) el = document.getElementById('loginMsg');
+   533|   533|  try {
+   534|   534|    await loadData();
+   535|   535|    var c = findCustomer(ph);
+   536|   536|    if(!c){
+   537|   537|      el.innerHTML='<div style="color:#ef4444;font-size:0.8125rem;">Account not found. <span class="toggle-link" onclick="showSignup()">Create one?</span></div>';
+   538|   538|      return;
+   539|   539|    }
+   540|   540|    curPhone = ph;
+   541|   541|    showDashboard();
+   542|   542|  } catch(e) {
+   543|   543|    el.innerHTML='<div style="color:#ef4444;font-size:0.75rem;">Error: '+e.message+'</div>';
+   544|   544|  }
+   545|   545|}
+   546|   546|
+   547|   547|// ========== DASHBOARD ==========
+   548|   548|function showDashboard(){
+   549|   549|  document.getElementById('landingScreen').classList.add('hidden');
+   550|   550|  document.getElementById('dashScreen').classList.remove('hidden');
+   551|   551|  applyShopBranding();
+   552|   552|  refreshDashboard();
+   553|   553|}
+   554|   554|
+   555|   555|async function refreshDashboard(){
+   556|   556|  try {
+   557|   557|    await loadData();
+   558|   558|    var c = findCustomer(curPhone);
+   559|   559|    if(!c) return signOut();
+   560|   560|    var t = getTier(c);
+   561|   561|    var ec = enrichCustomer(c);
+   562|   562|    var pts = c.points||0;
+   563|   563|
+   564|   564|    document.getElementById('dashPhone').textContent = formatPhone(curPhone);
+   565|   565|    document.getElementById('cardName').textContent = c.name||'Valued Member';
+   566|   566|    document.getElementById('cardTier').innerHTML = '<span class="tier-badge" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.375rem 0.75rem;border-radius:100px;font-size:0.75rem;font-weight:700;background:'+t.bg+';color:'+t.color+';">'+t.icon+' '+t.name+'</span>';
+   567|   567|    document.getElementById('cardPts').innerHTML = pts.toLocaleString()+' <span style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);">visits</span>';
+   568|   568|    document.getElementById('cardValue').textContent = pts > 0 ? '$'+ec._value+' redemption value' : 'Start earning to unlock rewards ';
+   569|   569|
+   570|   570|    // Tier progress
+   571|   571|    var progress = tierProgress(c);
+   572|   572|    var n = ec._next;
+   573|   573|    var tierTrackHtml = '';
+   574|   574|    TIERS.forEach(function(tier){
+   575|   575|      var isActive = pts >= tier.min;
+   576|   576|      var isCurrent = t.name === tier.name;
+   577|   577|      tierTrackHtml += '<div class="tier-dot '+(isCurrent?'current':isActive?'active':'')+'" title="'+tier.name+' ('+tier.min+' pts)">'+tier.icon+'</div>';
+   578|   578|    });
+   579|   579|    document.getElementById('tierTrack').innerHTML = tierTrackHtml;
+   580|   580|    document.getElementById('tierProgressBar').style.width = progress+'%';
+   581|   581|    document.getElementById('tierNext').textContent = n ? 'Next: '+n.icon+' '+n.name+' at '+n.min.toLocaleString()+' pts ('+(n.min-pts).toLocaleString()+' more)' : ' Max tier reached!';
+   582|   582|
+   583|   583|    // Rewards
+   584|   584|    var rewardsHtml = '';
+   585|   585|    REDEEM_TIERS.forEach(function(rt){
+   586|   586|      var needed = rt[0];
+   587|   587|      var dollars = rt[1];
+   588|   588|      var can = pts >= needed;
+   589|   589|      rewardsHtml += '<div class="reward-card '+(can?'affordable':'locked')+'">'+
+   590|   590|        '<div class="reward-icon" style="background:'+(can?'var(--accent-glow)':'rgba(255,255,255,0.05)')+'">'+(can?'OK':'')+'</div>'+
+   591|   591|        '<div style="flex:1;"><div style="font-weight:600;font-size:0.9375rem;">$'+dollars+' off haircut</div><div style="font-size:0.75rem;color:var(--text-muted);">Redeem at counter with staff</div></div>'+
+   592|   592|        '<div class="reward-pts">'+needed.toLocaleString()+' pts</div>'+
+   593|   593|        '</div>';
+   594|   594|    });
+   595|   595|    document.getElementById('rewardsList').innerHTML = rewardsHtml;
+   596|   596|
+   597|   597|    // Achievements
+   598|   598|    var ach = ec._achievements || [];
+   599|   599|    var earned = ach.filter(function(a){ return a.earned; });
+   600|   600|    var locked = ach.filter(function(a){ return !a.earned; });
+   601|   601|    var achHtml = '';
+   602|   602|    earned.forEach(function(a){
+   603|   603|      achHtml += '<div style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.5rem 0.75rem;margin:0 0.375rem 0.375rem 0;background:var(--accent-glow);border:1px solid var(--accent);border-radius:100px;font-size:0.6875rem;font-weight:600;">'+a.icon+' '+a.name+'</div>';
+   604|   604|    });
+   605|   605|    // Show first 3 locked to create desire
+   606|   606|    locked.slice(0,3).forEach(function(a){
+   607|   607|      achHtml += '<div style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.5rem 0.75rem;margin:0 0.375rem 0.375rem 0;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:100px;font-size:0.6875rem;color:var(--text-muted);opacity:0.5;"> '+a.name+'</div>';
+   608|   608|    });
+   609|   609|    if(locked.length > 3){
+   610|   610|      achHtml += '<div style="display:inline-flex;align-items:center;padding:0.5rem 0.75rem;margin:0 0.375rem 0.375rem 0;color:var(--text-muted);font-size:0.6875rem;">+'+ (locked.length-3) +' more</div>';
+   611|   611|    }
+   612|   612|    document.getElementById('achievementsList').innerHTML = achHtml || '<div style="font-size:0.8125rem;color:var(--text-muted);">Start earning to unlock achievements!</div>';
+   613|   613|
+   614|   614|    // Recent transactions
+   615|   615|    var txs = (c.transactions||[]).slice(-5).reverse();
+   616|   616|    var txnsHtml = '';
+   617|   617|    if(!txs.length){
+   618|   618|      txnsHtml = '<div style="text-align:center;padding:2rem 0;color:var(--text-muted);"> Your journey starts here! Visit the shop to earn points.</div>';
+   619|   619|    } else {
+   620|   620|      txs.forEach(function(tx){
+   621|   621|        var icon = tx.type==='haircut'?'':tx.type==='redeem'?'':tx.type==='birthday_bonus'?'':'*';
+   622|   622|        var label = tx.type==='haircut'?'Haircut $'+(tx.amount||0).toFixed(2):
+   623|   623|                    tx.type==='redeem'?'Redeemed $'+tx.value+' off':
+   624|   624|                    (tx.note||tx.type.replace(/_/g,' '));
+   625|   625|        txnsHtml += '<div class="mini-txn">'+
+   626|   626|          '<div class="txn-icon">'+icon+'</div>'+
+   627|   627|          '<div style="flex:1"><div style="font-size:0.8125rem;font-weight:500;">'+label+'</div><div style="font-size:0.6875rem;color:var(--text-muted);">'+formatDate(tx.timestamp)+'</div></div>'+
+   628|   628|          '<div style="font-size:0.875rem;font-weight:700;color:'+(tx.points>0?'var(--accent)':'#ef4444')+'">'+(tx.points>0?'+':'')+tx.points+'</div>'+
+   629|   629|          '</div>';
+   630|   630|      });
+   631|   631|    }
+   632|   632|    document.getElementById('recentTxns').innerHTML = txnsHtml;
+   633|   633|
+   634|   634|    // Referral
+   635|   635|    document.getElementById('refCode').textContent = c.referral_code||'--------';
+   636|   636|    // Referral stats
+   637|   637|    var refCount = c.referral_count||0;
+   638|   638|    var refName = document.getElementById('custEditName');
+   639|   639|    if(refName) refName.value = c.name||'';
+   640|   640|    document.getElementById('refStats').innerHTML = refCount > 0 ? ' '+refCount+' friend'+(refCount!==1?'s':'')+' joined with your code' : 'Share your code to earn bonus points when friends join';
+   641|   641|  } catch(e) {
+   642|   642|    showToast('Error loading: '+e.message, 'error');
+   643|   643|  }
+   644|   644|}
+   645|   645|
+   646|   646|function signOut(){
+   647|   647|  curPhone = null;
+   648|   648|  loginDigits = '';
+   649|   649|  document.getElementById('loginPhone').value = '';
+   650|   650|  document.getElementById('dashScreen').classList.add('hidden');
+   651|   651|  document.getElementById('landingScreen').classList.remove('hidden');
+   652|   652|  showActionCards();
+   653|   653|}
+   654|   654|
+   655|   655|function copyRef(){
+   656|   656|  var code = document.getElementById('refCode').textContent;
+   657|   657|  if(code==='--------') return;
+   658|   658|  if(navigator.clipboard){
+   659|   659|    navigator.clipboard.writeText(code).then(function(){ showToast(' Code copied!', 'success'); });
+   660|   660|  }
+   661|   661|}
+   662|   662|
+   663|   663|// ========== SELF-EDIT NAME ==========
+   664|   664|async function doSaveCustName(){
+   665|   665|  var nm = document.getElementById('custEditName').value.trim();
+   666|   666|  var el = document.getElementById('custNameMsg');
+   667|   667|  if(!nm){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Enter your name</div>'; return; }
+   668|   668|  try {
+   669|   669|    await loadData();
+   670|   670|    var c = findCustomer(curPhone);
+   671|   671|    if(!c){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Account not found</div>'; return; }
+   672|   672|    c.name = nm;
+   673|   673|    _enqueueWrite();
+   674|   674|    el.innerHTML='<div style=\"color:var(--accent);font-size:0.75rem;\">OK Name updated</div>';
+   675|   675|    setTimeout(function(){ el.innerHTML=''; }, 2000);
+   676|   676|    refreshDashboard();
+   677|   677|  } catch(e){ el.innerHTML='<div style=\"color:#ef4444;font-size:0.75rem;\">Error: '+e.message+'</div>'; }
+   678|   678|}
+   679|   679|
+   680|   680|// ========== TOAST ==========
+   681|   681|function showToast(msg, type){
+   682|   682|  var existing = document.querySelectorAll('.toast');
+   683|   683|  existing.forEach(function(t){ t.remove(); });
+   684|   684|  var t = document.createElement('div');
+   685|   685|  t.className = 'toast toast-'+type;
+   686|   686|  t.textContent = msg;
+   687|   687|  document.body.appendChild(t);
+   688|   688|  setTimeout(function(){ t.remove(); }, 2500);
+   689|   689|}
+   690|   690|
+   691|   691|// ========== AUTO-REDIRECT if already logged in ==========
+   692|   692|(function(){
+   693|   693|  var saved = localStorage.getItem('_cust_phone');
+   694|   694|  if(saved){
+   695|   695|    curPhone = saved;
+   696|   696|    loadData().then(function(){
+   697|   697|      var c = findCustomer(saved);
+   698|   698|      if(c){
+   699|   699|        document.getElementById('landingScreen').classList.add('hidden');
+   700|   700|        document.getElementById('dashScreen').classList.remove('hidden');
+   701|   701|        applyShopBranding();
+   702|   702|        refreshDashboard();
+   703|   703|      }
+   704|   704|    }).catch(function(){});
+   705|   705|  }
+   706|   706|  // Save phone on signout/dashboard for return visits
+   707|   707|  var origSignOut = signOut;
+   708|   708|  signOut = function(){
+   709|   709|    localStorage.removeItem('_cust_phone');
+   710|   710|    origSignOut();
+   711|   711|  };
+   712|   712|  var origShowDashboard = showDashboard;
+   713|   713|  showDashboard = function(){
+   714|   714|    localStorage.setItem('_cust_phone', curPhone);
+   715|   715|    origShowDashboard();
+   716|   716|  };
+   717|   717|})();
+   718|   718|</script>
+   719|   719|</body>
+   720|   720|</html>
+   721|   721|

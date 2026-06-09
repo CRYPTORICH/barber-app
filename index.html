@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b0a">
-<meta name="description" content="Digital loyalty cards for barbershops. Clients earn free cuts. No app download. 5-minute setup.">
-<title>Cuts & Rewards — Barbershop Loyalty Platform</title>
+<meta name="description" content="ChairBook — The client book that keeps barbers booked. Track every head, kill no-shows, never lose a regular.">
+<title>ChairBook — Your Clients. Your Chair.</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -18,6 +18,7 @@
   --accent:#b8312f;
   --accent-hover:#c9403e;
   --gold:#c49b3f;
+  --cream:#f5f0e8;
   --radius:14px;
   --radius-lg:20px;
 }
@@ -37,11 +38,16 @@ img{max-width:100%;display:block}
   display:flex;align-items:center;justify-content:space-between;
   padding:1.25rem 2rem;max-width:1100px;margin:0 auto;
 }
-.nav-logo{font-weight:800;font-size:1.125rem;letter-spacing:-0.02em;color:var(--text);text-decoration:none}
-.nav-logo span{color:var(--accent)}
+.nav-logo{
+  font-weight:900;font-size:1.25rem;letter-spacing:-0.02em;
+  color:var(--text);text-decoration:none;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.nav-logo svg{width:24px;height:24px}
+.nav-logo span{color:var(--gold)}
 .nav-cta{
   padding:0.5rem 1.25rem;background:var(--accent);color:#fff;
-  border-radius:8px;font-size:0.875rem;font-weight:600;text-decoration:none;
+  border-radius:8px;font-size:0.875rem;font-weight:700;text-decoration:none;
   transition:background 0.2s;
 }
 .nav-cta:hover{background:var(--accent-hover)}
@@ -49,20 +55,27 @@ img{max-width:100%;display:block}
 /* ── HERO ── */
 .hero{
   position:relative;padding:6rem 1.5rem;text-align:center;
-  background:linear-gradient(180deg,rgba(13,11,10,0.3) 0%,var(--bg) 100%),
+  background:linear-gradient(180deg,rgba(13,11,10,0.25) 0%,rgba(13,11,10,0.85) 70%,var(--bg) 100%),
              url('images/hero-barber.jpg') center/cover no-repeat;
-  min-height:520px;display:flex;align-items:center;justify-content:center;
+  min-height:580px;display:flex;align-items:center;justify-content:center;
 }
-.hero-content{max-width:650px;position:relative;z-index:1}
+.hero-content{max-width:680px;position:relative;z-index:1}
 .hero-badge{
-  display:inline-block;padding:0.375rem 1rem;margin-bottom:1.5rem;
-  border:1px solid rgba(255,255,255,0.15);border-radius:50px;
-  font-size:0.8125rem;color:rgba(255,255,255,0.7);
-  backdrop-filter:blur(10px);background:rgba(255,255,255,0.05);
+  display:inline-block;padding:0.375rem 1.125rem;margin-bottom:1.5rem;
+  border:1px solid rgba(255,255,255,0.12);border-radius:50px;
+  font-size:0.8125rem;color:rgba(255,255,255,0.6);
+  backdrop-filter:blur(10px);background:rgba(255,255,255,0.04);
+  letter-spacing:0.03em;
 }
-.hero h1{font-size:3rem;font-weight:900;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1.25rem}
-.hero h1 span{color:var(--accent)}
-.hero p{font-size:1.1875rem;color:rgba(255,255,255,0.65);max-width:500px;margin:0 auto 2.5rem;line-height:1.65}
+.hero h1{
+  font-size:3.25rem;font-weight:900;line-height:1.08;letter-spacing:-0.03em;
+  margin-bottom:1.25rem;
+}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p{
+  font-size:1.1875rem;color:rgba(255,255,255,0.55);
+  max-width:520px;margin:0 auto 2.5rem;line-height:1.65;
+}
 .hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
 
 .btn{
@@ -73,19 +86,36 @@ img{max-width:100%;display:block}
 .btn-primary{background:var(--accent);color:#fff}
 .btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
 .btn-outline{
-  background:transparent;border:2px solid rgba(255,255,255,0.2);color:#fff;
+  background:transparent;border:2px solid rgba(255,255,255,0.15);color:#fff;
 }
-.btn-outline:hover{background:rgba(255,255,255,0.05)}
+.btn-outline:hover{background:rgba(255,255,255,0.04)}
 
 /* ── SECTION ── */
 .section{padding:5rem 1.5rem;max-width:1100px;margin:0 auto}
 .section-label{
-  text-transform:uppercase;letter-spacing:0.08em;font-size:0.75rem;
+  text-transform:uppercase;letter-spacing:0.1em;font-size:0.75rem;
   font-weight:700;color:var(--accent);margin-bottom:0.75rem;
 }
 .section h2{font-size:2.25rem;font-weight:900;letter-spacing:-0.02em;margin-bottom:1rem;line-height:1.2}
-.section h3{font-size:1.375rem;font-weight:800;letter-spacing:-0.01em}
 .section p.sub{color:var(--text-muted);font-size:1.0625rem;max-width:600px;margin-bottom:3rem;line-height:1.7}
+
+/* ── PAIN STRIP ── */
+.pain-strip{
+  background:var(--bg-card);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);padding:3rem 1.5rem;text-align:center;
+}
+.pain-strip h2{font-size:1.75rem;font-weight:800;margin-bottom:2rem;letter-spacing:-0.02em}
+.pain-strip h2 span{color:var(--accent)}
+.pain-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+  max-width:900px;margin:0 auto;
+}
+.pain-item{text-align:center}
+.pain-item .num{
+  font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;
+  margin-bottom:0.5rem;
+}
+.pain-item .label{font-size:0.9375rem;color:var(--text-muted);line-height:1.5}
 
 /* ── FEATURES ── */
 .features-grid{
@@ -99,11 +129,11 @@ img{max-width:100%;display:block}
 .feature-card:hover{border-color:var(--accent)}
 .feature-icon{
   width:48px;height:48px;border-radius:12px;
-  background:rgba(184,49,47,0.1);color:var(--accent);
+  background:rgba(184,49,47,0.08);color:var(--accent);
   display:flex;align-items:center;justify-content:center;
   margin-bottom:1.25rem;
 }
-.feature-icon svg{width:24px;height:24px}
+.feature-icon svg{width:22px;height:22px}
 .feature-card h4{font-size:1rem;font-weight:700;margin-bottom:0.5rem}
 .feature-card p{font-size:0.875rem;color:var(--text-muted);line-height:1.6}
 
@@ -124,14 +154,20 @@ img{max-width:100%;display:block}
   background:var(--bg-card);border:1px solid var(--border);
   border-radius:var(--radius-lg);padding:2.5rem 2rem;text-align:center;
 }
-.pricing-card.featured{border-color:var(--accent)}
+.pricing-card.featured{border-color:var(--accent);position:relative}
+.pricing-card.featured::before{
+  content:'MOST POPULAR';position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#fff;font-size:0.6875rem;font-weight:700;
+  padding:0.25rem 1rem;border-radius:50px;letter-spacing:0.06em;
+}
 .pricing-card .plan{font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);font-weight:700;margin-bottom:0.5rem}
-.pricing-card .price{font-size:3rem;font-weight:900;color:var(--accent)}
+.pricing-card .price{font-size:3rem;font-weight:900;color:var(--gold)}
 .pricing-card .price span{font-size:0.9375rem;color:var(--text-muted);font-weight:400}
+.pricing-card .haircut-anchor{font-size:0.8125rem;color:var(--text-muted);margin-top:-0.25rem;margin-bottom:1.25rem}
 .pricing-card ul{list-style:none;text-align:left;margin:1.5rem 0}
-.pricing-card ul li{padding:0.5rem 0;font-size:0.875rem;color:var(--text-muted);border-bottom:1px solid var(--border)}
+.pricing-card ul li{padding:0.5rem 0;font-size:0.875rem;color:var(--text-muted);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
 .pricing-card ul li:last-child{border-bottom:none}
-.pricing-card ul li::before{content:"✓";color:var(--accent);margin-right:0.625rem;font-weight:700}
+.pricing-card ul li svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
 
 /* ── TESTIMONIAL ── */
 .testimonial{
@@ -168,10 +204,11 @@ img{max-width:100%;display:block}
   .pricing-grid{grid-template-columns:1fr}
   .section h2{font-size:1.75rem}
   .nav{padding:1rem 1.25rem}
+  .pain-grid{grid-template-columns:1fr;gap:2rem}
 }
 
 @media(max-width:480px){
-  .hero{padding:4rem 1.25rem;min-height:420px}
+  .hero{padding:4rem 1.25rem;min-height:440px}
   .hero h1{font-size:1.625rem}
   .hero-actions{flex-direction:column}
   .btn{width:100%;justify-content:center}
@@ -182,69 +219,84 @@ img{max-width:100%;display:block}
 
 <!-- NAV -->
 <nav class="nav">
-  <a href="/barber-app/" class="nav-logo">Cuts<span>&</span>Rewards</a>
-  <a href="admin.html" class="nav-cta">Set Up Your Shop</a>
+  <a href="/barber-app/" class="nav-logo">
+    <!-- barber pole SVG -->
+    <svg viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="20" rx="2" fill="var(--accent)"/><line x1="12" y1="3" x2="12" y2="9" stroke="#fff" stroke-width="2.5"/><line x1="12" y1="12" x2="12" y2="18" stroke="#1a3a8a" stroke-width="2.5"/><line x1="12" y1="10" x2="12" y2="10.01" stroke="#fff" stroke-width="2.5"/></svg>
+    Chair<span>Book</span>
+  </a>
+  <a href="admin.html" class="nav-cta">Claim Your Chair</a>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-badge">Trusted by barbershops across the U.S.</div>
-    <h1>Turn every <span>haircut</span> into a comeback</h1>
-    <p>Digital loyalty cards your clients tap at checkout. No app download. No plastic cards. Just a phone number and they're earning free cuts.</p>
+    <div class="hero-badge">Built for barbers. Not tech bros.</div>
+    <h1>Your chair. Your clients. <em>Your book.</em></h1>
+    <p>The client book that fills chairs, kills no-shows, and keeps your regulars coming back. No commission. No bullshit.</p>
     <div class="hero-actions">
-      <a href="admin.html" class="btn btn-primary">Launch Your Shop — Free 14 Days</a>
-      <a href="#how-it-works" class="btn btn-outline">How It Works</a>
+      <a href="admin.html" class="btn btn-primary">Get Started — 30 Days Free</a>
+      <a href="#how" class="btn btn-outline">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN STRIP -->
+<section class="pain-strip">
+  <h2>The average barber loses <span>$7,200 a year</span> to no-shows and ghosting.</h2>
+  <div class="pain-grid">
+    <div class="pain-item">
+      <div class="num">3x</div>
+      <div class="label">A client with a reminder rebooks 3x more often than one without.</div>
+    </div>
+    <div class="pain-item">
+      <div class="num">67%</div>
+      <div class="label">Of clients who ghost say it's because nobody followed up.</div>
+    </div>
+    <div class="pain-item">
+      <div class="num">$60</div>
+      <div class="label">What one no-show costs you. That's a full fade. Gone.</div>
     </div>
   </div>
 </section>
 
 <!-- FEATURES -->
 <section class="section">
-  <div class="section-label">Platform Features</div>
-  <h2>Everything your shop needs to keep clients coming back</h2>
-  <p class="sub">No app to install. No hardware to buy. Your clients just enter their phone number at checkout — that's it.</p>
+  <div class="section-label">What You Get</div>
+  <h2>A client book that actually works for you</h2>
+  <p class="sub">No app for your clients to download. No hardware. Your barbers open it on any phone and go.</p>
 
   <div class="features-grid">
 
     <div class="feature-card">
       <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/><path d="M9 6h6"/><path d="M9 10h6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
       </div>
-      <h4>Digital Punch Card</h4>
-      <p>Clients enter their phone number at checkout. Each visit earns a point. 10 visits = free cut. Simple.</p>
+      <h4>Every Head Tracked</h4>
+      <p>Every client. Every visit. Their cut, their birthday, what they tip. Your book — organized.</p>
     </div>
 
     <div class="feature-card">
       <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/><path d="M15 7l-3 3-3-3"/><path d="M12 10v7"/></svg>
       </div>
-      <h4>Referral Rewards</h4>
-      <p>Client brings a friend? Both get bonus points. Word of mouth pays for itself.</p>
+      <h4>Auto Reminders</h4>
+      <p>Client hits 8 visits? They get a text: "Two more and your next cut is on us." They book. You're full.</p>
     </div>
 
     <div class="feature-card">
       <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       </div>
-      <h4>Staff PIN Checkout</h4>
-      <p>Your barbers tap a 4-digit PIN to stamp visits. No accounts. No passwords. Just tap and go.</p>
+      <h4>VIP Treatment</h4>
+      <p>Your best clients get the recognition they deserve. Anniversary cuts. Birthday bonuses. Red carpet treatment.</p>
     </div>
 
     <div class="feature-card">
       <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h18v18H3z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
       </div>
-      <h4>SMS Reminders</h4>
-      <p>"You're 2 cuts away from a free haircut!" Auto-texts bring clients back when they're close to a reward.</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      </div>
-      <h4>Client Dashboard</h4>
-      <p>Your clients see their progress, upcoming rewards, and referral link — all from their phone browser.</p>
+      <h4>Staff PIN Access</h4>
+      <p>Your barbers tap a 4-digit PIN. That's it. No accounts, no passwords, no training required.</p>
     </div>
 
     <div class="feature-card">
@@ -252,33 +304,41 @@ img{max-width:100%;display:block}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       </div>
       <h4>Shop Analytics</h4>
-      <p>Track daily visits, top clients, referral performance, and revenue trends. Real-time dashboard.</p>
+      <p>See who's coming back, who's drifting, and which barbers are building the strongest books.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/></svg>
+      </div>
+      <h4>Referral Built In</h4>
+      <p>Client brings a friend? Both get credit. Word of mouth is the best marketing — we make it automatic.</p>
     </div>
 
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="section" id="how-it-works">
-  <div class="section-label">How It Works</div>
-  <h2>Three steps. Five minutes.</h2>
-  <p class="sub">You're fully set up before your next client walks in.</p>
+<section class="section" id="how">
+  <div class="section-label">Setup</div>
+  <h2>You're live before your next client sits down</h2>
+  <p class="sub">Three steps. Five minutes. Zero technical skill required.</p>
 
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
-      <h4>Create Your Shop</h4>
-      <p>Enter your shop name and email. We'll send a verification code. Set your staff PIN.</p>
+      <h4>Claim Your Shop</h4>
+      <p>Enter your shop name and email. Set a staff PIN. That's the whole setup.</p>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <h4>Share With Your Barbers</h4>
-      <p>Give your team the staff link and PIN. They open it on any phone — no app install.</p>
+      <p>Give your team the link and PIN. They open it on any phone — takes 10 seconds.</p>
     </div>
     <div class="step">
       <div class="step-num">3</div>
-      <h4>Clients Start Earning</h4>
-      <p>Clients enter their phone number at checkout. Every 10th cut is free. They'll keep coming back.</p>
+      <h4>Watch Your Book Fill</h4>
+      <p>Clients enter their number at checkout. Every visit is tracked. Your chair stays full.</p>
     </div>
   </div>
 </section>
@@ -286,33 +346,33 @@ img{max-width:100%;display:block}
 <!-- PRICING -->
 <section class="section">
   <div class="section-label">Pricing</div>
-  <h2 style="text-align:center">One price. Everything included.</h2>
-  <p class="sub" style="text-align:center;margin-left:auto;margin-right:auto">14-day free trial. No contract. Cancel anytime.</p>
+  <h2 style="text-align:center">Less than one haircut a month</h2>
+  <p class="sub" style="text-align:center;margin-left:auto;margin-right:auto">30-day free trial. No contract. Cancel anytime.</p>
 
   <div class="pricing-grid">
     <div class="pricing-card">
-      <div class="plan">Starter</div>
-      <div class="price">$97<span>/month</span></div>
+      <div class="plan">The Chair</div>
+      <div class="price">$29<span>/month</span></div>
+      <div class="haircut-anchor">One fade. One month. That's it.</div>
       <ul>
-        <li>Unlimited loyalty cards</li>
-        <li>SMS reminders</li>
-        <li>Customer portal</li>
-        <li>Staff PIN checkout</li>
-        <li>Basic analytics</li>
-        <li>Email support</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Unlimited client tracking</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Auto SMS reminders</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Client portal</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Staff PIN access</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Basic analytics</li>
       </ul>
       <a href="admin.html" class="btn btn-primary" style="width:100%">Start Free Trial</a>
     </div>
     <div class="pricing-card featured">
-      <div class="plan">Pro</div>
-      <div class="price">$200<span>/month</span></div>
+      <div class="plan">The Shop</div>
+      <div class="price">$79<span>/month</span></div>
+      <div class="haircut-anchor">Less than three cuts. For the whole shop.</div>
       <ul>
-        <li>Everything in Starter</li>
-        <li>Referral rewards</li>
-        <li>Birthday bonuses</li>
-        <li>Custom branding</li>
-        <li>Priority support</li>
-        <li>API access</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Everything in The Chair</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Multi-barber support</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Referral tracking</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Birthday & anniversary automation</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
       </ul>
       <a href="admin.html" class="btn btn-primary" style="width:100%">Go Pro</a>
     </div>
@@ -322,7 +382,7 @@ img{max-width:100%;display:block}
 <!-- TESTIMONIAL -->
 <section class="section">
   <div class="testimonial">
-    <p class="quote">"My regulars love watching their visits add up. I've had guys come back three weeks in a row just to hit their 10th cut. This thing pays for itself in one extra visit a month."</p>
+    <p class="quote">"I was losing three no-shows a week. That's $180 out of my pocket. Since I started using this, I've had two no-shows in six months. My regulars love that I remember their cut, their birthday, everything. This thing pays for itself in one saved appointment."</p>
     <p class="author">Marcus D.</p>
     <p class="role">Owner, Fade City Barbers — Atlanta, GA</p>
   </div>
@@ -330,14 +390,14 @@ img{max-width:100%;display:block}
 
 <!-- CTA -->
 <section class="cta">
-  <h2>Ready to fill your chairs?</h2>
-  <p>Set up in 5 minutes. First 14 days free. No credit card required.</p>
-  <a href="admin.html" class="btn btn-primary btn-lg">Launch Your Shop</a>
+  <h2>Your chair shouldn't sit empty</h2>
+  <p>Set up in 5 minutes. 30 days free. No credit card required.</p>
+  <a href="admin.html" class="btn btn-primary">Claim Your Chair</a>
 </section>
 
 <!-- FOOTER -->
 <footer class="footer">
-  <p>Cuts &amp; Rewards &copy; 2026 &middot; <a href="admin.html">Shop Login</a></p>
+  <p>ChairBook &copy; 2026 &middot; <a href="admin.html">Shop Login</a></p>
 </footer>
 
 </body>
